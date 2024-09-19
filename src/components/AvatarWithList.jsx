@@ -8,8 +8,13 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { logout } from "../redux/authSlice";
+
 
 const AvatarWithList = ({ settings }) => {
+  const dispatch = useDispatch()
+
   const [anchorElUser, setAnchorElUser] = useState(null);
 
   const handleOpenUserMenu = (event) => {
@@ -18,6 +23,10 @@ const AvatarWithList = ({ settings }) => {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+
+  const handleLogout = () => {
+    dispatch(logout())
   };
 
 
@@ -45,7 +54,7 @@ const AvatarWithList = ({ settings }) => {
         onClose={handleCloseUserMenu}
       >
         {settings.map((setting) => (
-          <MenuItem key={setting} onClick={handleCloseUserMenu}>
+          <MenuItem key={setting} onClick={ setting === "Logout" ? handleLogout : handleCloseUserMenu}>
             <Typography sx={{ textAlign: "center" }}>{setting}</Typography>
           </MenuItem>
         ))}

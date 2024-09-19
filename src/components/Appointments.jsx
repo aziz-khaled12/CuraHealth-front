@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
-import { TextField, Box, Button } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { CheckCircle, Cancel, Schedule } from "@mui/icons-material";
 import { MdAdd } from "react-icons/md";
+import AddNewModal from "./Appointments/AddNewModal";
+import Calendar from "./Calendar";
 
-const Appointments = ({expand}) => {
+const Appointments = () => {
+  const [open, setOpen] = useState(false);
   // Fake rows data
   const initialRows = [
     {
@@ -296,21 +299,30 @@ const Appointments = ({expand}) => {
   ];
 
   return (
-    <div className= {`w-full transition-all duration-100 ease-in-out h-[570px]`}>
-      <Box sx={{display: "flex", alignItems: "center", justifyContent: "end"}} mb={3}>
-        <Button startIcon={<MdAdd /> } variant="contained" sx={{textTransform: "none"}} className="!bg-primary">
-            New Appointment
+    <div className={`w-full transition-all duration-100 ease-in-out h-[570px]`}>
+      <Box
+        sx={{ display: "flex", alignItems: "center", justifyContent: "end" }}
+        mb={3}
+      >
+        <Button
+          startIcon={<MdAdd />}
+          onClick={() => {
+            setOpen(true);
+          }}
+          variant="contained"
+          sx={{ textTransform: "none" }}
+          className="!bg-primary"
+        >
+          New Appointment
         </Button>
       </Box>
 
       <DataGrid
         rows={rows}
         columns={columns}
-        pageSize={5}
-        rowsPerPageOptions={[5, 10, 20]}
-        disableSelectionOnClick
+        autoPageSize={true}
         sx={{
-            width: "100%",
+          width: "100%",
           "@media (max-width: 600px)": {
             "& .MuiDataGrid-root": {
               fontSize: "0.8rem",
@@ -318,6 +330,10 @@ const Appointments = ({expand}) => {
           },
         }}
       />
+
+      {/* <Calendar></Calendar> */}
+
+      <AddNewModal open={open} setOpen={setOpen} />
     </div>
   );
 };

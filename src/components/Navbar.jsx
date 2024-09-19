@@ -10,6 +10,7 @@ import {
 import { CiSearch } from "react-icons/ci";
 import AvatarWithList from "./AvatarWithList";
 
+
 const Navbar = () => {
   const [selectedSearch, setSelectedSearch] = useState("all");
   const settings = ["Profile", "Account", "Dashboard", "Logout"];
@@ -19,6 +20,8 @@ const Navbar = () => {
 
   return (
     <nav className="flex items-center justify-between w-full p-4">
+      <div className={`text-2xl font-semibold text-center`}>Cura Health</div>
+
       <div className="flex gap-5 max-h-[45px]">
         <div className="border border-solid border-[#DCDFE3] rounded-md">
           <FormControl sx={{ p: 0, width: 166, m: 0 }}>

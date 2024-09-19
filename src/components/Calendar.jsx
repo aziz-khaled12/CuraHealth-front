@@ -1,0 +1,421 @@
+import React, { useState, useCallback, memo, useEffect, useMemo } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import Paper from "@mui/material/Paper";
+import {
+  Scheduler,
+  DayView,
+  Appointments,
+  DragDropProvider,
+} from "@devexpress/dx-react-scheduler-material-ui";
+import {
+  ViewState,
+  EditingState,
+  IntegratedEditing,
+} from "@devexpress/dx-react-scheduler";
+import {
+  Modal,
+  TextField,
+  Button,
+  Box,
+  Autocomplete,
+  MenuItem,
+  Select,
+  FormControl,
+} from "@mui/material";
+import {
+  DatePicker,
+  TimePicker,
+  LocalizationProvider,
+} from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
+import {
+  addAppointment,
+  updateAppointment,
+  deleteAppointment,
+} from "../redux/Appointments/appointmentsSlice";
+
+const fakePatients = [
+  {
+    id: "1",
+    fullName: "John Doe",
+    birthday: "1985-05-15",
+    address: "123 Elm Street, Springfield, IL",
+    email: "john.doe@example.com",
+    phoneNumber: "555-1234",
+    sex: "Male",
+  },
+  {
+    id: "2",
+    fullName: "Jane Smith",
+    birthday: "1990-10-22",
+    address: "456 Oak Avenue, Springfield, IL",
+    email: "jane.smith@example.com",
+    phoneNumber: "555-5678",
+    sex: "Female",
+  },
+  {
+    id: "3",
+    fullName: "Alice Johnson",
+    birthday: "1982-03-30",
+    address: "789 Pine Road, Springfield, IL",
+    email: "alice.johnson@example.com",
+    phoneNumber: "555-8765",
+    sex: "Female",
+  },
+  {
+    id: "4",
+    fullName: "Bob Brown",
+    birthday: "1978-07-19",
+    address: "101 Maple Lane, Springfield, IL",
+    email: "bob.brown@example.com",
+    phoneNumber: "555-4321",
+    sex: "Male",
+  },
+];
+
+const categories = [
+  { name: "Emergency" },
+  { name: "Normal" },
+  { name: "Family" },
+  { name: "Friend" },
+];
+
+const Calendar = () => {
+  const dispatch = useDispatch();
+  const appointments = useSelector((state) =>
+    state.appointments.appointments.map((appointment) => ({
+      ...appointment,
+      startDate: new Date(appointment.startDate),
+      endDate: new Date(appointment.endDate),
+    }))
+  );
+
+  useEffect(() => {
+    console.log(appointments);
+  }, [appointments]);
+
+  const [open, setOpen] = useState(false);
+  const [category, setCategory] = useState("Normal");
+  const [appointmentTitle, setAppointmentTitle] = useState("");
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
+
+  const [editingOptions] = useState({
+    allowAdding: true,
+    allowDeleting: true,
+    allowUpdating: true,
+    allowDragging: true,
+    allowResizing: true,
+  });
+  const { allowUpdating, allowResizing, allowDragging } = editingOptions;
+
+  const handleOpen = (cellData) => {
+    setStartDate(cellData.startDate);
+    setEndDate(cellData.endDate);
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setAppointmentTitle("");
+    setStartDate(new Date());
+    setEndDate(new Date());
+  };
+
+  const Appointment = ({ children, ...restProps }) => (
+    <Appointments.Appointment
+      {...restProps}
+      onClick={() => handleOpen(restProps.data)}
+    >
+      {children}
+    </Appointments.Appointment>
+  );
+
+  const allowDrag = useCallback(
+    () => allowDragging && allowUpdating,
+    [allowDragging, allowUpdating]
+  );
+  const allowResize = useCallback(
+    () => allowResizing && allowUpdating,
+    [allowResizing, allowUpdating]
+  );
+
+  const handleSubmitAppointment = () => {
+    if (appointmentTitle && startDate && endDate) {
+      const newAppointment = {
+        title: appointmentTitle,
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
+      };
+      dispatch(addAppointment(newAppointment));
+      handleClose();
+    }
+  };
+
+  const [selectedPatient, setSelectedPatient] = useState(null);
+
+
+  const handlePatientSelect = (event, value) => {
+    if (value) {
+      setSelectedPatient(value);
+      setAppointmentTitle(value.fullName);
+    }
+  };
+
+  const onCommitChanges = useCallback(
+    ({ added, changed, deleted }) => {
+      if (added) {
+        const appointmentData = {
+          title: added.title,
+          startDate: added.startDate.toISOString(),
+          endDate: added.endDate.toISOString(),
+        };
+        dispatch(addAppointment(appointmentData));
+      }
+      if (changed) {
+        Object.entries(changed).forEach(([id, changes]) => {
+          const serializedChanges = {};
+          if (changes.startDate) {
+            serializedChanges.startDate = changes.startDate.toISOString();
+          }
+          if (changes.endDate) {
+            serializedChanges.endDate = changes.endDate.toISOString();
+          }
+          if (changes.title) {
+            serializedChanges.title = changes.title;
+          }
+          dispatch(updateAppointment({ id: Number(id), ...serializedChanges }));
+        });
+      }
+      if (deleted !== undefined) {
+        dispatch(deleteAppointment(deleted));
+      }
+    },
+    [dispatch]
+  );
+
+  const TimeTableCell = useCallback(
+    memo(({ onDoubleClick, ...restProps }) => (
+      <DayView.TimeTableCell
+        {...restProps}
+        onDoubleClick={() => handleOpen(restProps)}
+      />
+    )),
+    []
+  );
+
+  const handleCategoryChange = (event) => {
+    setCategory(event.target.value);
+  };
+
+  return (
+    <React.Fragment>
+      <Paper>
+        <Scheduler data={appointments} height={720}>
+          <ViewState />
+          <EditingState onCommitChanges={onCommitChanges} />
+          <IntegratedEditing />
+          <DayView
+            startDayHour={9}
+            endDayHour={19}
+            timeTableCellComponent={TimeTableCell}
+          />
+          <Appointments appointmentComponent={Appointment} />
+          <DragDropProvider allowDrag={allowDrag} allowResize={allowResize} />
+        </Scheduler>
+      </Paper>
+
+      <Modal open={open} onClose={handleClose}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 1300,
+            bgcolor: "background.paper",
+            borderRadius: "8px",
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          <h2 className="mb-10 text-2xl font-semibold">Add Appointment</h2>
+          <div className="flex flex-col gap-8">
+            <div className="flex flex-col items-start w-full">
+              <h1 className="text-base font-medium mb-3">Patient</h1>
+              <Autocomplete
+                sx={{ margin: "0" }}
+                fullWidth
+                freeSolo
+                options={fakePatients}
+                getOptionLabel={(option) => option.fullName}
+                onChange={handlePatientSelect}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    fullWidth
+                    placeholder="Patient"
+                    variant="outlined"
+                    margin="normal"
+                  />
+                )}
+                renderOption={(props, option) => (
+                  <>
+                  <MenuItem {...props} key={option.id}>
+                    {option.fullName}
+                  </MenuItem>
+                  </>
+                )}
+              />
+            </div>
+
+            <div className="flex gap-4">
+              <div className="flex flex-col items-start w-full">
+                <h1 className="text-base font-medium mb-3">Address</h1>
+                <TextField
+                  disabled={!selectedPatient}
+                  className="w-full"
+                  slotProps={{
+                    input: {
+                      readOnly: true,
+                    },
+                  }}
+                  name="address"
+                  placeholder="Address"
+                  value={selectedPatient ? selectedPatient.address : ""}
+                />
+              </div>
+              <div className="flex flex-col items-start w-full">
+                <h1 className="text-base font-medium mb-3">Patient ID</h1>
+                <TextField
+                  className="w-full"
+                  disabled={!selectedPatient}
+                  slotProps={{
+                    input: {
+                      readOnly: true,
+                    },
+                  }}
+                  name="id"
+                  placeholder="Patient ID"
+                  value={selectedPatient ? selectedPatient.id : ""}
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <div className="flex flex-col items-start w-full">
+                <h1 className="text-base font-medium mb-3">Email</h1>
+                <TextField
+                  disabled={!selectedPatient}
+                  className="w-full"
+                  slotProps={{
+                    input: {
+                      readOnly: true,
+                    },
+                  }}
+                  name="email"
+                  placeholder="Email"
+                  value={selectedPatient ? selectedPatient.email : ""}
+                />
+              </div>
+              <div className="flex flex-col items-start w-full">
+                <h1 className="text-base font-medium mb-3">Phone Number</h1>
+                <TextField
+                  disabled={!selectedPatient}
+                  className="w-full"
+                  slotProps={{
+                    input: {
+                      readOnly: true,
+                    },
+                  }}
+                  name="phoneNumber"
+                  placeholder="Phone Number"
+                  value={selectedPatient ? selectedPatient.phoneNumber : ""}
+                />
+              </div>
+              <div className="flex flex-col items-start w-full">
+                <h1 className="text-base font-medium mb-3">Category</h1>
+                <FormControl fullWidth>
+                  <Select
+                    className="w-full"
+                    name="category"
+                    hiddenLabel
+                    value={category}
+                    onChange={handleCategoryChange}
+                  >
+                    {categories.map((category, index) => {
+                      return (
+                        <MenuItem value={category.name} key={index}>
+                          {category.name}
+                        </MenuItem>
+                      );
+                    })}
+                  </Select>
+                </FormControl>
+              </div>
+              <div className="flex flex-col items-start w-full">
+                <h1 className="text-base font-medium mb-3">Sex</h1>
+                <TextField
+                  className="w-full"
+                  disabled={!selectedPatient}
+                  slotProps={{
+                    input: {
+                      readOnly: true,
+                    },
+                  }}
+                  name="sex"
+                  placeholder="Sex"
+                  value={selectedPatient ? selectedPatient.sex : ""}
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <div className="w-full flex flex-col gap-3">
+                  <h1 className="text-base font-medium">Select Date</h1>
+                  <DatePicker
+                    fullWidth
+                    placeholder="Select Date"
+                    value={startDate}
+                    onChange={(newValue) => {
+                      setStartDate(newValue);
+                      setEndDate(newValue);
+                    }}
+                    renderInput={(params) => (
+                      <TextField fullWidth margin="normal" {...params} />
+                    )}
+                  />
+                </div>
+
+                <div className="w-full flex flex-col gap-3">
+                  <h1 className="font-medium text-base">Start Time</h1>
+                  <TimePicker
+                    fullWidth
+                    placeholder="Start Time"
+                    value={startDate}
+                    onChange={(newValue) => setStartDate(newValue)}
+                    renderInput={(params) => (
+                      <TextField fullWidth margin="normal" {...params} />
+                    )}
+                  />
+                </div>
+              </LocalizationProvider>
+            </div>
+          </div>
+          <Button
+            variant="contained"
+            className="!bg-primary"
+            fullWidth
+            onClick={handleSubmitAppointment}
+            sx={{ mt: 2, textTransform: "none", height: "45px", fontSize: "22", fontWeight: "500" }}
+          >
+            Add Appointment
+          </Button>
+        </Box>
+      </Modal>
+    </React.Fragment>
+  );
+};
+
+export default Calendar;
