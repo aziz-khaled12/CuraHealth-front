@@ -81,7 +81,15 @@ export const verifyToken = createAsyncThunk(
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
-    user: JSON.parse(localStorage.getItem("user")) || null,
+    user: JSON.parse((() => { 
+      const Parce = localStorage.getItem("user"); 
+      if (Parce === undefined)  {
+        return Parce
+      } else {
+        return null
+      }
+    })()),
+    // user: JSON.parse( ),
     accessToken: localStorage.getItem("token") || null,
     isAuthenticated: !!localStorage.getItem("token"),
     error: null,
