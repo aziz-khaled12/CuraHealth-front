@@ -1,104 +1,138 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-import { jwtDecode } from "jwt-decode";
-import Cookies from "js-cookie";
+// authSlice.js
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 
 const url = import.meta.env.VITE_BACK_END_URL;
 
-const loadFromLocalStorage = () => {
-  const user = localStorage.getItem("user");
-  return {
-    authStatus: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed'
-    user: user ? JSON.parse(user) : null,
-    isAuthenticated: !!Cookies.get("token"),
-    error: null,
-  };
-};
-
-const initialState = loadFromLocalStorage();
-
-// Async action for login
+// Async thunks
 export const login = createAsyncThunk(
-  "auth/login",
+  'auth/login',
   async ({ email, password }, { rejectWithValue }) => {
-    console.log("entered login");
     try {
       const res = await axios.post(`${url}/api/login`, { email, password });
-      const { user } = res.data;
-      console.log(user);
+      console.log(res)
+      const token = res.data.token;
+      const decodedToken = jwtDecode(token);
+      console.log("decoded: ", decodedToken)
+      const user = decodedToken.user;
 
-      return { user };
+
+      localStorage.setItem("token", token)
+      localStorage.setItem("user", JSON.stringify(user))
+
+      return { user, token };
     } catch (err) {
-      const errorMessage =
+      return rejectWithValue(
         err.response && err.response.status === 401
-          ? "Invalid email or password, please try again"
-          : "Something went wrong";
-      return rejectWithValue(errorMessage);
+          ? 'Invalid email or password, please try again'
+          : 'Something went wrong'
+      );
     }
   }
 );
 
-// Async action for signup
 export const signup = createAsyncThunk(
-  "auth/signup",
-  async ({ Email, Password, Name, TypeID }, { rejectWithValue }) => {
+  'auth/signup',
+  async ({ email, password, username, role }, { rejectWithValue }) => {
     try {
-      const res = await axios.post(`${url}/api/register`, {
-        Email,
-        Password,
-        Name,
-        TypeID,
-      });
-      const { user } = res.data;
-      return { user };
+      const res = await axios.post(`${url}/api/signup`, { email, password, username, role });
+      const token = res.data;
+      const decodedToken = jwtDecode(token);
+      const user = decodedToken.user;
+
+
+      
+      localStorage.setItem("token", token)
+      localStorage.setItem("user", JSON.stringify(user))
+
+      return { user, token };
     } catch (err) {
-      return rejectWithValue(err.res.data.error);
+      return rejectWithValue(err.response.data.error || 'Something went wrong');
     }
   }
 );
 
-// Auth Slice
+export const verifyToken = createAsyncThunk(
+  'auth/verifyToken',
+  async (_, { getState, rejectWithValue }) => {
+    const { auth } = getState();
+    if (auth.accessToken) {
+      try {
+        const res = await axios.post(
+          `${url}/auth/verify-token`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${auth.accessToken}`,
+            },
+          }
+        );
+        if (res.status !== 200) {
+          throw new Error('Token verification failed');
+        }
+      } catch (err) {
+        return rejectWithValue('Token verification failed');
+      }
+    }
+  }
+);
+
 const authSlice = createSlice({
-  name: "auth",
+  name: 'auth',
   initialState: {
-    initialState,
+    user: JSON.parse(localStorage.getItem("user")) || null,
+    accessToken: localStorage.getItem("token") || null,
+    isAuthenticated: !!localStorage.getItem("token"),
+    error: null,
+    authStatus: 'idle',
   },
   reducers: {
     logout: (state) => {
       state.user = null;
+      state.accessToken = null;
       state.isAuthenticated = false;
       state.error = null;
+
+      localStorage.removeItem("token")
+      localStorage.removeItem("user")
     },
   },
   extraReducers: (builder) => {
     builder
       .addCase(login.pending, (state) => {
-        state.authStatus = "pending";
-        state.error = null;
+        state.authStatus = 'loading';
       })
       .addCase(login.fulfilled, (state, action) => {
-        state.authStatus = "success";
-        state.isAuthenticated = true;
-        state.token = action.payload.token;
+        state.authStatus = 'succeeded';
         state.user = action.payload.user;
+        state.accessToken = action.payload.token;
+        state.isAuthenticated = true;
+        state.error = null;
       })
       .addCase(login.rejected, (state, action) => {
-        state.authStatus = "failed";
+        state.authStatus = 'failed';
         state.error = action.payload;
       })
       .addCase(signup.pending, (state) => {
-        state.authStatus = "pending";
-        state.error = null;
+        state.authStatus = 'loading';
       })
       .addCase(signup.fulfilled, (state, action) => {
-        state.authStatus = "success";
-        state.isAuthenticated = true;
-        state.token = action.payload.token;
+        state.authStatus = 'succeeded';
         state.user = action.payload.user;
+        state.accessToken = action.payload.token;
+        state.isAuthenticated = true;
+        state.error = null;
       })
       .addCase(signup.rejected, (state, action) => {
-        state.authStatus = "failed";
+        state.authStatus = 'failed';
         state.error = action.payload;
+      })
+      .addCase(verifyToken.rejected, (state) => {
+        state.user = null;
+        state.accessToken = null;
+        state.isAuthenticated = false;
+        state.error = 'Token verification failed';
       });
   },
 });

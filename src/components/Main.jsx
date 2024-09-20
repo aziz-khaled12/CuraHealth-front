@@ -41,7 +41,7 @@ const Main = ({ selected }) => {
     }
   };
 
-  return <div className="container w-full">{renderContent()}</div>;
+  return renderContent();
 };
 
 export default Main;

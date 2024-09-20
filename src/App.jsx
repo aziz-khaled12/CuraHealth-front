@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import "./App.css";
 import Layout from "./components/Layout";
 import Page from "./components/Page";
@@ -9,18 +9,21 @@ import { useEffect } from "react";
 import { useSelector } from "react-redux";
 
 function App() {
-  const { error, isAuthenticated, authStatus } = useSelector(
+
+  const navigate = useNavigate()
+  const { isAuthenticated } = useSelector(
     (state) => state.auth
   );
+
   useEffect(() => {
     if (isAuthenticated) {
       navigate("/");
     }
-  }, [authStatus, isAuthenticated]);
+  }, [isAuthenticated]);
 
   return (
     <>
-      <div className="">
+      <div>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />

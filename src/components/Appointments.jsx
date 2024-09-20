@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { Box, Button } from "@mui/material";
 import { CheckCircle, Cancel, Schedule } from "@mui/icons-material";
 import { MdAdd } from "react-icons/md";
 import AddNewModal from "./Appointments/AddNewModal";
 import Calendar from "./Calendar";
+import Header from "./Header";
 
 const Appointments = () => {
   const [open, setOpen] = useState(false);
@@ -299,11 +300,17 @@ const Appointments = () => {
   ];
 
   return (
-    <div className={`w-full transition-all duration-100 ease-in-out h-[570px]`}>
+    <div className={`w-full transition-all duration-100 ease-in-out`}>
       <Box
-        sx={{ display: "flex", alignItems: "center", justifyContent: "end" }}
-        mb={3}
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginBottom: "16px"
+        }}
       >
+        <Header title={"Appointments"} subTitle={"Manage your appointments"} />
+
         <Button
           startIcon={<MdAdd />}
           onClick={() => {
@@ -317,19 +324,22 @@ const Appointments = () => {
         </Button>
       </Box>
 
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        autoPageSize={true}
-        sx={{
-          width: "100%",
-          "@media (max-width: 600px)": {
-            "& .MuiDataGrid-root": {
-              fontSize: "0.8rem",
+      <Box height={600}>
+        <DataGrid
+          rows={rows}
+          slots={{ toolbar: GridToolbar }}
+          columns={columns}
+          autoPageSize
+          sx={{
+            width: "100%",
+            "@media (max-width: 600px)": {
+              "& .MuiDataGrid-root": {
+                fontSize: "0.8rem",
+              },
             },
-          },
-        }}
-      />
+          }}
+        />
+      </Box>
 
       {/* <Calendar></Calendar> */}
 

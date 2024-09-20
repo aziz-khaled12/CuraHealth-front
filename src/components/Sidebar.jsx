@@ -20,9 +20,9 @@ const Sidebar = ({ selected, setSelected }) => {
 
   return (
     <>
-      <div className="h-full bg-white w-[73px]"></div>
+      
       <div
-        className={`h-full bg-white ${
+        className={`h-full overflow-hidden bg-white ${
           expand ? `w-[240px]` : `w-[73px] `
         } fixed z-20 transition-all duration-300 ease-in-out`}
         onMouseEnter={() => {
@@ -66,7 +66,7 @@ const Sidebar = ({ selected, setSelected }) => {
             >
               <span
                 className={`${
-                  expand ? `opacity-100` : `opacity-0`
+                  expand ? `opacity-100 w-fit` : `opacity-0 w-0`
                 } transition-opacity delay-100`}
               >
                 {item.label}
@@ -75,6 +75,7 @@ const Sidebar = ({ selected, setSelected }) => {
           ))}
         </div>
       </div>
+      <div className="h-full bg-white w-[73px]"></div>
     </>
   );
 };

@@ -33,6 +33,7 @@ import {
   updateAppointment,
   deleteAppointment,
 } from "../redux/Appointments/appointmentsSlice";
+import Header from "./Header";
 
 const fakePatients = [
   {

@@ -34,7 +34,7 @@ const AvatarWithList = ({ settings }) => {
     <Box sx={{ flexGrow: 0 }}>
       <Tooltip title="Open settings">
         <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-          <Avatar sx={{height: "40px", width: "40px"}} alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+          <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
         </IconButton>
       </Tooltip>
       <Menu

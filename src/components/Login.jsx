@@ -1,18 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Alert, Button, TextField, Typography } from "@mui/material";
 import { FcGoogle } from "react-icons/fc";
 import { FaApple, FaFacebook, FaGoogle } from "react-icons/fa";
-import { Link, Navigate } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "../redux/authSlice";
+import { MoonLoader } from "react-spinners";
 
 const Login = () => {
-  const navigate = useNavigate();
+
   const dispatch = useDispatch();
-  const { error, isAuthenticated, authStatus } = useSelector(
-    (state) => state.auth
-  );
+  const { error, authStatus } = useSelector((state) => state.auth);
 
   const [formData, setFormData] = useState({
     email: "",
@@ -55,8 +53,6 @@ const Login = () => {
       );
     }
   };
-
- 
 
   return (
     <>
@@ -118,7 +114,16 @@ const Login = () => {
                 variant="contained"
                 className="!bg-primary !rounded-lg !p-4 w-full"
               >
-                Continue
+                {authStatus === "loading" ? (
+                  <MoonLoader
+                    color="#ffffff"
+                    loading
+                    size={40}
+                    speedMultiplier={1}
+                  />
+                ) : (
+                  "Continue"
+                )}
               </Button>
 
               <div className="flex w-full justify-between items-center my-4">
