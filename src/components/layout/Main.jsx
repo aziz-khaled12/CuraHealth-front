@@ -1,10 +1,10 @@
 import React from "react";
-import Appointments from "./Appointments";
-import Dashboard from "./Dashboard";
-import Patients from "./Patients";
-import Rapports from "./Rapports";
-import Facturation from "./Facturation";
-import Calendar from "./Calendar";
+import Appointments from "../appointments/Appointments";
+import Dashboard from "../Dashboard";
+import Patients from "../patients/Patients";
+import Rapports from "../Rapports";
+import Facturation from "../Facturation";
+import Calendar from "../calendar/Calendar";
 
 const Main = ({ selected }) => {
 

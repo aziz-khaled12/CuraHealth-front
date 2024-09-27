@@ -1,91 +1,75 @@
-// authSlice.js
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
-import { jwtDecode } from 'jwt-decode';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
+import { jwtDecode } from "jwt-decode"; // Corrected import, it's a default export
 
 const url = import.meta.env.VITE_BACK_END_URL;
 
+// Utility function to check if the token is expired
+export function isTokenExpired(token) {
+  if (!token) return true;
+
+  const decodedToken = jwtDecode(token);
+  const currentTime = Date.now() / 1000; // in seconds
+
+  return decodedToken.exp < currentTime; // true if expired
+}
+
 // Async thunks
 export const login = createAsyncThunk(
-  'auth/login',
+  "auth/login",
   async ({ email, password }, { rejectWithValue }) => {
     try {
       const res = await axios.post(`${url}/api/login`, { email, password });
-      console.log(res)
       const token = res.data.token;
       const decodedToken = jwtDecode(token);
-      console.log("decoded: ", decodedToken)
-      const user = decodedToken.user;
+      const user = decodedToken.User;
 
-
-      localStorage.setItem("token", token)
-      localStorage.setItem("user", JSON.stringify(user))
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
 
       return { user, token };
     } catch (err) {
       return rejectWithValue(
         err.response && err.response.status === 401
-          ? 'Invalid email or password, please try again'
-          : 'Something went wrong'
+          ? "Invalid email or password, please try again"
+          : "Something went wrong"
       );
     }
   }
 );
 
 export const signup = createAsyncThunk(
-  'auth/signup',
-  async ({ email, password, username, role }, { rejectWithValue }) => {
+  "auth/signup",
+  async ({ Email, Password, Name, TypeID }, { rejectWithValue }) => {
     try {
-      const res = await axios.post(`${url}/api/signup`, { email, password, username, role });
-      const token = res.data;
+      const res = await axios.post(`${url}/api/register`, {
+        Email,
+        Password,
+        Name,
+        TypeID,
+      });
+      const token = res.data.token;
       const decodedToken = jwtDecode(token);
-      const user = decodedToken.user;
+      const user = decodedToken.User;
 
-
-      
-      localStorage.setItem("token", token)
-      localStorage.setItem("user", JSON.stringify(user))
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
 
       return { user, token };
     } catch (err) {
-      return rejectWithValue(err.response.data.error || 'Something went wrong');
-    }
-  }
-);
-
-export const verifyToken = createAsyncThunk(
-  'auth/verifyToken',
-  async (_, { getState, rejectWithValue }) => {
-    const { auth } = getState();
-    if (auth.accessToken) {
-      try {
-        const res = await axios.post(
-          `${url}/auth/verify-token`,
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${auth.accessToken}`,
-            },
-          }
-        );
-        if (res.status !== 200) {
-          throw new Error('Token verification failed');
-        }
-      } catch (err) {
-        return rejectWithValue('Token verification failed');
-      }
+      return rejectWithValue(err.response.data.error || "Something went wrong");
     }
   }
 );
 
 const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState: {
     user: JSON.parse(localStorage.getItem("user")) || null,
     accessToken: localStorage.getItem("token") || null,
     isAuthenticated: !!localStorage.getItem("token"),
     error: null,
-    authStatus: 'idle',
+    authStatus: "idle",
   },
   reducers: {
     logout: (state) => {
@@ -94,49 +78,52 @@ const authSlice = createSlice({
       state.isAuthenticated = false;
       state.error = null;
 
-      localStorage.removeItem("token")
-      localStorage.removeItem("user")
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+    },
+    autoLogout: (state) => {
+      state.isAuthenticated = false;
+      state.accessToken = null;
+      state.user = null;
+      state.error = "Session expired, please log in again";
+
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
     },
   },
   extraReducers: (builder) => {
     builder
       .addCase(login.pending, (state) => {
-        state.authStatus = 'loading';
+        state.authStatus = "loading";
       })
       .addCase(login.fulfilled, (state, action) => {
-        state.authStatus = 'succeeded';
+        state.authStatus = "succeeded";
         state.user = action.payload.user;
         state.accessToken = action.payload.token;
         state.isAuthenticated = true;
         state.error = null;
       })
       .addCase(login.rejected, (state, action) => {
-        state.authStatus = 'failed';
+        state.authStatus = "failed";
         state.error = action.payload;
       })
       .addCase(signup.pending, (state) => {
-        state.authStatus = 'loading';
+        state.authStatus = "loading";
       })
       .addCase(signup.fulfilled, (state, action) => {
-        state.authStatus = 'succeeded';
+        state.authStatus = "succeeded";
         state.user = action.payload.user;
         state.accessToken = action.payload.token;
         state.isAuthenticated = true;
         state.error = null;
       })
       .addCase(signup.rejected, (state, action) => {
-        state.authStatus = 'failed';
+        state.authStatus = "failed";
         state.error = action.payload;
-      })
-      .addCase(verifyToken.rejected, (state) => {
-        state.user = null;
-        state.accessToken = null;
-        state.isAuthenticated = false;
-        state.error = 'Token verification failed';
       });
   },
 });
 
-export const { logout } = authSlice.actions;
+export const { logout, autoLogout } = authSlice.actions;
 
 export default authSlice.reducer;

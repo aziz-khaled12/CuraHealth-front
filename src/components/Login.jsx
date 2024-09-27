@@ -118,7 +118,7 @@ const Login = () => {
                   <MoonLoader
                     color="#ffffff"
                     loading
-                    size={40}
+                    size={30}
                     speedMultiplier={1}
                   />
                 ) : (

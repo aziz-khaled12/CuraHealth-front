@@ -1,17 +1,4 @@
-import React, { useState, useCallback, memo, useEffect, useMemo } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import Paper from "@mui/material/Paper";
-import {
-  Scheduler,
-  DayView,
-  Appointments,
-  DragDropProvider,
-} from "@devexpress/dx-react-scheduler-material-ui";
-import {
-  ViewState,
-  EditingState,
-  IntegratedEditing,
-} from "@devexpress/dx-react-scheduler";
+import React, { useEffect, useState } from "react";
 import {
   Modal,
   TextField,
@@ -21,6 +8,7 @@ import {
   MenuItem,
   Select,
   FormControl,
+  
 } from "@mui/material";
 import {
   DatePicker,
@@ -28,12 +16,16 @@ import {
   LocalizationProvider,
 } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
-import {
-  addAppointment,
-  updateAppointment,
-  deleteAppointment,
-} from "../redux/Appointments/appointmentsSlice";
-import Header from "./Header";
+import { useDispatch } from "react-redux";
+import { addAppointment } from "../../redux/appointmentsSlice";
+
+
+const categories = [
+  { name: "Emergency" },
+  { name: "Normal" },
+  { name: "Family" },
+  { name: "Friend" },
+];
 
 const fakePatients = [
   {
@@ -74,46 +66,49 @@ const fakePatients = [
   },
 ];
 
-const categories = [
-  { name: "Emergency" },
-  { name: "Normal" },
-  { name: "Family" },
-  { name: "Friend" },
-];
-
-const Calendar = () => {
-  const dispatch = useDispatch();
-  const appointments = useSelector((state) =>
-    state.appointments.appointments.map((appointment) => ({
-      ...appointment,
-      startDate: new Date(appointment.startDate),
-      endDate: new Date(appointment.endDate),
-    }))
-  );
-
+const AddNewModal = ({ open, setOpen, cellData }) => {
   useEffect(() => {
-    console.log(appointments);
-  }, [appointments]);
+    console.log("nigga i am here");
+  }, []);
+  useEffect(() => {
+    console.log(cellData);
+  }, [cellData]);
 
-  const [open, setOpen] = useState(false);
-  const [category, setCategory] = useState("Normal");
+  const dispatch = useDispatch();
+
   const [appointmentTitle, setAppointmentTitle] = useState("");
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(
+    cellData ? cellData.startDate : new Date()
+  );
+  const [endDate, setEndDate] = useState(
+    cellData ? cellData.endDate : new Date()
+  );
+  const [selectedPatient, setSelectedPatient] = useState(null);
+  const [category, setCategory] = useState("Normal");
 
-  const [editingOptions] = useState({
-    allowAdding: true,
-    allowDeleting: true,
-    allowUpdating: true,
-    allowDragging: true,
-    allowResizing: true,
-  });
-  const { allowUpdating, allowResizing, allowDragging } = editingOptions;
+  const handleSubmitAppointment = () => {
+    if (appointmentTitle && startDate && endDate) {
+      const newAppointment = {
+        title: appointmentTitle,
+        patient: selectedPatient,
+        category: category,
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
+      };
+      dispatch(addAppointment(newAppointment));
+      handleClose();
+    }
+  };
 
-  const handleOpen = (cellData) => {
-    setStartDate(cellData.startDate);
-    setEndDate(cellData.endDate);
-    setOpen(true);
+  const handlePatientSelect = (event, value) => {
+    if (value) {
+      setSelectedPatient(value);
+      setAppointmentTitle(value.fullName);
+    }
+  };
+
+  const handleCategoryChange = (event) => {
+    setCategory(event.target.value);
   };
 
   const handleClose = () => {
@@ -123,109 +118,8 @@ const Calendar = () => {
     setEndDate(new Date());
   };
 
-  const Appointment = ({ children, ...restProps }) => (
-    <Appointments.Appointment
-      {...restProps}
-      onClick={() => handleOpen(restProps.data)}
-    >
-      {children}
-    </Appointments.Appointment>
-  );
-
-  const allowDrag = useCallback(
-    () => allowDragging && allowUpdating,
-    [allowDragging, allowUpdating]
-  );
-  const allowResize = useCallback(
-    () => allowResizing && allowUpdating,
-    [allowResizing, allowUpdating]
-  );
-
-  const handleSubmitAppointment = () => {
-    if (appointmentTitle && startDate && endDate) {
-      const newAppointment = {
-        title: appointmentTitle,
-        startDate: startDate.toISOString(),
-        endDate: endDate.toISOString(),
-      };
-      dispatch(addAppointment(newAppointment));
-      handleClose();
-    }
-  };
-
-  const [selectedPatient, setSelectedPatient] = useState(null);
-
-
-  const handlePatientSelect = (event, value) => {
-    if (value) {
-      setSelectedPatient(value);
-      setAppointmentTitle(value.fullName);
-    }
-  };
-
-  const onCommitChanges = useCallback(
-    ({ added, changed, deleted }) => {
-      if (added) {
-        const appointmentData = {
-          title: added.title,
-          startDate: added.startDate.toISOString(),
-          endDate: added.endDate.toISOString(),
-        };
-        dispatch(addAppointment(appointmentData));
-      }
-      if (changed) {
-        Object.entries(changed).forEach(([id, changes]) => {
-          const serializedChanges = {};
-          if (changes.startDate) {
-            serializedChanges.startDate = changes.startDate.toISOString();
-          }
-          if (changes.endDate) {
-            serializedChanges.endDate = changes.endDate.toISOString();
-          }
-          if (changes.title) {
-            serializedChanges.title = changes.title;
-          }
-          dispatch(updateAppointment({ id: Number(id), ...serializedChanges }));
-        });
-      }
-      if (deleted !== undefined) {
-        dispatch(deleteAppointment(deleted));
-      }
-    },
-    [dispatch]
-  );
-
-  const TimeTableCell = useCallback(
-    memo(({ onDoubleClick, ...restProps }) => (
-      <DayView.TimeTableCell
-        {...restProps}
-        onDoubleClick={() => handleOpen(restProps)}
-      />
-    )),
-    []
-  );
-
-  const handleCategoryChange = (event) => {
-    setCategory(event.target.value);
-  };
-
   return (
-    <React.Fragment>
-      <Paper>
-        <Scheduler data={appointments} height={720}>
-          <ViewState />
-          <EditingState onCommitChanges={onCommitChanges} />
-          <IntegratedEditing />
-          <DayView
-            startDayHour={9}
-            endDayHour={19}
-            timeTableCellComponent={TimeTableCell}
-          />
-          <Appointments appointmentComponent={Appointment} />
-          <DragDropProvider allowDrag={allowDrag} allowResize={allowResize} />
-        </Scheduler>
-      </Paper>
-
+    <>
       <Modal open={open} onClose={handleClose}>
         <Box
           sx={{
@@ -257,14 +151,13 @@ const Calendar = () => {
                     fullWidth
                     placeholder="Patient"
                     variant="outlined"
-                    margin="normal"
                   />
                 )}
                 renderOption={(props, option) => (
                   <>
-                  <MenuItem {...props} key={option.id}>
-                    {option.fullName}
-                  </MenuItem>
+                    <MenuItem {...props} key={option.id}>
+                      {option.fullName}
+                    </MenuItem>
                   </>
                 )}
               />
@@ -409,14 +302,20 @@ const Calendar = () => {
             className="!bg-primary"
             fullWidth
             onClick={handleSubmitAppointment}
-            sx={{ mt: 2, textTransform: "none", height: "45px", fontSize: "22", fontWeight: "500" }}
+            sx={{
+              mt: 2,
+              textTransform: "none",
+              height: "45px",
+              fontSize: "22",
+              fontWeight: "500",
+            }}
           >
             Add Appointment
           </Button>
         </Box>
       </Modal>
-    </React.Fragment>
+    </>
   );
 };
 
-export default Calendar;
+export default AddNewModal;

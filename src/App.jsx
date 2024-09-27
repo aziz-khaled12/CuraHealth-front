@@ -1,25 +1,30 @@
 import { Routes, Route, useNavigate } from "react-router-dom";
 import "./App.css";
-import Layout from "./components/Layout";
 import Page from "./components/Page";
 import Login from "./components/Login";
 import PortectedRoutes from "./utils/PortectedRoutes";
 import Signup from "./components/Signup";
 import { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import Layout from "./components/layout/Layout";
+import { autoLogout, isTokenExpired } from "./redux/authSlice";
 
 function App() {
 
   const navigate = useNavigate()
-  const { isAuthenticated } = useSelector(
-    (state) => state.auth
-  );
+  const dispatch = useDispatch();
+  const { accessToken } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/");
+    if (accessToken) {
+      const isExpired = isTokenExpired(accessToken);
+      if (isExpired) {
+        dispatch(autoLogout());
+      }
     }
-  }, [isAuthenticated]);
+  }, [dispatch, accessToken]);
+
+
 
   return (
     <>
