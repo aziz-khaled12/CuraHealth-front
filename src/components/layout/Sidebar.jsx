@@ -2,25 +2,48 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@mui/material";
 import { MdPersonalInjury, MdCalendarMonth, MdClose } from "react-icons/md";
 import { BiSolidDashboard } from "react-icons/bi";
+import { useNavigate } from "react-router-dom";
+import { PiStethoscopeBold } from "react-icons/pi";
 
-const Sidebar = ({ selected, setSelected }) => {
+const Sidebar = () => {
+
+  const [selected , setSelected] = useState(0)
+  const navigate = useNavigate();
   const [expand, setExpand] = useState(false);
+
+
   const menuItems = [
-    { id: 0, label: "Dashboard", icon: <BiSolidDashboard /> },
-    { id: 1, label: "Patients", icon: <MdPersonalInjury /> },
-    { id: 2, label: "Appointments", icon: <MdCalendarMonth /> },
-    { id: 3, label: "Rapports", icon: <MdPersonalInjury /> },
-    { id: 4, label: "Facturation", icon: <MdPersonalInjury /> },
-    { id: 5, label: "Calendar", icon: <MdCalendarMonth /> },
+    {
+      id: 0,
+      label: "Dashboard",
+      icon: <BiSolidDashboard />,
+      link: "dashboard",
+    },
+    { id: 1, label: "Patients", icon: <MdPersonalInjury />, link: "patients" },
+    {
+      id: 2,
+      label: "Appointments",
+      icon: <MdCalendarMonth />,
+      link: "appointments",
+    },
+    { id: 3, label: "Rapports", icon: <MdPersonalInjury />, link: "rapports" },
+    {
+      id: 4,
+      label: "Facturation",
+      icon: <MdPersonalInjury />,
+      link: "facturation",
+    },
+    { id: 5, label: "Calendar", icon: <MdCalendarMonth />, link: "calendar" },
+    { id: 6, label: "Office", icon: <PiStethoscopeBold />, link: "office" },
   ];
 
-  const handleSelect = (id) => {
-    setSelected(id);
+  const handleClick = (link, id) => {
+    setSelected(id)
+    navigate(`/${link}`);
   };
 
   return (
     <>
-      
       <div
         className={`h-full overflow-hidden bg-white ${
           expand ? `w-[240px]` : `w-[73px] `
@@ -44,7 +67,7 @@ const Sidebar = ({ selected, setSelected }) => {
             <Button
               key={item.id}
               startIcon={item.icon}
-              onClick={() => handleSelect(item.id)}
+              onClick={() => handleClick(item.link, item.id)}
               className={`${
                 selected === item.id
                   ? "!bg-primary !text-primaryText"

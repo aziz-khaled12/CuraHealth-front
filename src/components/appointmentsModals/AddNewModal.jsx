@@ -67,12 +67,6 @@ const fakePatients = [
 ];
 
 const AddNewModal = ({ open, setOpen, cellData }) => {
-  useEffect(() => {
-    console.log("nigga i am here");
-  }, []);
-  useEffect(() => {
-    console.log(cellData);
-  }, [cellData]);
 
   const dispatch = useDispatch();
 

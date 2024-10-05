@@ -14,7 +14,7 @@ export const fetchPatients = createAsyncThunk(
         { headers: { Authorization: `${token}` } }
       );
       console.log("fetch res: ", res);
-      const  patients  = res.data.patients;
+      const  patients  = res.data.patients === null ? [] : res.data.patients;
       console.log("patients: ", patients)
       return patients;
     } catch (err) {

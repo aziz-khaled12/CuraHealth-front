@@ -10,17 +10,13 @@ import AddNewModal from "../patientsModals.jsx/AddNewModal";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchPatients } from "../../redux/patientsSlice";
 import { format } from "date-fns";
+import { useNavigate } from "react-router-dom";
 
 const Patients = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
   const { patients } = useSelector((state) => state.patients);
-
-  const formatDate = (dateString) => {
-    const [datePart] = dateString.split("T"); // Get the date part before 'T'
-    const [year, month, day] = datePart.split("-");
-    return `${year}-${month}-${day}`; // Format as dd/mm/yyyy
-  };
 
   const columns = [
     {
@@ -52,7 +48,7 @@ const Patients = () => {
       field: "Sex",
       headerName: "Sex",
       valueGetter: (value) => {
-        return value ? "M" : "F";
+        return value === 1 ? "M" : "F";
       },
       flex: 0.5,
     },
@@ -72,13 +68,20 @@ const Patients = () => {
           >
             <DeleteIcon />
           </IconButton>
-          <IconButton color="info" onClick={() => handleDetails(params.row)}>
+          <IconButton
+            color="info"
+            onClick={() => handleDetails(params.row.PatientID)}
+          >
             <InfoIcon />
           </IconButton>
         </>
       ),
     },
   ];
+
+  const handleDetails = (patientID) => {
+    navigate(`/patients/${patientID}`);
+  };
 
   useEffect(() => {
     dispatch(fetchPatients());
@@ -91,6 +94,19 @@ const Patients = () => {
   function getRowId(row) {
     return row.PatientID;
   }
+
+  const fakePatient = [
+    {
+      PatientID: "1",
+      FirstName: "John",
+      LastName: "Doe",
+      BirthDay: new Date(2005, 4, 10),
+      Address: "123 Elm Street, Springfield, IL",
+      Email: "john.doe@example.com",
+      PhoneNum: "0561036105",
+      Sex: 1,
+    },
+  ];
 
   return (
     <div>
@@ -117,7 +133,7 @@ const Patients = () => {
       </Box>
       <Box height={600}>
         <DataGrid
-          rows={patients}
+          rows={fakePatient}
           getRowId={getRowId}
           slots={{ toolbar: GridToolbar }}
           columns={columns}

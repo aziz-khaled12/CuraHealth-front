@@ -1,26 +1,30 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
-import Main from "./Main";
+import { Outlet, useLocation } from 'react-router-dom';
 
 const Layout = () => {
-  const [selected, setSelected] = useState(2);
+  const location = useLocation();
 
+  // Check if the current route is the calendar route to adjust padding
+  const isCalendarPage = location.pathname === '/calendar';
+  useEffect(() => {
+    console.log(isCalendarPage)
+  }, [isCalendarPage])
   return (
     <div className="w-full h-screen flex flex-col">
       <div className="w-full">
         <Navbar />
       </div>
-
       <div className="flex flex-grow w-full overflow-hidden">
         <div className="h-full flex-grow overflow-hidden">
-          <Sidebar selected={selected} setSelected={setSelected} />
+          <Sidebar />
         </div>
-        <div
-          className={`flex-grow w-full bg-lightBg ${selected === 5 ? `p-0` : `p-8`} overflow-auto custom-scrollbar`}
+        <main
+          className={`flex-grow w-full bg-lightBg ${isCalendarPage ? 'p-0' : 'p-8'} overflow-auto custom-scrollbar`}
         >
-          <Main selected={selected} />
-        </div>
+          <Outlet />
+        </main>
       </div>
     </div>
   );

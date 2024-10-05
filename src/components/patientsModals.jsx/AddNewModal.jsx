@@ -57,7 +57,6 @@ const AddNewModal = ({ open, setOpen }) => {
   const handleSubmit = () => {
     const dataToSubmit = {
       ...formData,
-      phoneNum: parseInt(formData.phoneNum, 10), // Convert phoneNum to a number (removes leading zero)
       sex: formData.sex === 1 ? true : false,
 
     };

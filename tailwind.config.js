@@ -14,6 +14,9 @@ export default {
         primaryText: "#ffffff",
         lightText: "#9B9B9B",
         darkText: "#000000"
+      },
+      boxShadow: {
+        behindShadow: "0px 0px 12px -8px"
       }
     },
   },
