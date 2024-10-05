@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Alert, Button, TextField, Typography } from "@mui/material";
 import { FcGoogle } from "react-icons/fc";
 import { FaApple, FaFacebook, FaGoogle } from "react-icons/fa";
@@ -8,7 +8,6 @@ import { login } from "../redux/authSlice";
 import { MoonLoader } from "react-spinners";
 
 const Login = () => {
-
   const dispatch = useDispatch();
   const { error, authStatus } = useSelector((state) => state.auth);
 
@@ -48,11 +47,11 @@ const Login = () => {
     }
 
     if (isValid) {
-      await dispatch(
-        login({ email: formData.email, password: formData.password })
-      );
+      dispatch(login({ email: formData.email, password: formData.password }));
+
     }
   };
+
 
   return (
     <>
@@ -118,7 +117,7 @@ const Login = () => {
                   <MoonLoader
                     color="#ffffff"
                     loading
-                    size={30}
+                    size={20}
                     speedMultiplier={1}
                   />
                 ) : (
