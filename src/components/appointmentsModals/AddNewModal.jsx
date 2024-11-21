@@ -288,6 +288,18 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
                     )}
                   />
                 </div>
+                <div className="w-full flex flex-col gap-3">
+                  <h1 className="font-medium text-base">End Time</h1>
+                  <TimePicker
+                    fullWidth
+                    placeholder="End Time"
+                    value={endDate}
+                    onChange={(newValue) => setEndDate(newValue)}
+                    renderInput={(params) => (
+                      <TextField fullWidth margin="normal" {...params} />
+                    )}
+                  />
+                </div>
               </LocalizationProvider>
             </div>
           </div>

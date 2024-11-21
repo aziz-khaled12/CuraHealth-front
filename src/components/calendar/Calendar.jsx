@@ -20,7 +20,8 @@ import {
   updateAppointment,
   deleteAppointment,
 } from "../../redux/appointmentsSlice";
-import AddNewModal from '../appointmentsModals/AddNewModal'
+import AddNewModal from "../appointmentsModals/AddNewModal";
+import ModifyModal from "../appointmentsModals/ModifyModal";
 
 const Calendar = () => {
   const dispatch = useDispatch();
@@ -55,6 +56,7 @@ const Calendar = () => {
   };
 
   const handleEditOpen = (cellData) => {
+    setCellData(cellData);
     setEditOpen(true);
   };
 
@@ -155,6 +157,13 @@ const Calendar = () => {
 
       {cellData && open && (
         <AddNewModal open={open} setOpen={setOpen} cellData={cellData} />
+      )}
+      {cellData && editOpen && (
+        <ModifyModal
+          open={editOpen}
+          setOpen={setEditOpen}
+          cellData={cellData}
+        />
       )}
     </React.Fragment>
   );

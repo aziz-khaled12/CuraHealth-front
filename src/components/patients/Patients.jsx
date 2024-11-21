@@ -6,17 +6,20 @@ import InfoIcon from "@mui/icons-material/Info";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { Box, Button, IconButton } from "@mui/material";
 import { MdAdd } from "react-icons/md";
-import AddNewModal from "../patientsModals.jsx/AddNewModal";
+import AddNewModal from "../patientsModals/AddNewModal";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchPatients } from "../../redux/patientsSlice";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
+import ModifyModal from "../patientsModals/ModifyModal";
 
 const Patients = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false)
   const { patients } = useSelector((state) => state.patients);
+  const [dataToEdit, setDataToEdit] = useState()
 
   const columns = [
     {
@@ -59,7 +62,7 @@ const Patients = () => {
       sortable: false,
       renderCell: (params) => (
         <>
-          <IconButton color="primary" onClick={() => handleModify(params.row)}>
+          <IconButton color="primary" onClick={() => handleModify(params.row.PatientID)}>
             <EditIcon />
           </IconButton>
           <IconButton
@@ -91,6 +94,12 @@ const Patients = () => {
     setOpen(true);
   };
 
+  const handleModify = (prevData) => {
+    // const selectedPatient = patients.filter(patient => patient.id = prevData)
+    setDataToEdit(fakePatient[0])
+    setEditOpen(true)
+  }
+
   function getRowId(row) {
     return row.PatientID;
   }
@@ -98,12 +107,16 @@ const Patients = () => {
   const fakePatient = [
     {
       PatientID: "1",
-      FirstName: "John",
-      LastName: "Doe",
+      FirstName: "Khaled",
+      LastName: "Abd Elaziz",
       BirthDay: new Date(2005, 4, 10),
-      Address: "123 Elm Street, Springfield, IL",
-      Email: "john.doe@example.com",
+      Address: "Logs 150",
+      Email: "khaledaziz@yahoo.com",
+      IDNum: "98645132",
       PhoneNum: "0561036105",
+      City: "Bir-El-Ater",
+      EtatCivil: "Single",
+      BloodType: "O+",
       Sex: 1,
     },
   ];
@@ -149,6 +162,7 @@ const Patients = () => {
         />
       </Box>
       {open && <AddNewModal open={open} setOpen={setOpen} />}
+      {editOpen && dataToEdit && <ModifyModal open={editOpen} setOpen={setEditOpen} prevData={dataToEdit} />}
     </div>
   );
 };

@@ -79,11 +79,11 @@ const AddNewModal = ({ open, setOpen }) => {
             p: 4,
           }}
         >
-          <h2 className="mb-10 text-2xl font-semibold">Add Appointment</h2>
+          <h2 className="mb-10 text-2xl font-semibold">Add Patient</h2>
           <div className="flex flex-col gap-5 items-start w-full">
             <div className="flex gap-5 w-full">
               <div className="flex flex-col items-start w-full">
-                <h1 className="text-base font-medium mb-3">First Name</h1>
+                <h1 className="text-base font-medium mb-2">First Name</h1>
                 <TextField
                   className="w-full"
                   name="firstName"
@@ -93,7 +93,7 @@ const AddNewModal = ({ open, setOpen }) => {
                 />
               </div>
               <div className="flex flex-col items-start w-full">
-                <h1 className="text-base font-medium mb-3">Last Name</h1>
+                <h1 className="text-base font-medium mb-2">Last Name</h1>
                 <TextField
                   className="w-full"
                   onChange={handleChange}
@@ -104,7 +104,7 @@ const AddNewModal = ({ open, setOpen }) => {
               </div>
               <div className="flex flex-col items-start w-full">
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <h1 className="text-base font-medium mb-3">Birthday</h1>
+                  <h1 className="text-base font-medium mb-2">Birthday</h1>
                   <DatePicker
                     sx={{ width: "100%" }}
                     placeholder="Select Date"
@@ -124,7 +124,7 @@ const AddNewModal = ({ open, setOpen }) => {
 
             <div className="flex w-full gap-5">
               <div className="flex flex-col items-start w-full">
-                <h1 className="text-base font-medium mb-3">Phone Number</h1>
+                <h1 className="text-base font-medium mb-2">Phone Number</h1>
                 <TextField
                   className="w-full"
                   name="phoneNum"
@@ -134,7 +134,7 @@ const AddNewModal = ({ open, setOpen }) => {
                 />
               </div>
               <div className="flex flex-col items-start w-full">
-                <h1 className="text-base font-medium mb-3">
+                <h1 className="text-base font-medium mb-2">
                   National Identification Number
                 </h1>
                 <TextField
@@ -149,7 +149,7 @@ const AddNewModal = ({ open, setOpen }) => {
 
             <div className="w-full flex gap-5">
               <div className="flex flex-col items-start w-full">
-                <h1 className="text-base font-medium mb-3">Email</h1>
+                <h1 className="text-base font-medium mb-2">Email</h1>
                 <TextField
                   className="w-full"
                   onChange={handleChange}
@@ -160,7 +160,7 @@ const AddNewModal = ({ open, setOpen }) => {
               </div>
 
               <div className="flex flex-col items-start w-full">
-                <h1 className="text-base font-medium mb-3">Blood Type</h1>
+                <h1 className="text-base font-medium mb-2">Blood Type</h1>
                 <FormControl fullWidth>
                   <Select
                     className="w-full"
@@ -183,7 +183,7 @@ const AddNewModal = ({ open, setOpen }) => {
                 </FormControl>
               </div>
               <div className="flex flex-col items-start w-full">
-                <h1 className="text-base font-medium mb-3">Etat Civile</h1>
+                <h1 className="text-base font-medium mb-2">Etat Civile</h1>
                 <FormControl fullWidth>
                   <Select
                     className="w-full"
@@ -207,7 +207,7 @@ const AddNewModal = ({ open, setOpen }) => {
                 </FormControl>
               </div>
               <div className="flex flex-col items-start w-full">
-                <h1 className="text-base font-medium mb-3">Sex</h1>
+                <h1 className="text-base font-medium mb-2">Sex</h1>
                 <FormControl fullWidth>
                   <Select
                     className="w-full"
@@ -233,7 +233,7 @@ const AddNewModal = ({ open, setOpen }) => {
 
             <div className="w-full flex gap-5">
             <div className="flex flex-col items-start w-full">
-                <h1 className="text-base font-medium mb-3">Address</h1>
+                <h1 className="text-base font-medium mb-2">Address</h1>
                 <TextField
                   className="w-full"
                   onChange={handleChange}
@@ -243,7 +243,7 @@ const AddNewModal = ({ open, setOpen }) => {
                 />
               </div>
               <div className="flex flex-col items-start w-full">
-                <h1 className="text-base font-medium mb-3">City</h1>
+                <h1 className="text-base font-medium mb-2">City</h1>
                 <TextField
                   className="w-full"
                   onChange={handleChange}
