@@ -12,7 +12,7 @@ import Appointments from "./components/appointments/Appointments";
 import Dashboard from "./components/Dashboard";
 import Patients from "./components/patients/Patients";
 import Rapports from "./components/Rapports";
-import Facturation from "./components/Facturation";
+import Facturation from "./components/facturation/Facturation";
 import Calendar from "./components/calendar/Calendar";
 import PatientDetails from "./components/patients/PatientDetails";
 import Office from "./components/office/Office";

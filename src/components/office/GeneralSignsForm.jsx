@@ -1,11 +1,17 @@
-import React, { useState } from "react";
-import { Button, Stack, TextField } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Button, InputAdornment, Stack, TextField } from "@mui/material";
 import { AiOutlineFileAdd } from "react-icons/ai";
 import { GrDocumentText } from "react-icons/gr";
 import ViewerModal from "../ViewerModal";
-import { FaPlus } from "react-icons/fa";
-const GeneralSignsForm = ({ formData, setFormData }) => {
+import { FaEdit, FaPlus } from "react-icons/fa";
+import ModifySignsModal from "./ModifySignsModal";
+import { LuPencil } from "react-icons/lu";
+import { useSelector } from "react-redux";
+const GeneralSignsForm = ({ formData, setFormData, generalSignes }) => {
+  
   const [open, setOpen] = useState(false);
+  const [openModify, setOpenModify] = useState(false);
+  const { signs } = useSelector((state) => state.signs);
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData((prevState) => ({
@@ -13,21 +19,6 @@ const GeneralSignsForm = ({ formData, setFormData }) => {
       [name]: value,
     }));
   };
-
-  const generalSignes = [
-    {
-      name: "height",
-      placeholder: "Height",
-    },
-    {
-      name: "weight",
-      placeholder: "Weight",
-    },
-    {
-      name: "bloodPressure",
-      placeholder: "Blood Pressure",
-    },
-  ];
 
   const otherSignes = [
     {
@@ -68,11 +59,10 @@ const GeneralSignsForm = ({ formData, setFormData }) => {
 
       setFormData((prevFormData) => ({
         ...prevFormData,
-        files: [...(prevFormData.files || []), fileInfo], 
+        files: [...(prevFormData.files || []), fileInfo],
       }));
     }
   };
-  
 
   const handleFileSelect = (fileUrl) => {
     setSelectedFile(fileUrl); // Store the selected file's URL
@@ -86,19 +76,47 @@ const GeneralSignsForm = ({ formData, setFormData }) => {
     setSelectedFile(null);
   };
 
+  const handleOpenModify = () => {
+    setOpenModify(true);
+  };
+
+  const handleCloseModify = () => {
+    setOpenModify(false);
+  };
+
+  useEffect(() => {
+    console.log(openModify);
+  }, [openModify]);
+
   return (
     <>
       <Stack direction={"row"} gap={4} mb={4}>
         <div className="w-1/2 p-8 border-2 border-lightText/20 border-solid rounded-lg">
-          <div className="text-2xl font-semibold text-darkText mb-6">
-            General Signs
-          </div>
+          <Stack
+            direction={"row"}
+            alignItems={"center"}
+            justifyContent={"space-between"}
+            sx={{ mb: 4 }}
+          >
+            <div className="text-2xl font-semibold text-darkText">
+              General Signs
+            </div>
+
+            <Button
+              variant="contained"
+              startIcon={<LuPencil />}
+              onClick={handleOpenModify}
+            >
+              Modify Signs
+            </Button>
+          </Stack>
+
           <Stack direction={"column"} gap={2} height={"100%"} mb={4}>
-            {generalSignes.map((sign, index) => {
+            {signs.map((sign, index) => {
               return (
                 <Stack gap={1} key={index}>
                   <div className="text-sm font-medium text-darkText">
-                    {sign.placeholder}
+                    {sign.name}
                   </div>
                   <TextField
                     sx={{
@@ -110,6 +128,13 @@ const GeneralSignsForm = ({ formData, setFormData }) => {
                     value={formData[sign.name]}
                     name={sign.name}
                     onChange={handleChange}
+                    slotProps={{
+                      input: {
+                        endAdornment: (
+                          <InputAdornment position="end">{sign.unit}</InputAdornment>
+                        ),
+                      },
+                    }}
                     fullWidth
                   />
                 </Stack>
@@ -119,7 +144,7 @@ const GeneralSignsForm = ({ formData, setFormData }) => {
         </div>
 
         <div className="w-1/2 p-8 border-2 border-lightText/20 border-solid rounded-lg">
-          <div className="text-2xl font-semibold p-0 text-darkText mb-6">
+          <div className="text-2xl font-semibold p-0 text-darkText mb-8">
             Other Information
           </div>
 
@@ -133,6 +158,11 @@ const GeneralSignsForm = ({ formData, setFormData }) => {
                   <TextField
                     placeholder={sign.placeholder}
                     value={formData[sign.name]}
+                    sx={{
+                      "& .MuiOutlinedInput-input": {
+                        height: "1rem",
+                      },
+                    }}
                     name={sign.name}
                     onChange={handleChange}
                     fullWidth
@@ -199,15 +229,19 @@ const GeneralSignsForm = ({ formData, setFormData }) => {
             );
           })}
           <div className="w-1/6 p-2">
-          <label
-            htmlFor="file-upload"
-            className="rounded-lg h-full min-h-[8rem] border-2 border-lightText border-dashed shadow-md flex items-center justify-center"
-          >
-            <FaPlus className="text-2xl" />
-          </label>
+            <label
+              htmlFor="file-upload"
+              className="rounded-lg h-full min-h-[8rem] border-2 border-lightText border-dashed shadow-md flex items-center justify-center"
+            >
+              <FaPlus className="text-2xl" />
+            </label>
           </div>
         </div>
       </div>
+
+      {openModify && (
+        <ModifySignsModal open={openModify} handleClose={handleCloseModify} />
+      )}
 
       {open && (
         <ViewerModal open={open} file={selectedFile} onClose={handleClose} />

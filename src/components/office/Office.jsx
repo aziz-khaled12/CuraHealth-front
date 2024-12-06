@@ -7,36 +7,35 @@ import { TabContext, TabList, TabPanel } from "@mui/lab";
 import StepperForm from "./StepperForm";
 
 const Office = () => {
-
-
   const [value, setValue] = useState(0);
   const [formData, setFormData] = useState({
-    height: '',
-    weight: '',
-    bloodPressure: '',
+    height: "",
+    weight: "",
+    bloodPressure: "",
 
-    tension: '',
-    pouls: '',
-    frequenceRespiratoire: '',
-    oxymetreDePouls: '',
-    asthenie: '',
-    anorexie: '',
-    amaigrissement: '',
-    diurese: '',
-    
-    physicalSigns: '',
-    consultationCause: '',
-    functionalSigns: '',
-    diagnostic: '',
-    conduits: '',
+    tension: "",
+    pouls: "",
+    frequenceRespiratoire: "",
+    oxymetreDePouls: "",
+    asthenie: "",
+    anorexie: "",
+    amaigrissement: "",
+    diurese: "",
+
+    physicalSigns: "",
+    consultationCause: "",
+    functionalSigns: "",
+    diagnostic: "",
+    conduits: "",
     files: [],
     ordonance: [],
   });
 
   const handleChange = (event, newValue, link) => {
-    console.log(event);
     setValue(newValue);
   };
+
+
 
   const tabs = [
     {
@@ -47,7 +46,12 @@ const Office = () => {
     {
       id: 1,
       title: "Appointment",
-      component: <StepperForm formData={formData} setFormData={setFormData} />,
+      component: (
+        <StepperForm
+          formData={formData}
+          setFormData={setFormData}
+        />
+      ),
     },
     {
       id: 2,
@@ -55,10 +59,6 @@ const Office = () => {
       component: <Facturation />,
     },
   ];
-
-  useEffect(() => {
-    console.log("value: ", value);
-  });
 
   return (
     <>

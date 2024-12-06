@@ -115,19 +115,21 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
   return (
     <>
       <Modal open={open} onClose={handleClose}>
-        <Box
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: 1300,
-            bgcolor: "background.paper",
-            borderRadius: "8px",
-            boxShadow: 24,
-            p: 4,
-          }}
-        >
+      <Box
+        sx={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: "85vw",
+          height: "84vh",
+          overflowY: "auto",
+          bgcolor: "#F7F7F7",
+          borderRadius: "8px",
+          boxShadow: 24,
+          p: 4,         
+        }}
+      >
           <h2 className="mb-10 text-2xl font-semibold">Add Appointment</h2>
           <div className="flex flex-col gap-8">
             <div className="flex flex-col items-start w-full">

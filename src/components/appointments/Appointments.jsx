@@ -17,11 +17,10 @@ const Appointments = () => {
     console.log("appointments: ", appointments);
   }, [appointments]);
 
-  
   const handleOpen = () => {
     setOpen(true);
   };
-  
+
   const handleClose = () => {
     setOpen(false);
   };
@@ -100,9 +99,8 @@ const Appointments = () => {
 
   return (
     <>
-
       <div className={`w-full transition-all duration-100 ease-in-out`}>
-      {open && <AddNewModal open={open} setOpen={setOpen} cellData={null} />}
+        {open && <AddNewModal open={open} setOpen={setOpen} cellData={null} />}
         <Box
           sx={{
             display: "flex",
@@ -127,7 +125,7 @@ const Appointments = () => {
           </Button>
         </Box>
 
-        <Box height={600}>
+        <Box sx={{ height: "69vh" }}>
           <DataGrid
             rows={appointments}
             slots={{ toolbar: GridToolbar }}
