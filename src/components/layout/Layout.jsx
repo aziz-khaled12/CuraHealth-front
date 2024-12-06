@@ -6,11 +6,8 @@ import { Outlet, useLocation } from 'react-router-dom';
 const Layout = () => {
   const location = useLocation();
 
-  // Check if the current route is the calendar route to adjust padding
   const isCalendarPage = location.pathname === '/calendar';
-  useEffect(() => {
-    console.log(isCalendarPage)
-  }, [isCalendarPage])
+
   return (
     <div className="w-full h-screen flex flex-col">
       <div className="w-full">

@@ -2,15 +2,29 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@mui/material";
 import { MdPersonalInjury, MdCalendarMonth, MdClose } from "react-icons/md";
 import { BiSolidDashboard } from "react-icons/bi";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { PiStethoscopeBold } from "react-icons/pi";
 
 const Sidebar = () => {
-
-  const [selected , setSelected] = useState(0)
+  const location = useLocation();
+  const [selected, setSelected] = useState();
   const navigate = useNavigate();
   const [expand, setExpand] = useState(false);
 
+  useEffect(() => {
+    const currentPath = location.pathname;
+    if (currentPath === "/") {
+      navigate("/dashboard");
+      setSelected(0);
+    }
+    const matchedTab = menuItems.find((tab) => {
+      return currentPath.startsWith(`/${tab.link}`);
+    });
+
+    if (matchedTab && matchedTab.id !== selected) {
+      setSelected(matchedTab.id);
+    }
+  }, [selected, location.pathname]);
 
   const menuItems = [
     {
@@ -37,8 +51,7 @@ const Sidebar = () => {
     { id: 6, label: "Office", icon: <PiStethoscopeBold />, link: "office" },
   ];
 
-  const handleClick = (link, id) => {
-    setSelected(id)
+  const handleClick = (link) => {
     navigate(`/${link}`);
   };
 
@@ -47,7 +60,7 @@ const Sidebar = () => {
       <div
         className={`h-full overflow-hidden bg-white ${
           expand ? `w-[240px]` : `w-[73px] `
-        } fixed z-20 transition-all duration-300 ease-in-out`}
+        } relative z-20 transition-all duration-300 ease-in-out`}
         onMouseEnter={() => {
           setExpand(true);
         }}

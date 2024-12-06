@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { Stepper, Step, StepLabel, Button, Stack } from '@mui/material';
 import GeneralSignsForm from './GeneralSignsForm';
 import OrdonanceForm from './OrdonanceForm';
+import TasksForm from './TasksForm';
 
-const steps = ['General Information', 'Ordonance'];
+const steps = ['General Information', 'Tasks','Ordonance'];
 
-const StepperForm = ({formData, setFormData}) => {
+const StepperForm = ({ formData, setFormData}) => {
   const [activeStep, setActiveStep] = useState(0);
  
 
@@ -29,6 +30,21 @@ const StepperForm = ({formData, setFormData}) => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
 
+  const generalSignes = [
+    {
+      name: "height",
+      placeholder: "Height",
+    },
+    {
+      name: "weight",
+      placeholder: "Weight",
+    },
+    {
+      name: "bloodPressure",
+      placeholder: "Blood Pressure",
+    },
+  ];
+
   return (
     <div>
       <Stepper activeStep={activeStep}>
@@ -40,8 +56,9 @@ const StepperForm = ({formData, setFormData}) => {
       </Stepper>
 
       <div className='min-h-[40vh] mt-8'>
-        {activeStep === 0 && <GeneralSignsForm formData={formData} setFormData={setFormData} />}
-        {activeStep === 1 && <OrdonanceForm formData={formData} setFormData={setFormData} />}
+        {activeStep === 0 && <GeneralSignsForm formData={formData} setFormData={setFormData} generalSignes={generalSignes} />}
+        {activeStep === 1 && <TasksForm />}
+        {activeStep === 2 && <OrdonanceForm formData={formData} setFormData={setFormData} />}
       </div>
 
 
