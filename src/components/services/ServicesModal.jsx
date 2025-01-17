@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Box, Button, Modal, Stack, TextField } from "@mui/material";
 import { useDispatch } from "react-redux";
-import { addFacture } from "../../redux/factureSlice";
-const FacturationModal = ({ open, setOpen }) => {
+import { addService } from "../../redux/servicesSlice";
+const ServicesModal = ({ open, setOpen }) => {
   const dispatch = useDispatch();
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
@@ -13,11 +13,11 @@ const FacturationModal = ({ open, setOpen }) => {
 
   const handleSubmit = () => {
     if (price.length > 0 && name.length > 0) {
-      const newFacture = {
+      const newService = {
         name: name,
         price: price,
       };
-      dispatch(addFacture(newFacture));
+      dispatch(addService(newService));
     }
     handleClose()
   };
@@ -36,7 +36,7 @@ const FacturationModal = ({ open, setOpen }) => {
           p: 4,
         }}
       >
-        <h2 className="mb-10 text-2xl font-semibold">Add Facture</h2>
+        <h2 className="mb-10 text-2xl font-semibold">Add Service</h2>
         <Stack gap={2}>
           <Stack direction={"row"} gap={2}>
             <TextField
@@ -63,8 +63,9 @@ const FacturationModal = ({ open, setOpen }) => {
             fullWidth
             className="!bg-primary !text-white"
             onClick={handleSubmit}
+            sx={{ textTransform: "none" }}
           >
-            Add Facture
+            Add Service
           </Button>
         </Stack>
       </Box>
@@ -72,4 +73,4 @@ const FacturationModal = ({ open, setOpen }) => {
   );
 };
 
-export default FacturationModal;
+export default ServicesModal;

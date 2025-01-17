@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from "react";
-import FacturationModal from "./FacturationModal";
+import ServicesModal from "./ServicesModal";
 import { Box, Button } from "@mui/material";
 import Header from "../Header";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { MdAdd } from "react-icons/md";
 import { useSelector } from "react-redux";
 
-const Facturation = () => {
+const Services = () => {
   const [open, setOpen] = useState(false);
 
-  const factures = useSelector(state => state.factures.factures)
+  const { services } = useSelector((state) => state.services);
 
   useEffect(() => {
-    console.log(factures)
-  }, [factures])
+    console.log(services);
+  }, [services]);
 
   const columns = [
     {
@@ -38,9 +38,7 @@ const Facturation = () => {
   };
   return (
     <div className={`w-full transition-all duration-100 ease-in-out`}>
-      {open && (
-        <FacturationModal open={open} setOpen={setOpen} cellData={null} />
-      )}
+      {open && <ServicesModal open={open} setOpen={setOpen} cellData={null} />}
       <Box
         sx={{
           display: "flex",
@@ -50,8 +48,8 @@ const Facturation = () => {
         }}
       >
         <Header
-          title={"Facturation"}
-          subTitle={"Manage your Bills and Functionalities"}
+          title={"Services"}
+          subTitle={"Manage your Services and Prices"}
         />
 
         <Button
@@ -61,13 +59,13 @@ const Facturation = () => {
           sx={{ textTransform: "none" }}
           className="!bg-primary"
         >
-          New Facture
+          New Service
         </Button>
       </Box>
 
       <Box sx={{ height: "69vh" }}>
         <DataGrid
-          rows={factures}
+          rows={services}
           slots={{ toolbar: GridToolbar }}
           columns={columns}
           autoPageSize
@@ -85,4 +83,4 @@ const Facturation = () => {
   );
 };
 
-export default Facturation;
+export default Services;

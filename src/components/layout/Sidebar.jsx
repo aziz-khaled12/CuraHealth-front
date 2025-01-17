@@ -43,9 +43,9 @@ const Sidebar = () => {
     { id: 3, label: "Rapports", icon: <MdPersonalInjury />, link: "rapports" },
     {
       id: 4,
-      label: "Facturation",
+      label: "Services",
       icon: <MdPersonalInjury />,
-      link: "facturation",
+      link: "services",
     },
     { id: 5, label: "Calendar", icon: <MdCalendarMonth />, link: "calendar" },
     { id: 6, label: "Office", icon: <PiStethoscopeBold />, link: "office" },
