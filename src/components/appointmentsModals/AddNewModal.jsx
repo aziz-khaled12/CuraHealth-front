@@ -74,9 +74,16 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
   const [startDate, setStartDate] = useState(
     cellData ? cellData.startDate : new Date()
   );
-  const [endDate, setEndDate] = useState(
-    cellData ? cellData.endDate : new Date()
-  );
+
+  const [endDate, setEndDate] = useState(() => {
+    if (cellData && cellData.endDate) {
+      return cellData.endDate;
+    }
+    const newDate = new Date();
+    newDate.setMinutes(newDate.getMinutes() + 30); // Add 30 minutes to current time
+    return newDate;
+  });
+  
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [category, setCategory] = useState("Normal");
 
@@ -86,6 +93,8 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
         title: appointmentTitle,
         patient: selectedPatient,
         category: category,
+        createdAt: new Date().toISOString(),
+        modifiedAt: null,
         startDate: startDate.toISOString(),
         endDate: endDate.toISOString(),
       };

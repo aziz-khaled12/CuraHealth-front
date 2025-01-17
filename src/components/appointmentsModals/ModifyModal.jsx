@@ -83,6 +83,7 @@ const ModifyModal = ({ open, setOpen, cellData }) => {
         title: appointmentTitle,
         patient: selectedPatient,
         category: category,
+        modifiedAt: new Date().toISOString(),
         startDate: startDate.toISOString(),
         endDate: endDate.toISOString(),
       };

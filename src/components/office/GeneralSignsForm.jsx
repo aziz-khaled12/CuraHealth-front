@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Button, InputAdornment, Stack, TextField } from "@mui/material";
-import { AiOutlineFileAdd } from "react-icons/ai";
 import { GrDocumentText } from "react-icons/gr";
 import ViewerModal from "../ViewerModal";
-import { FaEdit, FaPlus } from "react-icons/fa";
+import { FaPlus } from "react-icons/fa";
 import ModifySignsModal from "./ModifySignsModal";
 import { LuPencil } from "react-icons/lu";
 import { useSelector } from "react-redux";
-const GeneralSignsForm = ({ formData, setFormData, generalSignes }) => {
+const GeneralSignsForm = ({ formData, setFormData }) => {
   
+  useEffect(() => {
+    console.log("formData: ", formData);
+  }, [formData]);
   const [open, setOpen] = useState(false);
   const [openModify, setOpenModify] = useState(false);
   const { signs } = useSelector((state) => state.signs);
@@ -64,12 +66,17 @@ const GeneralSignsForm = ({ formData, setFormData, generalSignes }) => {
     }
   };
 
+  useEffect(() => {
+    console.log("signs: ", signs)
+  }, [signs])
+
   const handleFileSelect = (fileUrl) => {
     setSelectedFile(fileUrl); // Store the selected file's URL
     setOpen(true);
     console.log("Selected file URL:", selectedFile);
     // You can now do something with the selected file URL
   };
+
 
   const handleClose = () => {
     setOpen(false);
@@ -104,8 +111,9 @@ const GeneralSignsForm = ({ formData, setFormData, generalSignes }) => {
 
             <Button
               variant="contained"
-              startIcon={<LuPencil />}
+              startIcon={<LuPencil className="!text-lg"/>}
               onClick={handleOpenModify}
+              sx={{textTransform: "none"}}
             >
               Modify Signs
             </Button>
@@ -128,6 +136,7 @@ const GeneralSignsForm = ({ formData, setFormData, generalSignes }) => {
                     value={formData[sign.name]}
                     name={sign.name}
                     onChange={handleChange}
+                    type={sign.type}
                     slotProps={{
                       input: {
                         endAdornment: (

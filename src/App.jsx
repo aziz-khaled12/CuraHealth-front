@@ -12,10 +12,11 @@ import Appointments from "./components/appointments/Appointments";
 import Dashboard from "./components/Dashboard";
 import Patients from "./components/patients/Patients";
 import Rapports from "./components/Rapports";
-import Facturation from "./components/facturation/Facturation";
+import Services from "./components/services/Services";
 import Calendar from "./components/calendar/Calendar";
 import PatientDetails from "./components/patients/PatientDetails";
 import Office from "./components/office/Office";
+import Test from "./components/Test";
 
 
 function App() {
@@ -41,8 +42,8 @@ function App() {
     <>
       <div>
         <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+          {/* <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} /> */}
           {/* <Route element={<PortectedRoutes />}> */}
 
             <Route path="/" element={<Layout />} > 
@@ -51,12 +52,13 @@ function App() {
               <Route path="patients/:id" element={<PatientDetails />}/>
               <Route path="appointments" element={<Appointments />}/>
               <Route path="dashboard" element={<Dashboard />}/>
-              <Route path="facturation" element={<Facturation />}/>
+              <Route path="services" element={<Services />}/>
               <Route path="rapports" element={<Rapports />}/>
               <Route path="office" element={<Office />}/>
             </Route>
 
             <Route path="/page" element={<Page />} />
+            <Route path="/test" element={<Test />} />
           {/* </Route> */}
         </Routes>
       </div>
