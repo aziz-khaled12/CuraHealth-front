@@ -5,7 +5,7 @@ let nextId = 1;
 export const taskSlice = createSlice({
   name: "tasks",
   initialState: {
-    tasks: [],
+    tasks: [1],
     status: "idle",
     error: null,
   },
