@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Stepper, Step, StepLabel, Button, Stack } from '@mui/material';
 import GeneralSignsForm from './GeneralSignsForm';
 import OrdonanceForm from './OrdonanceForm';
@@ -43,7 +43,7 @@ const StepperForm = ({ formData, setFormData}) => {
 
       <div className='min-h-[40vh] mt-8'>
         {activeStep === 0 && <GeneralSignsForm formData={formData} setFormData={setFormData} />}
-        {activeStep === 1 && <TasksForm />}
+        {activeStep === 1 && <TasksForm formData={formData} setFormData={setFormData}/>}
         {activeStep === 2 && <OrdonanceForm formData={formData} setFormData={setFormData} />}
       </div>
 

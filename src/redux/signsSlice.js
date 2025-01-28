@@ -5,7 +5,7 @@ let nextId = 1;
 export const signSlice = createSlice({
   name: "signs",
   initialState: {
-    signs: [
+    generalSigns: [
       {
         name: "Height",
         placeholder: "170cm, 190cm...",
@@ -25,6 +25,15 @@ export const signSlice = createSlice({
         type: "number",
       },
     ],
+    otherSigns: [
+      { name: "physicalSigns", placeholder: "Physical Signs" },
+      { name: "functionalSigns", placeholder: "Functional Signs" },
+    ],
+    generalInfo: [
+      { name: "diagnostic", placeholder: "Diagnostic" },
+      { name: "conduits", placeholder: "Conduits a tenir" },
+      { name: "consultationCause", placeholder: "Consultation Cause" },
+    ],
     status: "idle",
     error: null,
   },
@@ -34,18 +43,18 @@ export const signSlice = createSlice({
         id: nextId++,
         ...action.payload,
       };
-      state.signs.push(newSign);
+      state.generalSigns.push(newSign);
     },
     updateSign: (state, action) => {
       const { id, ...changes } = action.payload;
-      const existingSign = state.signs.find((sign) => sign.id === id);
+      const existingSign = state.generalSigns.find((sign) => sign.id === id);
       if (existingSign) {
         Object.assign(existingSign, changes);
       }
     },
     deleteSign: (state, action) => {
       const id = action.payload;
-      state.signs = state.signs.filter((sign) => sign.id !== id);
+      state.generalSigns = state.generalSigns.filter((sign) => sign.id !== id);
     },
   },
 });

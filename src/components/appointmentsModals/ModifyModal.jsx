@@ -11,7 +11,7 @@ import {
 import { DatePicker, LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { updateAppointment } from "../../redux/appointmentsSlice";
 
 const categories = [
@@ -21,49 +21,12 @@ const categories = [
   { name: "Friend" },
 ];
 
-const fakePatients = [
-  {
-    id: "1",
-    fullName: "John Doe",
-    birthday: "1985-05-15",
-    address: "123 Elm Street, Springfield, IL",
-    email: "john.doe@example.com",
-    phoneNumber: "555-1234",
-    sex: "Male",
-  },
-  {
-    id: "2",
-    fullName: "Jane Smith",
-    birthday: "1990-10-22",
-    address: "456 Oak Avenue, Springfield, IL",
-    email: "jane.smith@example.com",
-    phoneNumber: "555-5678",
-    sex: "Female",
-  },
-  {
-    id: "3",
-    fullName: "Alice Johnson",
-    birthday: "1982-03-30",
-    address: "789 Pine Road, Springfield, IL",
-    email: "alice.johnson@example.com",
-    phoneNumber: "555-8765",
-    sex: "Female",
-  },
-  {
-    id: "4",
-    fullName: "Bob Brown",
-    birthday: "1978-07-19",
-    address: "101 Maple Lane, Springfield, IL",
-    email: "bob.brown@example.com",
-    phoneNumber: "555-4321",
-    sex: "Male",
-  },
-];
 
 const ModifyModal = ({ open, setOpen, cellData }) => {
 
   const dispatch = useDispatch()
 
+  const fakePatients = useSelector((state) => {state.patients.patients})
   const [selectedPatient, setSelectedPatient] = useState(cellData.patient);
   const [appointmentTitle, setAppointmentTitle] = useState(cellData.title);
   const [startDate, setStartDate] = useState(

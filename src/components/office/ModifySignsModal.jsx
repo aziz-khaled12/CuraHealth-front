@@ -14,12 +14,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { add, set } from "date-fns";
 import { addSign, updateSign } from "../../redux/signsSlice";
 
-const ModifySignsModal = ({ open, handleClose }) => {
+const ModifySignsModal = ({ open, handleClose, setFormData, formData }) => {
   const [alignment, setAlignment] = useState("");
   const [selectedSign, setSelectedSign] = useState(null);
   const [show, setShow] = useState(false);
   const dispatch = useDispatch();
-  const { signs } = useSelector((state) => state.signs);
+  const { generalSigns } = useSelector((state) => state.signs);
 
   const [newSign, setNewSign] = useState({
     name: "",
@@ -45,14 +45,33 @@ const ModifySignsModal = ({ open, handleClose }) => {
 
   const handleAdd = () => {
     dispatch(addSign(newSign));
+    const updatedData = {
+      ...formData,
+      generalSigns: [
+        ...formData.generalSigns,
+        { name: newSign.name, value: "" },
+      ],
+    };
+
+    setFormData(updatedData);
     setShow(false);
     setNewSign({ name: "", unit: "", type: "", placeholder: "" });
   };
 
   const handleUpdate = () => {
     dispatch(updateSign(selectedSign));
+
+    const updatedData = {
+      ...formData,
+      generalSigns: formData.generalSigns.map((sign) =>
+        sign.name === selectedSign.name ? { ...sign, ...selectedSign } : sign
+      ),
+    };
+
+    setFormData(updatedData);
+
     setSelectedSign(null);
-    setShow(false); 
+    setShow(false);
   };
 
   const hanldeSignSelect = (sign) => {
@@ -98,7 +117,7 @@ const ModifySignsModal = ({ open, handleClose }) => {
               onClick={() => {
                 setShow(true);
                 setNewSign({ name: "", unit: "", type: "", placeholder: "" }),
-                setAlignment(null);
+                  setAlignment(null);
                 setSelectedSign(null);
               }}
             >
@@ -113,7 +132,7 @@ const ModifySignsModal = ({ open, handleClose }) => {
                 aria-label="Platform"
                 orientation="vertical"
               >
-                {signs.map((sign, index) => {
+                {generalSigns.map((sign, index) => {
                   return (
                     <ToggleButton
                       key={index}

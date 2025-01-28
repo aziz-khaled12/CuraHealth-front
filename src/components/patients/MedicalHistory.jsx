@@ -10,6 +10,8 @@ import {
 } from "@mui/lab";
 import MedicalHistoryCard from "./MedicalHistoryCard";
 import MedicalHistoryModal from "./MedicalHistoryModal";
+import { useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 
 const medicalHistoryData = [
   {
@@ -114,42 +116,50 @@ const medicalHistoryData = [
     },
   },
 ];
-const MedicalHistory = () => {
+const MedicalHistory = ({patient}) => {
+  const patientId = useParams();
   const [selectedSession, setSelectedSession] = useState(null);
 
+
+  console.log("patient", patient);
   return (
     <>
       <h2 className="text-2xl font-bold text-darkText">Medical History</h2>
-      <div>
-        <Timeline
-          sx={{
-            [`& .${timelineItemClasses.root}:before`]: {
-              flex: 0,
-              padding: 0,
-            },
-          }}
-        >
-          {medicalHistoryData.map((session, index) => (
-            <TimelineItem key={index}>
-              <TimelineSeparator>
-                <TimelineDot />
-                <TimelineConnector />
-              </TimelineSeparator>
-              <TimelineContent>
-                <MedicalHistoryCard
-                  onSelectSession={setSelectedSession}
-                  session={session}
-                />
-              </TimelineContent>
-            </TimelineItem>
-          ))}
-        </Timeline>
+      <div className="w-full">
+        {patient && patient.sessions && patient.sessions.length > 0 ? (
+          <Timeline
+            sx={{
+              [`& .${timelineItemClasses.root}:before`]: {
+                flex: 0,
+                padding: 0,
+              },
+            }}
+          >
+            {patient.sessions.map((session, index) => (
+              <TimelineItem key={index}>
+                <TimelineSeparator>
+                  <TimelineDot />
+                  <TimelineConnector />
+                </TimelineSeparator>
+                <TimelineContent>
+                  <MedicalHistoryCard
+                    onSelectSession={setSelectedSession}
+                    session={session}
+                  />
+                </TimelineContent>
+              </TimelineItem>
+            ))}
+          </Timeline>
+        ) : (
+          <div className="w-full h-[30vh] flex items-center justify-center text-xl font-medium text-darkText">
+            <div>No medical history found</div>
+          </div>
+        )}
       </div>
       {selectedSession && (
-        
         <MedicalHistoryModal
-          session={selectedSession} 
-          onClose={() => setSelectedSession(null)} 
+          session={selectedSession}
+          onClose={() => setSelectedSession(null)}
         />
       )}
     </>

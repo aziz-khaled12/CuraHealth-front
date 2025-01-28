@@ -3,34 +3,36 @@ import React from "react";
 import { BiCalendar, BiUser } from "react-icons/bi";
 
 const PatientInfo = ({ fakePatient }) => {
+ 
+ 
   const patientFields = [
     {
       label: "First Name",
-      value: fakePatient.FirstName,
+      value: fakePatient.firstName,
     },
     {
       label: "Last Name",
-      value: fakePatient.LastName,
+      value: fakePatient.lastName,
     },
     {
       label: "Patient ID",
-      value: fakePatient.PatientID,
+      value: fakePatient.id,
     },
     {
       label: "Birthday",
-      value: fakePatient.BirthDay.toLocaleDateString(), // Formatting the date
+      value: fakePatient.birthday.toLocaleDateString(), // Formatting the date
     },
     {
       label: "Address",
-      value: fakePatient.Address,
+      value: fakePatient.address,
     },
     {
       label: "Email",
-      value: fakePatient.Email,
+      value: fakePatient.email,
     },
     {
       label: "Phone Number",
-      value: fakePatient.PhoneNum,
+      value: fakePatient.phoneNumber,
     },
     {
       label: "Etat Civil",
@@ -61,10 +63,10 @@ const PatientInfo = ({ fakePatient }) => {
 
             <div className="text-center mb-8">
               <h2 className="font-bold text-gray-800 text-2xl mb-1">
-                {fakePatient.FirstName} {fakePatient.LastName}
+                {fakePatient.fullName}
               </h2>
               <p className="font-semibold text-gray-600 text-base">
-                {fakePatient.Email}
+                {fakePatient.email}
               </p>
             </div>
 

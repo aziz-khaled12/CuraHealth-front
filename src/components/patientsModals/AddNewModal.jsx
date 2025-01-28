@@ -28,7 +28,10 @@ const AddNewModal = ({ open, setOpen }) => {
     sex: 2,
     address: "",
     city: "",
+    age: 0,
   });
+
+
 
   const { bloodTypes, etatsCivil } = useSelector((state) => state.userData);
 
@@ -58,7 +61,6 @@ const AddNewModal = ({ open, setOpen }) => {
     const dataToSubmit = {
       ...formData,
       sex: formData.sex === 1 ? true : false,
-
     };
     dispatch(addPatient({patientData: dataToSubmit}))
     handleClose()

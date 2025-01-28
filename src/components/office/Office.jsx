@@ -1,149 +1,75 @@
 import React, { useState } from "react";
 import Header from "../Header";
 import { Box, Button, Stack, Tab, Drawer } from "@mui/material";
-import Facturation from "./Facturation";
-import PatientInfo from "./PatientInfo";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
-import StepperForm from "./StepperForm";
-import { IoMdClose } from "react-icons/io";
+import { useSelector } from "react-redux";
+import { calculateWaitingTime } from "../../utils/TimeManipulationFunctions";
+import SessionTabs from "./SessionTabs";
 
-const SessionTabs = ({ session, onClose }) => {
-  const [innerTabValue, setInnerTabValue] = useState(0);
 
-  const handleInnerTabChange = (event, newValue) => {
-    setInnerTabValue(newValue);
-  };
-
-  const innerTabs = [
-    {
-      id: 0,
-      title: "Patient Info",
-      component: <PatientInfo />,
-    },
-    {
-      id: 1,
-      title: "Appointment",
-      component: <StepperForm formData={session.formData} setFormData={session.setFormData} />,
-    },
-    {
-      id: 2,
-      title: "Facturation",
-      component: <Facturation />,
-    },
-  ];
-
-  return (
-    <div className="w-full">
-      <div className="flex justify-between items-center mb-4 p-4 bg-gray-50">
-        <div>
-          <h2 className="text-xl font-semibold">{session.patientName}</h2>
-          <p className="text-gray-600">Started: {session.timestamp}</p>
-        </div>
-        <Button
-          variant="outlined"
-          onClick={onClose}
-          startIcon={<IoMdClose size={16} />}
-        >
-          Close Session
-        </Button>
-      </div>
-
-      <Box sx={{ width: "100%" }}>
-        <TabContext value={innerTabValue}>
-          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-            <TabList onChange={handleInnerTabChange}>
-              {innerTabs.map((tab) => (
-                <Tab
-                  key={tab.id}
-                  label={tab.title}
-                  value={tab.id}
-                  sx={{ textTransform: "none" }}
-                />
-              ))}
-            </TabList>
-          </Box>
-          {innerTabs.map((tab) => (
-            <TabPanel key={tab.id} value={tab.id}>
-              {tab.component}
-            </TabPanel>
-          ))}
-        </TabContext>
-      </Box>
-    </div>
-  );
-};
 
 const Office = () => {
   const [outerTabValue, setOuterTabValue] = useState("main");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [activeSessions, setActiveSessions] = useState([]);
-  const [formData, setFormData] = useState({
-    height: "",
-    weight: "",
-    bloodPressure: "",
-    tension: "",
-    pouls: "",
-    frequenceRespiratoire: "",
-    oxymetreDePouls: "",
-    asthenie: "",
-    anorexie: "",
-    amaigrissement: "",
-    diurese: "",
-    physicalSigns: "",
-    consultationCause: "",
-    functionalSigns: "",
-    diagnostic: "",
-    conduits: "",
-    files: [],
-    ordonance: [],
+  const { appointments } = useSelector((state) => state.appointments);
+  const { generalSigns, otherSigns, generalInfo } = useSelector(
+    (state) => state.signs
+  );
+
+  const [formData, setFormData] = useState(() => {
+    const initialFormData = {
+      files: [],
+      ordonance: [],
+      services: [],
+      generalSigns: generalSigns.map((sign) => ({
+        name: sign.name,
+        value: "",
+      })),
+      otherSigns: otherSigns.map((sign) => ({
+        name: sign.name,
+        value: "",
+      })),
+    };
+
+    generalInfo.forEach((info) => {
+      initialFormData[info.name] = "";
+    });
+
+    return initialFormData;
   });
 
   const handleOuterTabChange = (event, newValue) => {
     setOuterTabValue(newValue);
   };
 
-
-
-
-
-
-
-  
-
-  // Problem in set form data
-
-  const startSession = (patientData) => {
+  const startSession = (appointment) => {
     const sessionId = Date.now().toString();
     const newSession = {
       id: sessionId,
-      patientName: patientData.name,
+      appointmentId: appointment.id,
+      patientId: appointment.patient.id,
+      patientName: appointment.patient.fullName,
+      startedAt: new Date().toLocaleString(),
+      category: appointment.category,
       formData: { ...formData },
       setFormData: (newData) => {
-        setActiveSessions(prevSessions => 
-          prevSessions.map(s => 
+        setActiveSessions((prevSessions) =>
+          prevSessions.map((s) =>
             s.id === sessionId ? { ...s, formData: newData } : s
           )
         );
       },
-      timestamp: new Date().toLocaleString(),
     };
     setActiveSessions([...activeSessions, newSession]);
     setOuterTabValue(sessionId);
     setDrawerOpen(false);
   };
 
-
-
-
-
-
-
-
-
-
-
   const closeSession = (sessionId) => {
-    setActiveSessions(activeSessions.filter(session => session.id !== sessionId));
+    setActiveSessions(
+      activeSessions.filter((session) => session.id !== sessionId)
+    );
     setOuterTabValue(activeSessions.length > 1 ? activeSessions[0].id : "main");
   };
 
@@ -159,6 +85,7 @@ const Office = () => {
             title="Doctor Office"
             subTitle="Manage Appointments, Patients, and Medical Records Efficiently"
           />
+
           <Button
             variant="contained"
             sx={{ textTransform: "none" }}
@@ -191,9 +118,12 @@ const Office = () => {
 
           <TabPanel value="main">
             <div className="text-lg">
-              <h2 className="text-xl font-semibold mb-4">Welcome to Doctor Office</h2>
+              <h2 className="text-xl font-semibold mb-4">
+                Welcome to Doctor Office
+              </h2>
               <p className="text-gray-600">
-                Start a new session by clicking "See All Appointments" and selecting a patient.
+                Start a new session by clicking "See All Appointments" and
+                selecting a patient.
               </p>
               <p className="text-gray-600 mt-2">
                 Active Sessions: {activeSessions.length}
@@ -217,11 +147,7 @@ const Office = () => {
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
       >
-        <Box
-          sx={{ width: 400, height: "100%" }}
-          role="presentation"
-          py={2}
-        >
+        <Box sx={{ width: 400, height: "100%" }} role="presentation" py={2}>
           <Box
             sx={{
               position: "sticky",
@@ -234,28 +160,38 @@ const Office = () => {
           >
             <h1 className="text-2xl font-semibold">Patients Queue</h1>
           </Box>
-          <div className="w-full p-4">
-            <div className="w-full p-4 border border-solid border-lightText/80 rounded-md shadow-sm mb-4">
-              <div className="w-full mb-2">
-                <h1 className="text-lg font-medium">Khaled Abd Elaziz</h1>
-                <p className="text-sm text-lightText">Priority: Emergency</p>
-                <p className="text-sm text-lightText">Age: 20</p>
-                <p className="text-sm text-lightText">Wait Time: 20min</p>
+
+          {appointments.map((appointment, index) => {
+            return (
+              <div key={index} className="w-full p-4">
+                <div className="w-full p-4 border border-solid border-lightText/80 rounded-md shadow-sm">
+                  <div className="w-full mb-2">
+                    <h1 className="text-lg font-medium">
+                      {appointment.patient.fullName}
+                    </h1>
+                    <p className="text-sm text-lightText">
+                      Priority: {appointment.category}
+                    </p>
+                    <p className="text-sm text-lightText">
+                      Age: {appointment.age}
+                    </p>
+                    <p className="text-sm text-lightText">
+                      Wait Time:{" "}
+                      {calculateWaitingTime(appointment.createdAt).formatted}
+                    </p>
+                  </div>
+                  <Button
+                    variant="contained"
+                    sx={{ textTransform: "none" }}
+                    fullWidth
+                    onClick={() => startSession(appointment)}
+                  >
+                    Start Appointment
+                  </Button>
+                </div>
               </div>
-              <Button
-                variant="contained"
-                sx={{ textTransform: "none" }}
-                fullWidth
-                onClick={() => startSession({
-                  name: "Khaled Abd Elaziz",
-                  age: 20,
-                  priority: "Emergency"
-                })}
-              >
-                Start Appointment
-              </Button>
-            </div>
-          </div>
+            );
+          })}
         </Box>
       </Drawer>
     </>

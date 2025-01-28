@@ -26,29 +26,29 @@ const Patients = () => {
       field: "id",
       headerName: "ID",
       valueGetter: (value, row) => {
-        return `${row.PatientID}`;
+        return `${row.id}`;
       },
       flex: 1,
     }, // Smaller flex for ID
     {
-      field: "FullName",
+      field: "fullName",
       headerName: "Full Name",
       valueGetter: (value, row) => {
-        return `${row.FirstName || ""} ${row.LastName || ""}`;
+        return `${row.firstName || ""} ${row.lastName || ""}`;
       },
       flex: 1.5,
     },
     {
-      field: "BirthDay",
+      field: "birthday",
       headerName: "Birthday",
       valueGetter: (value) => format(new Date(value), "yyyy-MM-dd"),
       flex: 1,
     },
-    { field: "Address", headerName: "Address", flex: 2 },
-    { field: "Email", headerName: "Email", flex: 1.5 },
-    { field: "PhoneNum", headerName: "Phone Number", flex: 1 },
+    { field: "address", headerName: "Address", flex: 2 },
+    { field: "email", headerName: "Email", flex: 1.5 },
+    { field: "phoneNumber", headerName: "Phone Number", flex: 1 },
     {
-      field: "Sex",
+      field: "sex",
       headerName: "Sex",
       valueGetter: (value) => {
         return value === 1 ? "M" : "F";
@@ -62,7 +62,7 @@ const Patients = () => {
       sortable: false,
       renderCell: (params) => (
         <>
-          <IconButton color="primary" onClick={() => handleModify(params.row.PatientID)}>
+          <IconButton color="primary" onClick={() => handleModify(params.row.id)}>
             <EditIcon />
           </IconButton>
           <IconButton
@@ -73,7 +73,7 @@ const Patients = () => {
           </IconButton>
           <IconButton
             color="info"
-            onClick={() => handleDetails(params.row.PatientID)}
+            onClick={() => handleDetails(params.row.id)}
           >
             <InfoIcon />
           </IconButton>
@@ -86,40 +86,23 @@ const Patients = () => {
     navigate(`/patients/${patientID}`);
   };
 
-  useEffect(() => {
-    dispatch(fetchPatients());
-  }, []);
+  // useEffect(() => {
+  //   dispatch(fetchPatients());
+  // }, []);
 
   const handleOpen = () => {
     setOpen(true);
   };
 
   const handleModify = (prevData) => {
-    // const selectedPatient = patients.filter(patient => patient.id = prevData)
-    setDataToEdit(fakePatient[0])
+    const selectedPatient = patients.filter(patient => patient.id = prevData)
+    setDataToEdit(selectedPatient)
     setEditOpen(true)
   }
 
   function getRowId(row) {
-    return row.PatientID;
+    return row.id;
   }
-
-  const fakePatient = [
-    {
-      PatientID: "1",
-      FirstName: "Khaled",
-      LastName: "Abd Elaziz",
-      BirthDay: new Date(2005, 4, 10),
-      Address: "Logs 150",
-      Email: "khaledaziz@yahoo.com",
-      IDNum: "98645132",
-      PhoneNum: "0561036105",
-      City: "Bir-El-Ater",
-      EtatCivil: "Single",
-      BloodType: "O+",
-      Sex: 1,
-    },
-  ];
 
   return (
     <div>
@@ -146,7 +129,7 @@ const Patients = () => {
       </Box>
       <Box height={600}>
         <DataGrid
-          rows={fakePatient}
+          rows={patients}
           getRowId={getRowId}
           slots={{ toolbar: GridToolbar }}
           columns={columns}

@@ -1,126 +1,129 @@
 import React, { useEffect, useState } from "react";
 import { Button, InputAdornment, Stack, TextField } from "@mui/material";
 import { GrDocumentText } from "react-icons/gr";
-import ViewerModal from "../ViewerModal";
 import { FaPlus } from "react-icons/fa";
-import ModifySignsModal from "./ModifySignsModal";
 import { LuPencil } from "react-icons/lu";
 import { useSelector } from "react-redux";
+import ViewerModal from "../ViewerModal";
+import ModifySignsModal from "./ModifySignsModal";
+import { mdiConsoleLine } from "@mdi/js";
+
 const GeneralSignsForm = ({ formData, setFormData }) => {
-  
-  useEffect(() => {
-    console.log("formData: ", formData);
-  }, [formData]);
   const [open, setOpen] = useState(false);
   const [openModify, setOpenModify] = useState(false);
-  const { signs } = useSelector((state) => state.signs);
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
-
-  const otherSignes = [
-    {
-      name: "consultationCause",
-      placeholder: "Consultation Cause",
-    },
-    {
-      name: "physicalSigns",
-      placeholder: "Physical Signs",
-    },
-    {
-      name: "functionalSigns",
-      placeholder: "Functional Signs",
-    },
-
-    {
-      name: "diagnostic",
-      placeholder: "Diagnostic",
-    },
-    {
-      name: "conduits",
-      placeholder: "Conduits a tenir",
-    },
-  ];
-
   const [selectedFile, setSelectedFile] = useState(null);
 
-  // File upload handler
-  const handleFileUpload = (event) => {
-    const file = event.target.files[0]; // Get the selected file
-    if (file) {
-      const fileInfo = {
-        title: file.name,
-        size: (file.size / (1024 * 1024)).toFixed(2) + " MB",
-        url: URL.createObjectURL(file), // Temporary URL for display
-        file: file,
-      };
+  // Ensure signs is not undefined from Redux store
+  const { generalSigns, otherSigns, generalInfo } = useSelector(
+    (state) => state.signs
+  );
 
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        files: [...(prevFormData.files || []), fileInfo],
-      }));
-    }
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    const updatedData = {
+      ...formData,
+      [name]: value,
+    };
+    setFormData(updatedData);
+  };
+
+  const handleGeneralSignsChange = (event) => {
+    const { name, value } = event.target;
+
+    const updatedData = {
+      ...formData,
+      generalSigns: formData.generalSigns.map((sign) =>
+        sign.name === name ? { ...sign, value } : sign
+      ),
+    };
+
+    setFormData(updatedData);
+  };
+
+  const handleOtherSignsChange = (event) => {
+    const { name, value } = event.target;
+    const updatedData = {
+      ...formData,
+      otherSigns: formData.otherSigns.map((sign) =>
+        sign.name === name ? { ...sign, value } : sign
+      ),
+    };
+    setFormData(updatedData);
   };
 
   useEffect(() => {
-    console.log("signs: ", signs)
-  }, [signs])
+    console.log("form data: ", formData);
+  }, [formData]);
 
-  const handleFileSelect = (fileUrl) => {
-    setSelectedFile(fileUrl); // Store the selected file's URL
-    setOpen(true);
-    console.log("Selected file URL:", selectedFile);
-    // You can now do something with the selected file URL
+  const handleFileUpload = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const fileInfo = {
+      title: file.name,
+      size: `${(file.size / (1024 * 1024)).toFixed(2)} MB`,
+      url: URL.createObjectURL(file),
+      file: file,
+    };
+
+    console.log("fileInfo: ", fileInfo);
+
+    const updatedData = {
+      ...formData,
+      ["files"]: [...(formData.files || []), fileInfo], // Append the new file to the files array (or create a new array if it doesn't exist)
+    };
+
+    console.log("updatedData: ", updatedData);
+
+    setFormData(updatedData);
   };
 
+  const handleFileSelect = (fileUrl) => {
+    setSelectedFile(fileUrl);
+    setOpen(true);
+  };
 
   const handleClose = () => {
     setOpen(false);
     setSelectedFile(null);
   };
 
-  const handleOpenModify = () => {
-    setOpenModify(true);
-  };
+  const handleOpenModify = () => setOpenModify(true);
+  const handleCloseModify = () => setOpenModify(false);
 
-  const handleCloseModify = () => {
-    setOpenModify(false);
-  };
-
-  useEffect(() => {
-    console.log(openModify);
-  }, [openModify]);
+  // Ensure formData.files exists
+  const files = formData?.files || [];
 
   return (
     <>
-      <Stack direction={"row"} gap={4} mb={4}>
+      <Stack direction="row" gap={4} mb={4}>
         <div className="w-1/2 p-8 border-2 border-lightText/20 border-solid rounded-lg">
           <Stack
-            direction={"row"}
-            alignItems={"center"}
-            justifyContent={"space-between"}
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
             sx={{ mb: 4 }}
           >
             <div className="text-2xl font-semibold text-darkText">
               General Signs
             </div>
-
             <Button
               variant="contained"
-              startIcon={<LuPencil className="!text-lg"/>}
+              startIcon={<LuPencil className="!text-lg" />}
               onClick={handleOpenModify}
-              sx={{textTransform: "none"}}
+              sx={{ textTransform: "none" }}
             >
               Modify Signs
             </Button>
           </Stack>
 
-          <Stack direction={"column"} gap={2} height={"100%"} mb={4}>
-            {signs.map((sign, index) => {
+          <Stack direction="column" gap={2} height="100%" mb={4}>
+            {generalSigns.map((sign, index) => {
+              // Find the matching value in formData.generalSigns based on the name
+              const matchingSign = formData.generalSigns.find(
+                (item) => item.name === sign.name
+              );
+
               return (
                 <Stack gap={1} key={index}>
                   <div className="text-sm font-medium text-darkText">
@@ -133,16 +136,16 @@ const GeneralSignsForm = ({ formData, setFormData }) => {
                       },
                     }}
                     placeholder={sign.placeholder}
-                    value={formData[sign.name]}
+                    value={matchingSign?.value || ""} // Use the matching sign's value, or fallback to ""
                     name={sign.name}
-                    onChange={handleChange}
-                    type={sign.type}
-                    slotProps={{
-                      input: {
-                        endAdornment: (
-                          <InputAdornment position="end">{sign.unit}</InputAdornment>
-                        ),
-                      },
+                    onChange={handleGeneralSignsChange}
+                    type={sign.type || "text"}
+                    InputProps={{
+                      endAdornment: sign.unit && (
+                        <InputAdornment position="end">
+                          {sign.unit}
+                        </InputAdornment>
+                      ),
                     }}
                     fullWidth
                   />
@@ -156,9 +159,11 @@ const GeneralSignsForm = ({ formData, setFormData }) => {
           <div className="text-2xl font-semibold p-0 text-darkText mb-8">
             Other Information
           </div>
-
-          <Stack direction={"column"} gap={2}>
-            {otherSignes.map((sign, index) => {
+          <Stack direction="column" gap={2}>
+            {otherSigns.map((sign, index) => {
+              const matchingSign = formData.otherSigns.find(
+                (item) => item.name === sign.name
+              );
               return (
                 <Stack gap={1} key={index}>
                   <div className="text-sm font-medium text-darkText">
@@ -166,22 +171,42 @@ const GeneralSignsForm = ({ formData, setFormData }) => {
                   </div>
                   <TextField
                     placeholder={sign.placeholder}
-                    value={formData[sign.name]}
+                    value={matchingSign?.value || ""} 
                     sx={{
                       "& .MuiOutlinedInput-input": {
                         height: "1rem",
                       },
                     }}
                     name={sign.name}
-                    onChange={handleChange}
+                    onChange={handleOtherSignsChange}
                     fullWidth
                   />
                 </Stack>
               );
             })}
+            {generalInfo.map((sign, index) => (
+              <Stack gap={1} key={index}>
+                <div className="text-sm font-medium text-darkText">
+                  {sign.placeholder}
+                </div>
+                <TextField
+                  placeholder={sign.placeholder}
+                  value={formData?.[sign.name] || ""}
+                  sx={{
+                    "& .MuiOutlinedInput-input": {
+                      height: "1rem",
+                    },
+                  }}
+                  name={sign.name}
+                  onChange={handleChange}
+                  fullWidth
+                />
+              </Stack>
+            ))}
           </Stack>
         </div>
       </Stack>
+
       <div className="w-full h-full px-8 py-4 border-2 border-lightText/20 border-solid rounded-lg">
         <div className="text-2xl font-semibold text-darkText mb-6">
           Documents importés
@@ -189,7 +214,7 @@ const GeneralSignsForm = ({ formData, setFormData }) => {
 
         <div
           className={`border-2 border-dashed border-gray-300 rounded-lg p-8 text-center ${
-            formData.files.length === 0 ? "block" : "hidden"
+            files.length === 0 ? "block" : "hidden"
           }`}
         >
           <p className="text-sm text-gray-500 mb-4">
@@ -214,29 +239,24 @@ const GeneralSignsForm = ({ formData, setFormData }) => {
 
         <div
           className={`${
-            formData.files.length === 0 ? "hidden" : "flex"
-          } flex-wrap w-full h-full `}
+            files.length === 0 ? "hidden" : "flex"
+          } flex-wrap w-full h-full`}
         >
-          {formData.files.map((file, index) => {
-            return (
-              <div className="p-2 w-1/6">
-                <Stack
-                  key={index}
-                  className="rounded-lg border-2 border-lightText/20 border-solid shadow-md"
-                  direction={"column"}
-                  alignItems={"center"}
-                  p={4}
-                  gap={2}
-                  onClick={() => {
-                    handleFileSelect(file.url);
-                  }}
-                >
-                  <GrDocumentText className="mr-2 text-2xl " />
-                  <div>{file.title}</div>
-                </Stack>
-              </div>
-            );
-          })}
+          {files.map((file, index) => (
+            <div className="p-2 w-1/6" key={index}>
+              <Stack
+                className="rounded-lg border-2 border-lightText/20 border-solid shadow-md"
+                direction="column"
+                alignItems="center"
+                p={4}
+                gap={2}
+                onClick={() => handleFileSelect(file.url)}
+              >
+                <GrDocumentText className="mr-2 text-2xl" />
+                <div>{file.title}</div>
+              </Stack>
+            </div>
+          ))}
           <div className="w-1/6 p-2">
             <label
               htmlFor="file-upload"
@@ -249,7 +269,12 @@ const GeneralSignsForm = ({ formData, setFormData }) => {
       </div>
 
       {openModify && (
-        <ModifySignsModal open={openModify} handleClose={handleCloseModify} />
+        <ModifySignsModal
+          open={openModify}
+          handleClose={handleCloseModify}
+          setFormData={setFormData}
+          formData={formData}
+        />
       )}
 
       {open && (

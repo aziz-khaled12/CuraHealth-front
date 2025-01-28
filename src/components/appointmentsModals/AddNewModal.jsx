@@ -8,7 +8,6 @@ import {
   MenuItem,
   Select,
   FormControl,
-  
 } from "@mui/material";
 import {
   DatePicker,
@@ -16,9 +15,9 @@ import {
   LocalizationProvider,
 } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addAppointment } from "../../redux/appointmentsSlice";
-
+import { calculateAge } from "../../utils/TimeManipulationFunctions";
 
 const categories = [
   { name: "Emergency" },
@@ -27,49 +26,10 @@ const categories = [
   { name: "Friend" },
 ];
 
-const fakePatients = [
-  {
-    id: "1",
-    fullName: "John Doe",
-    birthday: "1985-05-15",
-    address: "123 Elm Street, Springfield, IL",
-    email: "john.doe@example.com",
-    phoneNumber: "555-1234",
-    sex: "Male",
-  },
-  {
-    id: "2",
-    fullName: "Jane Smith",
-    birthday: "1990-10-22",
-    address: "456 Oak Avenue, Springfield, IL",
-    email: "jane.smith@example.com",
-    phoneNumber: "555-5678",
-    sex: "Female",
-  },
-  {
-    id: "3",
-    fullName: "Alice Johnson",
-    birthday: "1982-03-30",
-    address: "789 Pine Road, Springfield, IL",
-    email: "alice.johnson@example.com",
-    phoneNumber: "555-8765",
-    sex: "Female",
-  },
-  {
-    id: "4",
-    fullName: "Bob Brown",
-    birthday: "1978-07-19",
-    address: "101 Maple Lane, Springfield, IL",
-    email: "bob.brown@example.com",
-    phoneNumber: "555-4321",
-    sex: "Male",
-  },
-];
-
 const AddNewModal = ({ open, setOpen, cellData }) => {
-
   const dispatch = useDispatch();
 
+  const fakePatients = useSelector((state) => state.patients.patients);
   const [appointmentTitle, setAppointmentTitle] = useState("");
   const [startDate, setStartDate] = useState(
     cellData ? cellData.startDate : new Date()
@@ -83,7 +43,7 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
     newDate.setMinutes(newDate.getMinutes() + 30); // Add 30 minutes to current time
     return newDate;
   });
-  
+
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [category, setCategory] = useState("Normal");
 
@@ -92,12 +52,14 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
       const newAppointment = {
         title: appointmentTitle,
         patient: selectedPatient,
+        age: calculateAge(selectedPatient.birthday),
         category: category,
         createdAt: new Date().toISOString(),
         modifiedAt: null,
         startDate: startDate.toISOString(),
         endDate: endDate.toISOString(),
       };
+      console.log("appointment: ", newAppointment);
       dispatch(addAppointment(newAppointment));
       handleClose();
     }
@@ -124,21 +86,21 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
   return (
     <>
       <Modal open={open} onClose={handleClose}>
-      <Box
-        sx={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "85vw",
-          height: "84vh",
-          overflowY: "auto",
-          bgcolor: "#F7F7F7",
-          borderRadius: "8px",
-          boxShadow: 24,
-          p: 4,         
-        }}
-      >
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "85vw",
+            height: "84vh",
+            overflowY: "auto",
+            bgcolor: "#F7F7F7",
+            borderRadius: "8px",
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
           <h2 className="mb-10 text-2xl font-semibold">Add Appointment</h2>
           <div className="flex flex-col gap-8">
             <div className="flex flex-col items-start w-full">
@@ -264,7 +226,13 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
                   }}
                   name="sex"
                   placeholder="Sex"
-                  value={selectedPatient ? selectedPatient.sex : ""}
+                  value={
+                    selectedPatient
+                      ? selectedPatient.sex == 0
+                        ? "Female"
+                        : "Male"
+                      : ""
+                  }
                 />
               </div>
             </div>

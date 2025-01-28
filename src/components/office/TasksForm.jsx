@@ -1,24 +1,31 @@
 import { Stack, Switch } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { addTask, deleteTask } from "../../redux/tasksSlice";
+import { useSelector } from "react-redux";
 
-const TasksForm = () => {
+const TasksForm = ({ formData, setFormData }) => {
   const { services } = useSelector((state) => state.services);
-  const { tasks } = useSelector((state) => state.tasks);
-  const dispatch = useDispatch();
-
-  const handleChange = (id) => {
-    if (tasks.includes(id)) {
-      dispatch(deleteTask(id));
-    } else {
-      dispatch(addTask(id));
-    }
-  };
 
   useEffect(() => {
-    console.log(tasks);
-  }, [tasks]);
+    console.log("formData: ", formData);  
+  }, [formData]);
+
+  const handleChange = (id) => {
+    if (formData.services.includes(id)) {
+      // Remove the id from the services array
+      const updatedData = {
+        ...formData,
+        services: formData.services.filter((service) => service !== id),
+      };
+      setFormData(updatedData);
+    } else {
+      // Add the id to the services array
+      const updatedData = {
+        ...formData,
+        services: [...formData.services, id], 
+      };
+      setFormData(updatedData);
+    }
+  };
 
   useEffect(() => {
     console.log("services: ", services);
@@ -30,11 +37,17 @@ const TasksForm = () => {
       <Stack direction={"column"} gap={2}>
         {services.map((service, index) => {
           return (
-            <div key={index} className="w-full flex items-center justify-between bg-white p-4 rounded-md border-2 border-solid border-lightText/20">
+            <div
+              key={index}
+              className="w-full flex items-center justify-between bg-white p-4 rounded-md border-2 border-solid border-lightText/20"
+            >
               <div className="w-fit text-lg font-medium text-darkText">
                 {service.name}
               </div>
-              <Switch checked={tasks.includes(service.id)} onChange={(e) => handleChange(service.id)}></Switch>
+              <Switch
+                checked={formData.services.includes(service.id)}
+                onChange={(e) => handleChange(service.id)}
+              ></Switch>
             </div>
           );
         })}
