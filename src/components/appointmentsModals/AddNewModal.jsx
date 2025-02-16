@@ -54,10 +54,11 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
         patient: selectedPatient,
         age: calculateAge(selectedPatient.birthday),
         category: category,
-        createdAt: new Date().toISOString(),
+        createdAt: new Date().toLocaleString(),
         modifiedAt: null,
-        startDate: startDate.toISOString(),
-        endDate: endDate.toISOString(),
+        status: "Scheduled",
+        startDate: startDate.toLocaleString(),
+        endDate: endDate.toLocaleString(),
       };
       console.log("appointment: ", newAppointment);
       dispatch(addAppointment(newAppointment));

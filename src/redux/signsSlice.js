@@ -7,6 +7,12 @@ export const signSlice = createSlice({
   initialState: {
     generalSigns: [
       {
+        name: "Blood Pressure",
+        placeholder: "10mm/Hg",
+        unit: "mm/Hg",
+        type: "text",
+      },
+      {
         name: "Height",
         placeholder: "170cm, 190cm...",
         unit: "cm",
@@ -19,8 +25,14 @@ export const signSlice = createSlice({
         type: "number",
       },
       {
-        name: "Blood Pressure",
-        placeholder: "70bpm, 82bpm...",
+        name: "Temperature",
+        placeholder: "36.5°C",
+        unit: "°C",
+        type: "number",
+      },
+      {
+        name: "Pulse",
+        placeholder: "70bpm",
         unit: "bpm",
         type: "number",
       },

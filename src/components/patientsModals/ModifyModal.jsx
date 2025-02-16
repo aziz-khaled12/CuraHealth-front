@@ -22,35 +22,11 @@ const ModifyModal = ({ open, setOpen, prevData }) => {
   ];
 
   const [formData, setFormData] = useState({
-    id: prevData.PatientID,
-    firstName: prevData.FirstName,
-    lastName: prevData.LastName,
-    birthday: prevData.Birthday,
-    phoneNum: prevData.PhoneNum,
-    IDNum: prevData.IDNum, //National Identity card number
-    email: prevData.Email,
-    bloodType: prevData.BloodType,
-    etatCivil: prevData.EtatCivil,
-    sex: prevData.Sex,
-    address: prevData.Address,
-    city: prevData.City,
+    ...prevData,
   });
 
   useEffect(() => {
-    setFormData({
-      id: prevData.PatientID,
-      firstName: prevData.FirstName,
-      lastName: prevData.LastName,
-      birthday: prevData.Birthday,
-      phoneNum: prevData.PhoneNum,
-      IDNum: prevData.IDNum, //National Identity card number
-      email: prevData.Email,
-      bloodType: prevData.BloodType,
-      etatCivil: prevData.EtatCivil,
-      sex: prevData.Sex,
-      address: prevData.Address,
-      city: prevData.City,
-    });
+    setFormData(...prevData);
   }, [prevData]);
 
   console.log(prevData);
@@ -145,7 +121,7 @@ const ModifyModal = ({ open, setOpen, prevData }) => {
                 name="phoneNum"
                 onChange={handleChange}
                 placeholder="Phone Number"
-                value={formData.phoneNum}
+                value={formData.phoneNumber}
               />
             </div>
             <div className="flex flex-col items-start w-full">
@@ -157,7 +133,7 @@ const ModifyModal = ({ open, setOpen, prevData }) => {
                 name="IDNum"
                 onChange={handleChange}
                 placeholder="National ID"
-                value={formData.IDNum}
+                value={formData.nationalId}
               />
             </div>
           </div>

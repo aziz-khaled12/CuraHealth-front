@@ -95,7 +95,7 @@ const Patients = () => {
   };
 
   const handleModify = (prevData) => {
-    const selectedPatient = patients.filter(patient => patient.id = prevData)
+    const selectedPatient = patients.filter(patient => patient.id == prevData)
     setDataToEdit(selectedPatient)
     setEditOpen(true)
   }

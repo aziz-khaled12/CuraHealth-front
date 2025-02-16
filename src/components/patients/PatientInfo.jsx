@@ -20,7 +20,7 @@ const PatientInfo = ({ fakePatient }) => {
     },
     {
       label: "Birthday",
-      value: fakePatient.birthday.toLocaleDateString(), // Formatting the date
+      value: fakePatient.birthday, // Formatting the date
     },
     {
       label: "Address",

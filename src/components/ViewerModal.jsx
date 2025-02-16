@@ -1,6 +1,5 @@
 import { Box, Modal } from "@mui/material";
 import React from "react";
-import FileViewer from "react-file-viewer";
 
 const ViewerModal = ({ open, file, onClose }) => {
  

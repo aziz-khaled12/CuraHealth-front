@@ -42,12 +42,10 @@ const PatientDetails = () => {
             title={"Patients"}
             subTitle={`${fakePatient.firstName} ${fakePatient.lastName}`}
           />
-
           <div className="flex w-full gap-4">
             <PatientInfo fakePatient={fakePatient} />
             <Documents></Documents>
           </div>
-
           <div className="my-4 bg-white rounded-xl shadow-lg p-5">
             <MedicalHistory patient={fakePatient}></MedicalHistory>
           </div>

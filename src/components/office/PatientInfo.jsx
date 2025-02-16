@@ -29,7 +29,7 @@ const PatientInfo = ({ patientId }) => {
     },
     {
       label: "Birthday",
-      value: selectedPatient.birthday.toLocaleDateString(), // Formatting the date
+      value: selectedPatient.birthday, // Formatting the date
     },
     {
       label: "Address",

@@ -10,7 +10,7 @@ const MedicalHistoryCard = ({session, onSelectSession }) => {
         <div>
           <p className="font-semibold text-lg mb-2">{session.startedAt}</p>
           <Chip label={session.category} />
-          <p className="text-sm mt-2">{session.details.consultationCause}</p>
+          {/* <p className="text-sm mt-2">{session.details.consultationCause}</p> */}
         </div>
         <Button variant="contained" sx={{textTransform: "none"}} onClick={() => onSelectSession(session)}>View Details</Button>
       </div>

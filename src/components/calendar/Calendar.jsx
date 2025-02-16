@@ -1,4 +1,4 @@
-import React, { useState, useCallback, memo, useEffect, useMemo } from "react";
+import React, { useState, useCallback, memo, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import Paper from "@mui/material/Paper";
 import {
@@ -16,7 +16,6 @@ import {
   IntegratedEditing,
 } from "@devexpress/dx-react-scheduler";
 import {
-  addAppointment,
   updateAppointment,
   deleteAppointment,
 } from "../../redux/appointmentsSlice";
@@ -62,6 +61,8 @@ const Calendar = () => {
 
   const Appointment = ({ children, ...restProps }) => (
     <Appointments.Appointment
+    style={{ backgroundColor: "#0D3B66" }}
+    
       onDoubleClick={() => {
         handleOpen(restProps.data);
       }}
@@ -133,8 +134,8 @@ const Calendar = () => {
 
   return (
     <React.Fragment>
-      <Paper>
-        <Scheduler data={appointments} height={720}>
+      <Paper sx={{ height: "100vh" }}>
+        <Scheduler data={appointments} height={"auto"}>
           <ViewState />
           <EditingState onCommitChanges={onCommitChanges} />
           <IntegratedEditing />

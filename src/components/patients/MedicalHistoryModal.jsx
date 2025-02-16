@@ -10,19 +10,24 @@ import {
   CardHeader,
   Chip,
   IconButton,
-  DialogTitle,
-  DialogContent,
+  Stack,
+  Paper,
+  Divider,
+  Avatar,
 } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import MedicalInformationIcon from "@mui/icons-material/MedicalInformation";
-import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
-import AssignmentIcon from "@mui/icons-material/Assignment";
-import MedicationIcon from "@mui/icons-material/Medication";
-import ImageIcon from "@mui/icons-material/Image";
-import ViewerModal from "../ViewerModal";
+import {
+  Close as CloseIcon,
+  MedicalInformation as MedicalInformationIcon,
+  LocalHospital as LocalHospitalIcon,
+  Assignment as AssignmentIcon,
+  Medication as MedicationIcon,
+  Image as ImageIcon,
+  Timeline as TimelineIcon,
+  MonitorHeart as MonitorHeartIcon,
+  Description as DescriptionIcon,
+} from "@mui/icons-material";
 import { useSelector } from "react-redux";
 
-// TabPanel component for tab content
 function TabPanel({ children, value, index, ...other }) {
   return (
     <div
@@ -32,18 +37,41 @@ function TabPanel({ children, value, index, ...other }) {
       aria-labelledby={`session-tab-${index}`}
       {...other}
     >
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
+      {value === index && <Box sx={{ p: 2 }}>{children}</Box>}
     </div>
   );
 }
 
 export function MedicalHistoryModal({ session, onClose }) {
-  const [tabValue, setTabValue] = React.useState(0);
+  const [tabValue, setTabValue] = useState(0);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [viewerOpen, setViewerOpen] = useState(false);
 
   if (!session) return null;
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
+  };
+
+  const handleFileSelect = (fileUrl) => {
+    setSelectedFile(fileUrl);
+    setViewerOpen(true);
+  };
+
+  const handleViewerClose = () => {
+    setViewerOpen(false);
+    setSelectedFile(null);
+  };
+
+  const getCategoryIcon = () => {
+    switch (session.category) {
+      case "Emergency":
+        return <LocalHospitalIcon sx={{ color: "error.main" }} />;
+      case "Normal":
+        return <MedicalInformationIcon color="primary" />;
+      default:
+        return <AssignmentIcon color="action" />;
+    }
   };
 
   const modalStyle = {
@@ -52,136 +80,183 @@ export function MedicalHistoryModal({ session, onClose }) {
     left: "50%",
     transform: "translate(-50%, -50%)",
     width: "90%",
-    maxWidth: "1000px",
+    maxWidth: "1200px",
     maxHeight: "90vh",
     bgcolor: "background.paper",
     boxShadow: 24,
-    borderRadius: 2,
+    borderRadius: 3,
     overflow: "hidden",
     display: "flex",
     flexDirection: "column",
   };
 
-  const { services } = useSelector((state) => state.services);
-  const [open, setOpen] = useState(false);
-  const [selectedFile, setSelectedFile] = useState(null);
-
-  const handleClose = () => {
-    setOpen(false);
-    setSelectedFile(null);
-  };
-  const handleFileSelect = (fileUrl) => {
-    setSelectedFile(fileUrl);
-    setOpen(true);
-  };
-
   return (
     <>
       <Modal open={!!session} onClose={onClose}>
-        <Box sx={modalStyle}>
+        <Paper sx={modalStyle} elevation={24}>
           {/* Header */}
-          <DialogTitle
-            sx={{ m: 0, p: 2, display: "flex", alignItems: "center" }}
+          <Box
+            sx={{
+              p: 2,
+              display: "flex",
+              alignItems: "center",
+              borderBottom: 1,
+              borderColor: "divider",
+              bgcolor: "background.default",
+            }}
           >
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
-                flexGrow: 1,
-              }}
-            >
-              {session.category === "Normal" ? (
-                <MedicalInformationIcon />
-              ) : session.category === "Emergency" ? (
-                <LocalHospitalIcon />
-              ) : (
-                <AssignmentIcon />
-              )}
-
-              <Typography variant="h6">
-                {session.category} - {session.startedAt}
+            <Avatar sx={{ mr: 2, bgcolor: "primary.light" }}>
+              {getCategoryIcon()}
+            </Avatar>
+            <Box sx={{ flexGrow: 1 }}>
+              <Typography variant="h5" component="h2" gutterBottom={false}>
+                {session.category} Consultation
+              </Typography>
+              <Typography variant="subtitle2" color="text.secondary">
+                {session.startedAt}
               </Typography>
             </Box>
-            <IconButton
-              aria-label="close"
-              onClick={onClose}
-              sx={{ position: "absolute", right: 8, top: 8 }}
-            >
+            <IconButton onClick={onClose} size="large">
               <CloseIcon />
             </IconButton>
-          </DialogTitle>
-
-          {/* Tabs */}
-          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-            <Tabs
-              value={tabValue}
-              onChange={handleTabChange}
-              variant="fullWidth"
-            >
-              <Tab label="Overview" />
-              <Tab label="Vitals" />
-              <Tab label="Prescriptions" />
-              <Tab label="Documents" />
-            </Tabs>
           </Box>
 
+          {/* Tabs */}
+          <Tabs
+            value={tabValue}
+            onChange={handleTabChange}
+            variant="fullWidth"
+            sx={{
+              borderBottom: 1,
+              borderColor: "divider",
+              bgcolor: "background.paper",
+            }}
+          >
+            <Tab
+              icon={<TimelineIcon />}
+              label="Overview"
+              iconPosition="start"
+            />
+            <Tab
+              icon={<MonitorHeartIcon />}
+              label="Vitals"
+              iconPosition="start"
+            />
+            <Tab
+              icon={<MedicationIcon />}
+              label="Prescriptions"
+              iconPosition="start"
+            />
+            <Tab
+              icon={<DescriptionIcon />}
+              label="Documents"
+              iconPosition="start"
+            />
+          </Tabs>
+
           {/* Content */}
-          <DialogContent sx={{ flexGrow: 1, overflow: "auto" }}>
+          <Box sx={{ flexGrow: 1, overflow: "auto", bgcolor: "grey.50" }}>
             {/* Overview Tab */}
             <TabPanel value={tabValue} index={0}>
-              <Card className="!shadow-md">
-                <CardHeader title="Consultation Cause" />
-                <CardContent>
-                  <Typography>{session.details.consultationCause}</Typography>
-                  <Typography variant="h6" sx={{ mt: 3, mb: 1 }}>
-                    Diagnosis
-                  </Typography>
-                  <Typography>{session.details.diagnostic}</Typography>
-                  <Typography variant="h6" sx={{ mt: 3, mb: 1 }}>
-                    Services Provided
-                  </Typography>
-                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-                    {session.details.services.map((service, index) => (
-                      <Chip
-                        key={index}
-                        label={services[service - 1].name}
-                        variant="outlined"
-                      />
-                    ))}
-                  </Box>
-                </CardContent>
-              </Card>
+              <Stack spacing={3}>
+                <Card elevation={2}>
+                  <CardHeader
+                    title="Consultation Cause"
+                    titleTypographyProps={{ variant: "h6" }}
+                  />
+                  <Divider />
+                  <CardContent>
+                    <Stack spacing={1}>
+                      {session.consultationCause.map((cause, index) => (
+                        <Typography key={index} variant="body1">
+                          {index + 1}. {cause}
+                        </Typography>
+                      ))}
+                    </Stack>
+                  </CardContent>
+                </Card>
+
+                <Card elevation={2}>
+                  <CardHeader
+                    title="Diagnosis"
+                    titleTypographyProps={{ variant: "h6" }}
+                  />
+                  <Divider />
+                  <CardContent>
+                    <Stack spacing={1}>
+                      {session.diagnosis.map((diagnosis, index) => (
+                        <Typography key={index} variant="body1">
+                          {index + 1}. {diagnosis}
+                        </Typography>
+                      ))}
+                    </Stack>
+                  </CardContent>
+                </Card>
+
+                <Card elevation={2}>
+                  <CardHeader
+                    title="Services Provided"
+                    titleTypographyProps={{ variant: "h6" }}
+                  />
+                  <Divider />
+                  <CardContent>
+                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+                      {session.services.map((service, index) => (
+                        <Chip
+                          key={index}
+                          label={service}
+                          color="primary"
+                          variant="outlined"
+                          sx={{ borderRadius: 2 }}
+                        />
+                      ))}
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Stack>
             </TabPanel>
 
             {/* Vitals Tab */}
             <TabPanel value={tabValue} index={1}>
-              <Card>
-                <CardHeader title="Vital Signs" />
+              <Card elevation={2}>
+                <CardHeader
+                  title="Vital Signs"
+                  titleTypographyProps={{ variant: "h6" }}
+                />
+                <Divider />
                 <CardContent>
                   <Box
                     sx={{
                       display: "grid",
-                      gridTemplateColumns: "repeat(2, 1fr)",
-                      gap: 2,
+                      gridTemplateColumns: {
+                        xs: "1fr",
+                        sm: "repeat(2, 1fr)",
+                        md: "repeat(3, 1fr)",
+                      },
+                      gap: 3,
                     }}
                   >
-                    {session.details.generalSigns.map((sign, index) => (
-                      <Box
+                    {session.vitals.map((vital, index) => (
+                      <Paper
                         key={index}
-                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                        elevation={1}
+                        sx={{
+                          p: 2,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 2,
+                        }}
                       >
-                        <MedicalInformationIcon
-                          sx={{ color: "text.secondary" }}
-                        />
-                        <Typography
-                          component="span"
-                          sx={{ fontWeight: "medium" }}
-                        >
-                          {sign.name}:
-                        </Typography>
-                        <Typography component="span">{sign.value}</Typography>
-                      </Box>
+                        <Avatar sx={{ bgcolor: "primary.light" }}>
+                          <MonitorHeartIcon />
+                        </Avatar>
+                        <Box>
+                          <Typography color="text.secondary" variant="caption">
+                            {vital.name}
+                          </Typography>
+                          <Typography variant="h6">{vital.value}</Typography>
+                        </Box>
+                      </Paper>
                     ))}
                   </Box>
                 </CardContent>
@@ -190,84 +265,113 @@ export function MedicalHistoryModal({ session, onClose }) {
 
             {/* Prescriptions Tab */}
             <TabPanel value={tabValue} index={2}>
-              <Card>
-                <CardHeader title="Prescriptions" />
+              <Card elevation={2}>
+                <CardHeader
+                  title="Prescribed Medications"
+                  titleTypographyProps={{ variant: "h6" }}
+                />
+                <Divider />
                 <CardContent>
-                  <Box
-                    sx={{ display: "flex", flexDirection: "column", gap: 2 }}
-                  >
-                    {session.details.ordonance.map((prescription, index) => (
-                      <Box
+                  <Stack spacing={2}>
+                    {session.medicaments.map((prescription, index) => (
+                      <Paper
                         key={index}
+                        elevation={1}
                         sx={{
+                          p: 2,
                           display: "flex",
                           gap: 2,
-                          p: 2,
-                          border: 1,
-                          borderColor: "divider",
-                          borderRadius: 1,
+                          borderLeft: 6,
+                          borderColor: "primary.main",
                         }}
                       >
-                        <MedicationIcon sx={{ color: "primary.main" }} />
-                        <Box>
-                          <Typography sx={{ fontWeight: "bold" }}>
-                            {prescription.name} - {prescription.dosage}
+                        <Avatar sx={{ bgcolor: "primary.light" }}>
+                          <MedicationIcon />
+                        </Avatar>
+                        <Box sx={{ flexGrow: 1 }}>
+                          <Typography variant="h6" gutterBottom>
+                            {prescription.name}
+                          </Typography>
+                          <Typography
+                            variant="subtitle1"
+                            color="primary"
+                            gutterBottom
+                          >
+                            Dosage: {prescription.dosage}
                           </Typography>
                           <Typography variant="body2" color="text.secondary">
                             {prescription.instructions}
                           </Typography>
                         </Box>
-                      </Box>
+                      </Paper>
                     ))}
-                  </Box>
+                  </Stack>
                 </CardContent>
               </Card>
             </TabPanel>
 
             {/* Documents Tab */}
             <TabPanel value={tabValue} index={3}>
-              <Card>
-                <CardHeader title="Imported Documents" />
+              <Card elevation={2}>
+                <CardHeader
+                  title="Medical Documents"
+                  titleTypographyProps={{ variant: "h6" }}
+                />
+                <Divider />
                 <CardContent>
                   <Box
                     sx={{
                       display: "grid",
-                      gridTemplateColumns: "repeat(2, 1fr)",
+                      gridTemplateColumns: {
+                        xs: "1fr",
+                        sm: "repeat(2, 1fr)",
+                        md: "repeat(3, 1fr)",
+                      },
                       gap: 2,
                     }}
                   >
-                    {session.details.files.map((file, index) => (
-                      <Box
+                    {session.files.map((file, index) => (
+                      <Paper
                         key={index}
+                        elevation={1}
                         sx={{
+                          p: 2,
                           display: "flex",
                           alignItems: "center",
                           gap: 2,
-                          p: 2,
-                          border: 1,
-                          borderColor: "divider",
-                          borderRadius: 1,
                           cursor: "pointer",
+                          transition: "all 0.2s",
+                          "&:hover": {
+                            transform: "translateY(-2px)",
+                            boxShadow: 4,
+                          },
                         }}
                         onClick={() => handleFileSelect(file.url)}
                       >
-                        <ImageIcon sx={{ color: "primary.main" }} />
-                        <Box>
-                          <Typography sx={{ fontWeight: "medium" }}>
+                        <Avatar sx={{ bgcolor: "primary.light" }}>
+                          <ImageIcon />
+                        </Avatar>
+                        <Box sx={{ flexGrow: 1 }}>
+                          <Typography variant="subtitle1" noWrap>
                             {file.file.name}
                           </Typography>
                         </Box>
-                      </Box>
+                      </Paper>
                     ))}
                   </Box>
                 </CardContent>
               </Card>
             </TabPanel>
-          </DialogContent>
-        </Box>
+          </Box>
+        </Paper>
       </Modal>
-      {open && (
-        <ViewerModal open={open} file={selectedFile} onClose={handleClose} />
+
+      {viewerOpen && (
+        <ViewerModal
+          open={viewerOpen}
+          file={selectedFile}
+          onClose={handleViewerClose}
+        />
       )}
     </>
   );

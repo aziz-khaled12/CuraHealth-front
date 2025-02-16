@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import { Alert, Button, TextField, Typography } from "@mui/material";
 import { FcGoogle } from "react-icons/fc";
-import { FaApple, FaFacebook, FaGoogle } from "react-icons/fa";
+import { FaApple, FaFacebook } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { login } from "../redux/authSlice";
+import { login } from "../../redux/authSlice";
 import { MoonLoader } from "react-spinners";
 
 const Login = () => {

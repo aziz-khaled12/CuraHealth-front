@@ -13,10 +13,10 @@ import {
 import { FcGoogle } from "react-icons/fc";
 import { FaApple, FaFacebook } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
-import { signup } from "../redux/authSlice";
-import { fetchTypes } from "../redux/userDataSlice";
+import { signup } from "../../redux/authSlice";
+import { fetchTypes } from "../../redux/userDataSlice";
 import { useDispatch, useSelector } from "react-redux";
-import LoginBg from "../assets/login.jpg";
+import LoginBg from "../../assets/login.jpg";
  
 const Signup = () => {
   const navigate = useNavigate();
