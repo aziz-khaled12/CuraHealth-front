@@ -7,10 +7,12 @@ import servicesReducer from "./servicesSlice.js";
 import tasksReducer from "./tasksSlice.js";
 import signsReducer from "./signsSlice.js";
 import sessionReducer from "./sessionSlice.js";
+import appointmentsDataReducer from "./appointmentDataSlice.js";
 
-export const store = configureStore({
+const store = configureStore({
   reducer: {
     appointments: appointmentsReducer,
+    appointmentsData: appointmentsDataReducer,
     auth: authReducer,
     patients: patientsReducre,
     userData: userDataReducer,
@@ -20,3 +22,6 @@ export const store = configureStore({
     sessions: sessionReducer,
   },
 });
+
+export default store;
+

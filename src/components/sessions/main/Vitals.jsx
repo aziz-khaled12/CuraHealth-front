@@ -1,37 +1,49 @@
 import { Box, Divider, Stack, Typography } from "@mui/material";
-import React, { forwardRef, useImperativeHandle, useState } from "react";
-import VitalsInput from "./VitalsInput";
+import React, { useEffect, useState } from "react";
+import VitalsInput from "../sessionUtils/VitalsInput";
 import { useDispatch, useSelector } from "react-redux";
+import { updateSessionAttribute } from "../../../redux/sessionSlice";
+// import { modifySession } from "../../../redux/sessionSlice";
 
-const Vitals = forwardRef(({ initialValue = [] }, ref) => {
+const Vitals = ({ id }) => {
+  const [selected, setSelected] = useState(false);
   const dispatch = useDispatch();
 
-  const [selected, setSelected] = useState(false);
   const { generalSigns } = useSelector((state) => state.signs);
-  const [vitals, setVitals] = useState(initialValue);
+  const vitals = useSelector((state) => state.sessions.vitals.find((vital) => vital.sessionId === id).data)
+  const [formData, setFormData] = useState(vitals || []);
 
-  useImperativeHandle(ref, () => ({
-    getValue: () => vitals,
-    setValue: (value) => setVitals(value),
-  }));
+
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    const currentVitals = Array.isArray(vitals) ? vitals : [];
+    const currentVitals = Array.isArray(formData) ? formData : [];
 
     const updatedVitals = [
       ...currentVitals.filter((vital) => vital.name !== name),
-      { name, value },
+      { id: generalSigns.find((sign) => sign.name === name)?.id, name, value }, // Include id
     ];
 
-    setVitals(updatedVitals);
+    setFormData(updatedVitals);
+    dispatch(
+      updateSessionAttribute({
+        sessionId: id,
+        category: "vitals",
+        newData: updatedVitals,
+      })
+    );
   };
+
+  useEffect(() => {
+    console.log("vitals", vitals)
+  }, [vitals])
 
   return (
     <Box className="w-full bg-white border border-[#B4B4B4] p-4 rounded-lg">
       <Typography
         variant="h6"
         sx={{ fontWeight: 500, cursor: "pointer" }}
-        onClick={() => setSelected((prevSelected) => !prevSelected)}
+        onClick={() => setSelected(!selected)}
       >
         Vitals
       </Typography>
@@ -42,8 +54,9 @@ const Vitals = forwardRef(({ initialValue = [] }, ref) => {
             <VitalsInput
               key={index}
               sign={sign}
-              formData={vitals}
+              formData={formData}
               handleChange={handleChange}
+              selected={selected}
             />
           ))}
         </Box>
@@ -53,15 +66,15 @@ const Vitals = forwardRef(({ initialValue = [] }, ref) => {
           alignItems={"center"}
           flexWrap={"wrap"}
           gap={2}
-          mt={vitals?.length > 0 ? 1 : 0}
+          mt={formData?.length > 0 ? 1 : 0}
         >
           {generalSigns
             .map((sign, index) => {
               if (sign.name === "Blood Pressure") {
-                const bp1 = vitals?.find(
+                const bp1 = formData?.find(
                   (vital) => vital.name === "BloodPressure1"
                 )?.value;
-                const bp2 = vitals?.find(
+                const bp2 = formData?.find(
                   (vital) => vital.name === "BloodPressure2"
                 )?.value;
 
@@ -81,11 +94,11 @@ const Vitals = forwardRef(({ initialValue = [] }, ref) => {
                   );
                 }
               } else {
-                const vitalValue = vitals?.find(
+                const vital = formData?.find(
                   (vital) => vital.name === sign.name
-                )?.value;
+                );
 
-                if (vitalValue) {
+                if (vital) {
                   return (
                     <Stack key={index} direction={"row"} alignItems={"center"}>
                       <Typography
@@ -95,7 +108,7 @@ const Vitals = forwardRef(({ initialValue = [] }, ref) => {
                         {sign.name}:
                       </Typography>
                       <Typography variant="body2">
-                        {vitalValue} {sign.unit}
+                        {vital.value} {sign.unit}
                       </Typography>
                     </Stack>
                   );
@@ -121,8 +134,6 @@ const Vitals = forwardRef(({ initialValue = [] }, ref) => {
       )}
     </Box>
   );
-});
-
-Vitals.displayName = "Vitals";
+};
 
 export default Vitals;

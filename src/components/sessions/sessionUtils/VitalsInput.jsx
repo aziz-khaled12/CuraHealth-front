@@ -9,6 +9,7 @@ import {
 
 // Component for General Vitals Input
 const VitalsInput = ({ sign, formData, handleChange }) => {
+  console.log(formData)
   if (sign.name === "Blood Pressure") {
     return (
       <Box className="flex gap-2 items-center">
@@ -20,7 +21,7 @@ const VitalsInput = ({ sign, formData, handleChange }) => {
           variant="standard"
           size="small"
           name="BloodPressure1"
-          value={formData["BloodPressure1"]}
+          value={formData.find((vital) => vital.name === "BloodPressure1")?.value || ""}
           onChange={handleChange}
           sx={{ width: "100px" }}
         />
@@ -30,7 +31,7 @@ const VitalsInput = ({ sign, formData, handleChange }) => {
           variant="standard"
           size="small"
           name="BloodPressure2"
-          value={formData["BloodPressure2"]}
+          value={formData.find((vital) => vital.name === "BloodPressure2")?.value || ""}
           onChange={handleChange}
           sx={{ width: "100px" }}
           InputProps={{
@@ -58,7 +59,7 @@ const VitalsInput = ({ sign, formData, handleChange }) => {
         variant="standard"
         size="small"
         name={sign.name}
-        value={formData[sign.name]}
+        value={formData.find((vital) => vital.name === sign.name)?.value || ""}
         onChange={handleChange}
         sx={{ width: "100px" }}
         InputProps={{

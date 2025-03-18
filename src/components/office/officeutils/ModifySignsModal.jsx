@@ -12,7 +12,7 @@ import {
 import { LuPencil, LuPlus, LuTrash2 } from "react-icons/lu";
 import { useDispatch, useSelector } from "react-redux";
 import { add, set } from "date-fns";
-import { addSign, updateSign } from "../../redux/signsSlice";
+import { addSign, updateSign } from "../../../redux/signsSlice";
 
 const ModifySignsModal = ({ open, handleClose, setFormData, formData }) => {
   const [alignment, setAlignment] = useState("");

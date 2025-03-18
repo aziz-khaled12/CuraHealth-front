@@ -1,118 +1,140 @@
 import React, { useEffect, useState } from "react";
-import { Button } from "@mui/material";
-import { MdPersonalInjury, MdCalendarMonth, MdClose } from "react-icons/md";
+import { Tooltip } from "@mui/material";
+import {
+  MdPersonalInjury,
+  MdCalendarMonth,
+  MdMedicalServices,
+  MdAssignment,
+} from "react-icons/md";
 import { BiSolidDashboard } from "react-icons/bi";
-import { useLocation, useNavigate } from "react-router-dom";
 import { PiStethoscopeBold } from "react-icons/pi";
+import { FaUserInjured } from "react-icons/fa";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Sidebar = () => {
   const location = useLocation();
-  const [selected, setSelected] = useState();
   const navigate = useNavigate();
-  const [expand, setExpand] = useState(false);
-
-  useEffect(() => {
-    const currentPath = location.pathname;
-    if (currentPath === "/") {
-      navigate("/dashboard");
-      setSelected(0);
-    }
-    const matchedTab = menuItems.find((tab) => {
-      return currentPath.startsWith(`/${tab.link}`);
-    });
-
-    if (matchedTab && matchedTab.id !== selected) {
-      setSelected(matchedTab.id);
-    }
-  }, [selected, location.pathname]);
+  const [selected, setSelected] = useState(null);
 
   const menuItems = [
     {
       id: 0,
       label: "Dashboard",
-      icon: <BiSolidDashboard />,
+      icon: <BiSolidDashboard size={22} />,
       link: "dashboard",
     },
-    { id: 1, label: "Patients", icon: <MdPersonalInjury />, link: "patients" },
+    {
+      id: 1,
+      label: "Patients",
+      icon: <FaUserInjured size={20} />,
+      link: "patients",
+    },
     {
       id: 2,
       label: "Appointments",
-      icon: <MdCalendarMonth />,
+      icon: <MdCalendarMonth size={22} />,
       link: "appointments",
     },
-    { id: 3, label: "Rapports", icon: <MdPersonalInjury />, link: "rapports" },
+    {
+      id: 3,
+      label: "Reports",
+      icon: <MdAssignment size={22} />,
+      link: "rapports",
+    },
     {
       id: 4,
       label: "Services",
-      icon: <MdPersonalInjury />,
+      icon: <MdMedicalServices size={22} />,
       link: "services",
     },
-    { id: 5, label: "Calendar", icon: <MdCalendarMonth />, link: "calendar" },
-    { id: 6, label: "Office", icon: <PiStethoscopeBold />, link: "office" },
+    {
+      id: 5,
+      label: "Calendar",
+      icon: <MdCalendarMonth size={22} />,
+      link: "calendar",
+    },
+    {
+      id: 6,
+      label: "Office",
+      icon: <PiStethoscopeBold size={22} />,
+      link: "office",
+    },
   ];
 
-  const handleClick = (link) => {
-    navigate(`/${link}`);
-  };
+  useEffect(() => {
+    const matchedTab = menuItems.find((tab) =>
+      location.pathname.startsWith(`/${tab.link}`)
+    );
+    if (matchedTab) setSelected(matchedTab.id);
+  }, [location.pathname]);
+
+  console.log("rerendered")
 
   return (
-    <>
-      <div
-        className={`h-full overflow-hidden bg-white ${
-          expand ? `w-[240px]` : `w-[73px] `
-        } relative z-20 transition-all duration-300 ease-in-out`}
-        onMouseEnter={() => {
-          setExpand(true);
-        }}
-        onMouseLeave={() => {
-          setExpand(false);
-        }}
-      >
-        <div className="flex flex-col h-full p-2 relative">
+    <div
+      className={`h-full bg-white shadow-md flex flex-col py-4 relative transition-all duration-300 
+    w-[80px]`}
+    >
+      {/* Logo */}
+      {/* <div className="flex justify-center items-center mb-8">
+        {expanded ? (
+          <div className="flex items-center">
+            <img src={logo} alt="Logo" className="h-8 w-8" />
+            <span className="ml-2 text-lg font-semibold text-blue-600 whitespace-nowrap">MediPortal</span>
+          </div>
+        ) : (
+          <img src={logo} alt="Logo" className="h-10 w-10" />
+        )}
+      </div> */}
+
+      {/* Navigation Items */}
+      <div className="flex flex-col gap-2 px-3">
+        {menuItems.map((item) => (
           <div
-            className="absolute rounded-r-full my-1 left-0 top-0 w-1 bg-primary transition-all duration-300 ease-in-out"
-            style={{
-              top: `${selected ? selected * 53 + 8 : 8}px`,
-              height: "45px",
-            }}
-          ></div>
-          {menuItems.map((item) => (
-            <Button
-              key={item.id}
-              startIcon={item.icon}
-              onClick={() => handleClick(item.link, item.id)}
-              className={`${
-                selected === item.id
-                  ? "!bg-primary !text-primaryText"
-                  : "!bg-white !text-darkText"
-              } hover:!bg-primary hover:!text-primaryText !my-1 `}
-              sx={{
-                textTransform: "none",
-                padding: "16px",
-                borderRadius: "8px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "start",
-                height: "45px",
-                width: `80%`,
-                maxWidth: "190px",
-                minWidth: "40px",
-                marginLeft: "8px",
-              }}
-            >
-              <span
-                className={`${
-                  expand ? `opacity-100 w-fit` : `opacity-0 w-0`
-                } transition-opacity delay-100`}
+            key={item.id}
+            className={`relative rounded-lg overflow-hidden ${
+              selected === item.id ? "bg-blue-50" : ""
+            }`}
+          >
+            {/* Active indicator */}
+            {selected === item.id && (
+              <div className="absolute left-0 top-0 h-full w-1 bg-primary"></div>
+            )}
+
+            <Tooltip title={item.label} placement="right">
+              <button
+                onClick={() => navigate(`/${item.link}`)}
+                className={`flex items-center w-full py-3 px-3 transition-all
+                  ${
+                    selected === item.id
+                      ? "text-primary font-medium"
+                      : "text-gray-600 hover:bg-gray-100"
+                  }`}
               >
-                {item.label}
-              </span>{" "}
-            </Button>
-          ))}
-        </div>
+                <span className="flex justify-center items-center min-w-[30px]">
+                  {item.icon}
+                </span>
+              </button>
+            </Tooltip>
+          </div>
+        ))}
       </div>
-      <div className="h-full bg-white w-[73px]"></div>
-    </>
+
+      {/* User Profile at Bottom */}
+      <div className="mt-auto mx-3 pt-4 border-t border-gray-200">
+        <Tooltip title={"Profile"} placement="right">
+          <button
+            onClick={() => navigate("/profile")}
+            className="flex items-center w-full rounded-lg py-2 px-3 text-gray-600 hover:bg-gray-100"
+          >
+            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-sm font-medium">
+              DR
+            </div>
+          
+          </button>
+        </Tooltip>
+      </div>
+    </div>
   );
 };
 

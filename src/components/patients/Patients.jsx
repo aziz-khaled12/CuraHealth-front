@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import Header from "../Header";
+import React, { useEffect, useMemo, useState } from "react";
+import Header from "../random/Header";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import InfoIcon from "@mui/icons-material/Info";
@@ -17,91 +17,99 @@ const Patients = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
-  const [editOpen, setEditOpen] = useState(false)
+  const [editOpen, setEditOpen] = useState(false);
   const { patients } = useSelector((state) => state.patients);
-  const [dataToEdit, setDataToEdit] = useState()
+  const [dataToEdit, setDataToEdit] = useState();
 
-  const columns = [
-    {
-      field: "id",
-      headerName: "ID",
-      valueGetter: (value, row) => {
-        return `${row.id}`;
+  const columns = useMemo(
+    () => [
+      {
+        field: "id",
+        headerName: "ID",
+        valueGetter: (value, row) => {
+          return `${row.PatientID}`;
+        },
+        flex: 1,
+      }, // Smaller flex for ID
+      {
+        field: "fullName",
+        headerName: "Full Name",
+        valueGetter: (value, row) => {
+          return `${row.FirstName || ""} ${row.LastName || ""}`;
+        },
+        flex: 1.5,
       },
-      flex: 1,
-    }, // Smaller flex for ID
-    {
-      field: "fullName",
-      headerName: "Full Name",
-      valueGetter: (value, row) => {
-        return `${row.firstName || ""} ${row.lastName || ""}`;
+      {
+        field: "BirthDay",
+        headerName: "Birthday",
+        valueGetter: (value) => format(value, "yyyy-MM-dd"),
+        flex: 1,
       },
-      flex: 1.5,
-    },
-    {
-      field: "birthday",
-      headerName: "Birthday",
-      valueGetter: (value) => format(new Date(value), "yyyy-MM-dd"),
-      flex: 1,
-    },
-    { field: "address", headerName: "Address", flex: 2 },
-    { field: "email", headerName: "Email", flex: 1.5 },
-    { field: "phoneNumber", headerName: "Phone Number", flex: 1 },
-    {
-      field: "sex",
-      headerName: "Sex",
-      valueGetter: (value) => {
-        return value === 1 ? "M" : "F";
+      { field: "Address", headerName: "Address", flex: 2 },
+      { field: "Email", headerName: "Email", flex: 1.5 },
+      { field: "PhoneNum", headerName: "Phone Number", flex: 1 },
+      {
+        field: "Sex",
+        headerName: "Sex",
+
+        flex: 0.5,
       },
-      flex: 0.5,
-    },
-    {
-      field: "actions",
-      headerName: "Actions",
-      flex: 1,
-      sortable: false,
-      renderCell: (params) => (
-        <>
-          <IconButton color="primary" onClick={() => handleModify(params.row.id)}>
-            <EditIcon />
-          </IconButton>
-          <IconButton
-            color="secondary"
-            onClick={() => handleDelete(params.row)}
-          >
-            <DeleteIcon />
-          </IconButton>
-          <IconButton
-            color="info"
-            onClick={() => handleDetails(params.row.id)}
-          >
-            <InfoIcon />
-          </IconButton>
-        </>
-      ),
-    },
-  ];
+      {
+        field: "actions",
+        headerName: "Actions",
+        flex: 1,
+        sortable: false,
+        renderCell: (params) => (
+          <>
+            <IconButton
+              color="primary"
+              onClick={() => handleModify(params.row.PatientID)}
+            >
+              <EditIcon />
+            </IconButton>
+            <IconButton
+              color="secondary"
+              onClick={() => handleDelete(params.row)}
+            >
+              <DeleteIcon />
+            </IconButton>
+            <IconButton
+              color="info"
+              onClick={() => handleDetails(params.row.PatientID)}
+            >
+              <InfoIcon />
+            </IconButton>
+          </>
+        ),
+      },
+    ],
+    []
+  );
 
   const handleDetails = (patientID) => {
     navigate(`/patients/${patientID}`);
   };
 
-  // useEffect(() => {
-  //   dispatch(fetchPatients());
-  // }, []);
+  useEffect(() => {
+    if (patients.length === 0) {
+      dispatch(fetchPatients());
+    }
+  }, [dispatch]);
 
   const handleOpen = () => {
     setOpen(true);
   };
 
   const handleModify = (prevData) => {
-    const selectedPatient = patients.filter(patient => patient.id == prevData)
-    setDataToEdit(selectedPatient)
-    setEditOpen(true)
-  }
+    const selectedPatient = patients.filter(
+      (patient) => patient.id == prevData
+    );
+    setDataToEdit(selectedPatient);
+    setEditOpen(true);
+  };
 
   function getRowId(row) {
-    return row.id;
+    return row.PatientID;
   }
 
   return (
@@ -128,24 +136,24 @@ const Patients = () => {
         </Button>
       </Box>
       <Box height={600}>
-        <DataGrid
-          rows={patients}
-          getRowId={getRowId}
-          slots={{ toolbar: GridToolbar }}
-          columns={columns}
-          autoPageSize
-          sx={{
-            width: "100%",
-            "@media (max-width: 600px)": {
-              "& .MuiDataGrid-root": {
-                fontSize: "0.8rem",
-              },
-            },
-          }}
-        />
+        {patients && (
+          <DataGrid
+            rows={patients}
+            getRowId={getRowId}
+            slots={{ toolbar: GridToolbar }}
+            columns={columns}
+            autoPageSize
+          />
+        )}
       </Box>
       {open && <AddNewModal open={open} setOpen={setOpen} />}
-      {editOpen && dataToEdit && <ModifyModal open={editOpen} setOpen={setEditOpen} prevData={dataToEdit} />}
+      {editOpen && dataToEdit && (
+        <ModifyModal
+          open={editOpen}
+          setOpen={setEditOpen}
+          prevData={dataToEdit}
+        />
+      )}
     </div>
   );
 };

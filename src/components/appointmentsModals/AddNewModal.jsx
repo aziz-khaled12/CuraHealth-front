@@ -16,24 +16,28 @@ import {
 } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 import { useDispatch, useSelector } from "react-redux";
-import { addAppointment } from "../../redux/appointmentsSlice";
-import { calculateAge } from "../../utils/TimeManipulationFunctions";
+import {
+  addAppointment,
+  createAppointment,
+  fetchAppointmentCategories,
+} from "../../redux/appointmentsSlice";
 
-const categories = [
-  { name: "Emergency" },
-  { name: "Normal" },
-  { name: "Family" },
-  { name: "Friend" },
-];
-
+import { fetchPatients } from "../../redux/patientsSlice";
 const AddNewModal = ({ open, setOpen, cellData }) => {
   const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
 
-  const fakePatients = useSelector((state) => state.patients.patients);
-  const [appointmentTitle, setAppointmentTitle] = useState("");
+  useEffect(() => {
+    dispatch(fetchAppointmentCategories());
+    dispatch(fetchPatients());
+  }, []);
+  const { categories } = useSelector((state) => state.appointments);
+  const { patients } = useSelector((state) => state.patients);
+
   const [startDate, setStartDate] = useState(
     cellData ? cellData.startDate : new Date()
   );
+  const [appointmentTitle, setAppointmentTitle] = useState("");
 
   const [endDate, setEndDate] = useState(() => {
     if (cellData && cellData.endDate) {
@@ -45,37 +49,56 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
   });
 
   const [selectedPatient, setSelectedPatient] = useState(null);
-  const [category, setCategory] = useState("Normal");
+  const [category, setCategory] = useState(categories[1]);
 
   const handleSubmitAppointment = () => {
-    if (appointmentTitle && startDate && endDate) {
-      const newAppointment = {
-        title: appointmentTitle,
-        patient: selectedPatient,
-        age: calculateAge(selectedPatient.birthday),
-        category: category,
-        createdAt: new Date().toLocaleString(),
-        modifiedAt: null,
-        status: "Scheduled",
-        startDate: startDate.toLocaleString(),
-        endDate: endDate.toLocaleString(),
-      };
-      console.log("appointment: ", newAppointment);
-      dispatch(addAppointment(newAppointment));
-      handleClose();
-    }
+    // if (appointmentTitle && startDate && endDate) {
+    //   const newAppointment = {
+    //     title: appointmentTitle,
+    //     patient: selectedPatient,
+    //     age: calculateAge(selectedPatient.BirthDay),
+    //     category: category,
+    //     createdAt: new Date().toLocaleString(),
+    //     modifiedAt: null,
+    //     status: "Scheduled",
+    //     startDate: startDate.toLocaleString(),
+    //     endDate: endDate.toLocaleString(),
+    //   };
+    //   console.log("appointment: ", newAppointment);
+    //   dispatch(addAppointment(newAppointment));
+    //   handleClose();
+    // }
+
+    const newAppointment = {
+      DoctorID: user.UserID,
+      PatientID: selectedPatient.PatientID,
+      ForTime: new Date(),
+      ApponmentCategoryID: category.ApponmentCategoryID,
+    };
+
+    dispatch(createAppointment(newAppointment));
+    handleClose();
   };
+
+  console.log("user: ", user);
 
   const handlePatientSelect = (event, value) => {
     if (value) {
       setSelectedPatient(value);
-      setAppointmentTitle(value.fullName);
+      setAppointmentTitle(`${value.FirstName} ${value.LastName}`);
     }
   };
 
-  const handleCategoryChange = (event) => {
-    setCategory(event.target.value);
+  const handleCategoryChange = (e) => {
+    const selectedCategory = categories.find(
+      (cat) => cat.ApponmentCategoryID === e.target.value
+    );
+    setCategory(selectedCategory);
   };
+
+  useEffect(() => {
+    console.log("category: ", category);
+  }, [category]);
 
   const handleClose = () => {
     setOpen(false);
@@ -110,8 +133,10 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
                 sx={{ margin: "0" }}
                 fullWidth
                 freeSolo
-                options={fakePatients}
-                getOptionLabel={(option) => option.fullName}
+                options={patients}
+                getOptionLabel={(option) =>
+                  `${option.FirstName} ${option.LastName}`
+                }
                 onChange={handlePatientSelect}
                 renderInput={(params) => (
                   <TextField
@@ -124,7 +149,7 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
                 renderOption={(props, option) => (
                   <>
                     <MenuItem {...props} key={option.id}>
-                      {option.fullName}
+                      {`${option.FirstName} ${option.LastName}`}
                     </MenuItem>
                   </>
                 )}
@@ -144,7 +169,7 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
                   }}
                   name="address"
                   placeholder="Address"
-                  value={selectedPatient ? selectedPatient.address : ""}
+                  value={selectedPatient ? selectedPatient.Address : ""}
                 />
               </div>
               <div className="flex flex-col items-start w-full">
@@ -159,7 +184,7 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
                   }}
                   name="id"
                   placeholder="Patient ID"
-                  value={selectedPatient ? selectedPatient.id : ""}
+                  value={selectedPatient ? selectedPatient.PatientID : ""}
                 />
               </div>
             </div>
@@ -177,7 +202,7 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
                   }}
                   name="email"
                   placeholder="Email"
-                  value={selectedPatient ? selectedPatient.email : ""}
+                  value={selectedPatient ? selectedPatient.Email : ""}
                 />
               </div>
               <div className="flex flex-col items-start w-full">
@@ -192,7 +217,7 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
                   }}
                   name="phoneNumber"
                   placeholder="Phone Number"
-                  value={selectedPatient ? selectedPatient.phoneNumber : ""}
+                  value={selectedPatient ? selectedPatient.PhoneNum : ""}
                 />
               </div>
               <div className="flex flex-col items-start w-full">
@@ -202,16 +227,17 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
                     className="w-full"
                     name="category"
                     hiddenLabel
-                    value={category}
+                    value={category?.ApponmentCategoryID || ""} // Ensure value matches the selected option
                     onChange={handleCategoryChange}
                   >
-                    {categories.map((category, index) => {
-                      return (
-                        <MenuItem value={category.name} key={index}>
-                          {category.name}
-                        </MenuItem>
-                      );
-                    })}
+                    {categories.map((category) => (
+                      <MenuItem
+                        value={category.ApponmentCategoryID} // Match value with category selection
+                        key={category.ApponmentCategoryID}
+                      >
+                        {category.NameCategory}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
               </div>
@@ -229,7 +255,7 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
                   placeholder="Sex"
                   value={
                     selectedPatient
-                      ? selectedPatient.sex == 0
+                      ? selectedPatient.Sex == "F"
                         ? "Female"
                         : "Male"
                       : ""

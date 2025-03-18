@@ -21,10 +21,10 @@ const Login = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    setFormData((prevData) => {
+      if (prevData[name] === value) return prevData;
+      return { ...prevData, [name]: value };
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -48,10 +48,10 @@ const Login = () => {
 
     if (isValid) {
       dispatch(login({ email: formData.email, password: formData.password }));
-
     }
   };
 
+  console.log("rendered");
 
   return (
     <>
@@ -77,6 +77,7 @@ const Login = () => {
               </div>
               <div className="w-full mb-4">
                 <TextField
+                  type="email"
                   error={Boolean(emailError)}
                   helperText={emailError}
                   className="w-full"
@@ -85,8 +86,10 @@ const Login = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
+                
                 />
               </div>
+
               <div className="w-full mb-4">
                 <TextField
                   error={Boolean(passwordError)}
@@ -100,7 +103,7 @@ const Login = () => {
                   onChange={handleChange}
                 />
               </div>
-              {error && error.length ? (
+              {error && error.length > 0 ? (
                 <Alert variant="outlined" severity="error" className="!mb-4">
                   {error}
                 </Alert>

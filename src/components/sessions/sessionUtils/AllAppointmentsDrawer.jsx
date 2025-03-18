@@ -27,7 +27,7 @@ const AllAppointmentsDrawer = ({ open, onClose, startSession }) => {
               <div className="w-full p-4 border border-solid border-lightText/80 rounded-md shadow-sm">
                 <div className="w-full mb-2">
                   <h1 className="text-lg font-medium">
-                    {appointment.patient.fullName}
+                    {`${appointment.first_name} ${appointment.last_name}`}
                   </h1>
                   <p className="text-sm text-lightText">
                     Priority: {appointment.category}
@@ -37,7 +37,7 @@ const AllAppointmentsDrawer = ({ open, onClose, startSession }) => {
                   </p>
                   <p className="text-sm text-lightText">
                     Wait Time:{" "}
-                    {calculateWaitingTime(appointment.createdAt).formatted}
+                    {calculateWaitingTime(appointment.created_at).formatted}
                   </p>
                 </div>
                 <Button

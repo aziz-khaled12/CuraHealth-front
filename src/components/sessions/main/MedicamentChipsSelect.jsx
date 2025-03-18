@@ -9,8 +9,9 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState } from "react";
 import { FaSearch } from "react-icons/fa";
+
 const MedicamentChipsSelect = ({
   data = [],
   title = "Medicaments",
@@ -19,43 +20,50 @@ const MedicamentChipsSelect = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selected, setSelected] = useState(false);
+  console.log(data)
 
   const handleToggle = (chip) => {
-    const updatedChips = selectedMedicaments.some((med) => med.name === chip.name)
-      ? selectedMedicaments.filter((item) => item.name !== chip.name)
-      : [...selectedMedicaments, chip];
-
-    console.log("updatedChips", updatedChips);
+    const updatedChips = selectedMedicaments.some(
+      (med) => med.DWAID === chip.DWAID
+    )
+      ? selectedMedicaments.filter((item) => item.DWAID !== chip.DWAID)
+      : [
+          ...selectedMedicaments,
+          {
+            ...chip,
+            instructions: chip.GeneralInstraction.Instraction || "",
+            quantity: chip.GeneralInstraction.Quantity || 1,
+            unit: chip.GeneralInstraction.Unite?.NameUnite || "pieces",
+            posologie: chip.GeneralInstraction.Pososition || "",
+            voie: chip.GeneralInstraction.LeVoie || "",
+          },
+        ];
 
     onMedicamentsChange(updatedChips);
   };
 
   const filteredData = data.filter((medicament) =>
-    medicament.name.toLowerCase().includes(searchQuery.toLowerCase())
+    medicament.NameDWA.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const selectedMedicamentsList = filteredData.filter((medicament) =>
-    selectedMedicaments.some((med) => med.name === medicament.name)
+    selectedMedicaments.some((med) => med.DWAID === medicament.DWAID)
   );
 
   const remainingMedicamentsList = filteredData.filter(
     (medicament) =>
-      !selectedMedicaments.some((med) => med.name === medicament.name)
+      !selectedMedicaments.some((med) => med.DWAID === medicament.DWAID)
   );
 
-  // Helper function to render chip label with name and dosage
+  // Helper function to render chip label with name and unit
   const renderChipLabel = (medicament) => {
-    return `${medicament.name} (${medicament.dosage})`;
+    return `${medicament.NameDWA}`;
   };
 
   return (
     <Box className="w-full bg-white border border-[#B4B4B4] p-4 rounded-lg">
-      <Stack
-        direction={"row"}
-        alignItems={"center"}
-        justifyContent={"space-between"}
-      >
-        <Stack direction={"row"} alignItems={"center"} gap={2}>
+      <Stack direction="row" alignItems="center" justifyContent="space-between">
+        <Stack direction="row" alignItems="center" gap={2}>
           <Typography
             variant="h6"
             sx={{ fontWeight: 500, cursor: "pointer" }}
@@ -96,15 +104,15 @@ const MedicamentChipsSelect = ({
       </Stack>
 
       <Stack
-        direction={"row"}
+        direction="row"
         gap={2}
-        flexWrap={"wrap"}
+        flexWrap="wrap"
         mt={selected || selectedMedicaments.length > 0 ? 1 : 0}
       >
         {!selected && selectedMedicaments.length > 0
           ? selectedMedicaments.map((medicament, index) => {
               return (
-                <React.Fragment key={index}>
+                <React.Fragment key={medicament.DWAID}>
                   <Typography variant="body2">
                     {renderChipLabel(medicament)}
                   </Typography>
@@ -122,11 +130,11 @@ const MedicamentChipsSelect = ({
       </Stack>
 
       {selected && (
-        <Stack direction={"row"} gap={1} flexWrap={"wrap"} mt={2}>
+        <Stack direction="row" gap={1} flexWrap="wrap" mt={2}>
           {/* Render selected medicaments first */}
-          {selectedMedicamentsList.map((medicament, index) => (
+          {selectedMedicamentsList.map((medicament) => (
             <Chip
-              key={index}
+              key={medicament.DWAID}
               label={renderChipLabel(medicament)}
               onClick={() => handleToggle(medicament)}
               onDelete={() => handleToggle(medicament)}
@@ -137,9 +145,9 @@ const MedicamentChipsSelect = ({
             />
           ))}
           {/* Render remaining medicaments */}
-          {remainingMedicamentsList.map((medicament, index) => (
+          {remainingMedicamentsList.map((medicament) => (
             <Chip
-              key={index}
+              key={medicament.DWAID}
               label={renderChipLabel(medicament)}
               onClick={() => handleToggle(medicament)}
               color="default"

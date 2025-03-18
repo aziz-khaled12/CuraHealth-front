@@ -1,51 +1,39 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
 
 let nextId = 1;
+const url = import.meta.env.VITE_BACK_END_URL;
+
+export const fetchVitals = createAsyncThunk(
+  "signs/fetchVitals",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await axios.get(`${url}/api/StatusType`);
+      const generalSigns = res.data.status;
+      console.log("general Signs", generalSigns);
+
+      // Transform the data back to the original format
+      const formattedSigns = generalSigns.map((sign) => ({
+        id: sign.StatusID,
+        name: sign.StatusName,
+        type: sign.StatusDataType,
+        placeholder: sign.Info?.placeholder || "",
+        unit: sign.Info?.unit || "",
+      }));
+
+      return formattedSigns;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.error || "Something went wrong"
+      );
+    }
+  }
+);
 
 export const signSlice = createSlice({
   name: "signs",
   initialState: {
-    generalSigns: [
-      {
-        name: "Blood Pressure",
-        placeholder: "10mm/Hg",
-        unit: "mm/Hg",
-        type: "text",
-      },
-      {
-        name: "Height",
-        placeholder: "170cm, 190cm...",
-        unit: "cm",
-        type: "number",
-      },
-      {
-        name: "Weight",
-        placeholder: "70kg, 80kg...",
-        unit: "kg",
-        type: "number",
-      },
-      {
-        name: "Temperature",
-        placeholder: "36.5°C",
-        unit: "°C",
-        type: "number",
-      },
-      {
-        name: "Pulse",
-        placeholder: "70bpm",
-        unit: "bpm",
-        type: "number",
-      },
-    ],
-    otherSigns: [
-      { name: "physicalSigns", placeholder: "Physical Signs" },
-      { name: "functionalSigns", placeholder: "Functional Signs" },
-    ],
-    generalInfo: [
-      { name: "diagnostic", placeholder: "Diagnostic" },
-      { name: "conduits", placeholder: "Conduits a tenir" },
-      { name: "consultationCause", placeholder: "Consultation Cause" },
-    ],
+    generalSigns: [],
     status: "idle",
     error: null,
   },
@@ -68,6 +56,21 @@ export const signSlice = createSlice({
       const id = action.payload;
       state.generalSigns = state.generalSigns.filter((sign) => sign.id !== id);
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchVitals.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        console.log(action.payload);
+        state.generalSigns = action.payload;
+      })
+      .addCase(fetchVitals.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchVitals.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      });
   },
 });
 

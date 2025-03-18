@@ -2,7 +2,7 @@ import { Button } from "@mui/material";
 import React, { useState } from "react";
 import { AiOutlineFileAdd } from "react-icons/ai";
 import { GrDocumentText } from "react-icons/gr";
-import ViewerModal from "../ViewerModal";
+import ViewerModal from "../../random/ViewerModal";
 
 const Documents = () => {
   const [open, setOpen] = useState(false);
@@ -34,7 +34,7 @@ const Documents = () => {
     setSelectedFile(null);
   };
   return (
-    <div className="w-[22%] min-h-[60vh] bg-white rounded-xl shadow-lg p-5">
+    <div className="flex-[2] bg-white rounded-xl shadow-md border border-[#B4B4B4] p-5">
       <div className="flex items-center justify-between mb-5">
         <div className="text-darkText font-semibold text-base">
           Files/Documents

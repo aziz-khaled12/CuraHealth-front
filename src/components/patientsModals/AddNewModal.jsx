@@ -36,8 +36,8 @@ const AddNewModal = ({ open, setOpen }) => {
   const { bloodTypes, etatsCivil } = useSelector((state) => state.userData);
 
   const genders = [
-    { id: 1, name: "Male" },
-    { id: 0, name: "Femal" },
+    { id: 'M', name: "Male" },
+    { id: 'F', name: "Femal" },
   ];
 
   useEffect(() => {
@@ -60,8 +60,8 @@ const AddNewModal = ({ open, setOpen }) => {
   const handleSubmit = () => {
     const dataToSubmit = {
       ...formData,
-      sex: formData.sex === 1 ? true : false,
     };
+    
     dispatch(addPatient({patientData: dataToSubmit}))
     handleClose()
   }

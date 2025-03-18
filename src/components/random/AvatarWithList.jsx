@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { logout } from "../redux/authSlice";
+import { logout } from "../../redux/authSlice";
 
 
 const AvatarWithList = ({ settings }) => {

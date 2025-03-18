@@ -1,71 +1,71 @@
-import { Close } from "@mui/icons-material";
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { updateSessionAttribute } from "../../../redux/sessionSlice";
 import {
-  Box,
-  Button,
   Chip,
-  Divider,
+  Box,
+  TextField,
   InputAdornment,
   Stack,
-  TextField,
   Typography,
+  Button,
+  Divider,
 } from "@mui/material";
-import React, { forwardRef, useImperativeHandle, useState } from "react";
+import { Close } from "@mui/icons-material";
 import { FaSearch } from "react-icons/fa";
 
-const ChipsSelect = forwardRef(({
-  name = "",
-  data = [],
-  title = "",
-  initialValue = [],
-}, ref) => {
+const ChipsSelect = ({ name = "", data = [], title = "", id }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selected, setSelected] = useState(false);
-  const [selectedChips, setSelectedChips] = useState(initialValue);
 
+  const dispatch = useDispatch();
 
-  // Expose methods to parent via ref
-  useImperativeHandle(ref, () => ({
-    getValue: () => selectedChips,
-    setValue: (value) => setSelectedChips(value),
-  }));
+  // Select the relevant category (e.g., diagnoses, medicaments) and find the session by ID
+  const categoryData = useSelector((state) => state.sessions[name]) || [];
+  const sessionData = categoryData.find((session) => session.sessionId === id);
+
+  const selectedChips = sessionData ? sessionData.data : [];
 
   const handleToggle = (chip) => {
-    const updatedChips = selectedChips.includes(chip)
-      ? selectedChips.filter((item) => item !== chip)
-      : [...selectedChips, chip];
+    const isSelected = selectedChips.some((item) => item.id === chip.id);
+    const updatedChips = isSelected
+      ? selectedChips.filter((item) => item.id !== chip.id) // Unselect
+      : [...selectedChips, chip]; // Select
 
-    setSelectedChips(updatedChips);
+    dispatch(
+      updateSessionAttribute({
+        sessionId: id,
+        category: name,
+        newData: updatedChips,
+      })
+    );
   };
 
   const filteredData = data.filter((chip) =>
-    chip.toLowerCase().includes(searchQuery.toLowerCase())
+    chip.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const selectedChipsList = filteredData.filter((chip) =>
-    selectedChips.includes(chip)
+    selectedChips.some((selected) => selected.id === chip.id)
   );
 
   const remainingChipsList = filteredData.filter(
-    (chip) => !selectedChips.includes(chip)
+    (chip) => !selectedChips.some((selected) => selected.id === chip.id)
   );
 
   return (
     <Box className="w-full bg-white border border-[#B4B4B4] p-4 rounded-lg">
-      <Stack
-        direction={"row"}
-        alignItems={"center"}
-        justifyContent={"space-between"}
-      >
-        <Stack direction={"row"} alignItems={"center"} gap={2}>
+      <Stack direction="row" alignItems="center" justifyContent="space-between">
+        <Stack direction="row" alignItems="center" gap={2}>
           <Typography
             variant="h6"
             sx={{ fontWeight: 500, cursor: "pointer" }}
-            onClick={() => setSelected((prevSelected) => !prevSelected)}
+            onClick={() => setSelected(!selected)}
           >
             {title}
           </Typography>
 
-          {selected ? (
+          {selected && (
             <TextField
               variant="outlined"
               placeholder="Search"
@@ -89,7 +89,7 @@ const ChipsSelect = forwardRef(({
                 ),
               }}
             />
-          ) : null}
+          )}
         </Stack>
         <Button variant="outlined" sx={{ textTransform: "none" }}>
           Modify
@@ -97,36 +97,33 @@ const ChipsSelect = forwardRef(({
       </Stack>
 
       <Stack
-        direction={"row"}
+        direction="row"
         gap={2}
-        flexWrap={"wrap"}
+        flexWrap="wrap"
         mt={selected || selectedChips.length > 0 ? 1 : 0}
       >
         {!selected && selectedChips.length > 0
-          ? selectedChips.map((chip, index) => {
-              return (
-                <React.Fragment key={index}>
-                  <Typography variant="body2">{chip}</Typography>
-                  {index < selectedChips.length - 1 && (
-                    <Divider
-                      sx={{ borderColor: "#000" }}
-                      flexItem
-                      orientation="vertical"
-                    />
-                  )}
-                </React.Fragment>
-              );
-            })
+          ? selectedChips.map((chip, index) => (
+              <React.Fragment key={chip.id}>
+                <Typography variant="body2">{chip.name}</Typography>
+                {index < selectedChips.length - 1 && (
+                  <Divider
+                    sx={{ borderColor: "#000" }}
+                    flexItem
+                    orientation="vertical"
+                  />
+                )}
+              </React.Fragment>
+            ))
           : null}
       </Stack>
 
       {selected && (
-        <Stack direction={"row"} gap={1} flexWrap={"wrap"} mt={2}>
-          {/* Render selected chips first */}
-          {selectedChipsList.map((chip, index) => (
+        <Stack direction="row" gap={1} flexWrap="wrap" mt={2}>
+          {selectedChipsList.map((chip) => (
             <Chip
-              key={index}
-              label={chip}
+              key={chip.id}
+              label={chip.name}
               onClick={() => handleToggle(chip)}
               onDelete={() => handleToggle(chip)}
               deleteIcon={<Close sx={{ width: "0.75em", height: "0.75em" }} />}
@@ -135,11 +132,10 @@ const ChipsSelect = forwardRef(({
               sx={{ cursor: "pointer", borderRadius: "8px" }}
             />
           ))}
-          {/* Render remaining chips */}
-          {remainingChipsList.map((chip, index) => (
+          {remainingChipsList.map((chip) => (
             <Chip
-              key={index}
-              label={chip}
+              key={chip.id}
+              label={chip.name}
               onClick={() => handleToggle(chip)}
               color="default"
               variant="outlined"
@@ -150,8 +146,6 @@ const ChipsSelect = forwardRef(({
       )}
     </Box>
   );
-});
-
-ChipsSelect.displayName = 'ChipsSelect';
+};
 
 export default ChipsSelect;

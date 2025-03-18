@@ -59,7 +59,7 @@ const Signup = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     let isValid = true;
@@ -101,7 +101,7 @@ const Signup = () => {
     }
 
     if (isValid) {
-      await dispatch(
+      dispatch(
         signup({
           Email: formData.email,
           Password: formData.password,
@@ -118,15 +118,10 @@ const Signup = () => {
     }
   }, [authStatus, isAuthenticated]);
 
+  console.log("rendered")
+
   return (
     <div className="w-full min-h-screen flex items-center justify-between">
-      <div className="w-[55%]">
-        <img
-          src={LoginBg}
-          alt="login background"
-          className="w-auto h-full max-h-screen"
-        />
-      </div>
       <div className="flex w-[45%] justify-center items-center flex-col">
         <form
           className="w-[460px] p-6 rounded-3xl"

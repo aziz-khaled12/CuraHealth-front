@@ -27,8 +27,9 @@ const Calendar = () => {
   const appointments = useSelector((state) =>
     state.appointments.appointments.map((appointment) => ({
       ...appointment,
-      startDate: new Date(appointment.startDate),
-      endDate: new Date(appointment.endDate),
+      title: `${appointment.first_name} ${appointment.last_name}`,
+      startDate: new Date(appointment.created_at),
+      endDate: new Date(appointment.created_at).setMinutes(new Date(appointment.created_at).getMinutes() + 30),
     }))
   );
 
@@ -134,7 +135,7 @@ const Calendar = () => {
 
   return (
     <React.Fragment>
-      <Paper sx={{ height: "100vh" }}>
+      <Paper sx={{ height: "100%" }}>
         <Scheduler data={appointments} height={"auto"}>
           <ViewState />
           <EditingState onCommitChanges={onCommitChanges} />

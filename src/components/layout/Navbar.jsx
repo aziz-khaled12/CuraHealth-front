@@ -8,7 +8,7 @@ import {
   Select,
 } from "@mui/material";
 import { CiSearch } from "react-icons/ci";
-import AvatarWithList from "../AvatarWithList";
+import AvatarWithList from "../random/AvatarWithList";
 
 
 const Navbar = () => {
