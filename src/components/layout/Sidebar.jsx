@@ -31,6 +31,7 @@ const Sidebar = () => {
   useEffect(() => {
     const matchedTab = filteredMenuItems.find((tab) => location.pathname.startsWith(`/${tab.link}`));
     if (matchedTab) setSelected(matchedTab.id);
+    else setSelected(null);
   }, [location.pathname, filteredMenuItems]);
 
   return (

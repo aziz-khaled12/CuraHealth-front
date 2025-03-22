@@ -22,6 +22,7 @@ import { fetchVitals } from "./redux/signsSlice";
 import Navbar from "./components/layout/Navbar";
 import Sidebar from "./components/layout/Sidebar";
 import Unauthorized from "./components/layout/Unauthorized";
+import Profile from "./components/profile/profile";
 
 const DashboardLayout = () => {
   const location = useLocation();
@@ -99,6 +100,7 @@ function App() {
               <Route path="rapports" element={<Rapports />} />
               <Route path="office" element={<Office />} />
               <Route path="office/sessions" element={<SessionsPage />} />
+              <Route path="profile" element={<Profile />} />
             </Route>
           </Route>
               <Route path="unauthorized" element={<Unauthorized />} />
