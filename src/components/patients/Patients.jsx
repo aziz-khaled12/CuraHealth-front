@@ -12,6 +12,7 @@ import { fetchPatients } from "../../redux/patientsSlice";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import ModifyModal from "../patientsModals/ModifyModal";
+import useHasPermission from "../../hooks/useHasPermission";
 
 const Patients = () => {
   const navigate = useNavigate();
@@ -20,6 +21,11 @@ const Patients = () => {
   const [editOpen, setEditOpen] = useState(false);
   const { patients } = useSelector((state) => state.patients);
   const [dataToEdit, setDataToEdit] = useState();
+
+  const canAddPatient = useHasPermission("add Patient");
+  const canModifyPatient = useHasPermission("modify Patient details");
+  const canRemovePatient = useHasPermission("remove Patient");
+  const canSeePatientDetails = useHasPermission("see Patient details");
 
   const columns = useMemo(
     () => [
@@ -61,24 +67,32 @@ const Patients = () => {
         sortable: false,
         renderCell: (params) => (
           <>
-            <IconButton
-              color="primary"
-              onClick={() => handleModify(params.row.PatientID)}
-            >
-              <EditIcon />
-            </IconButton>
-            <IconButton
-              color="secondary"
-              onClick={() => handleDelete(params.row)}
-            >
-              <DeleteIcon />
-            </IconButton>
-            <IconButton
-              color="info"
-              onClick={() => handleDetails(params.row.PatientID)}
-            >
-              <InfoIcon />
-            </IconButton>
+            {canModifyPatient && (
+              <IconButton
+                color="primary"
+                onClick={() => handleModify(params.row.PatientID)}
+              >
+                <EditIcon />
+              </IconButton>
+            )}
+
+            {canRemovePatient && (
+              <IconButton
+                color="secondary"
+                onClick={() => handleDelete(params.row)}
+              >
+                <DeleteIcon />
+              </IconButton>
+            )}
+
+            {canSeePatientDetails && (
+              <IconButton
+                color="info"
+                onClick={() => handleDetails(params.row.PatientID)}
+              >
+                <InfoIcon />
+              </IconButton>
+            )}
           </>
         ),
       },
@@ -124,16 +138,17 @@ const Patients = () => {
         }}
       >
         <Header title={"Patients"} subTitle={"Add, edit or delete patients"} />
-
-        <Button
-          startIcon={<MdAdd />}
-          onClick={handleOpen}
-          variant="contained"
-          sx={{ textTransform: "none" }}
-          className="!bg-primary"
-        >
-          New Patient
-        </Button>
+        {canAddPatient && (
+          <Button
+            startIcon={<MdAdd />}
+            onClick={handleOpen}
+            variant="contained"
+            sx={{ textTransform: "none" }}
+            className="!bg-primary"
+          >
+            New Patient
+          </Button>
+        )}
       </Box>
       <Box height={600}>
         {patients && (
@@ -146,8 +161,8 @@ const Patients = () => {
           />
         )}
       </Box>
-      {open && <AddNewModal open={open} setOpen={setOpen} />}
-      {editOpen && dataToEdit && (
+      {open && canAddPatient && <AddNewModal open={open} setOpen={setOpen} />}
+      {canModifyPatient && editOpen && dataToEdit && (
         <ModifyModal
           open={editOpen}
           setOpen={setEditOpen}

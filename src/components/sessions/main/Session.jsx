@@ -14,10 +14,13 @@ import {
   endAppointment,
   submitAppointmentData,
 } from "../../../redux/appointmentsSlice";
+import useHasPermission from "../../../hooks/useHasPermission";
 
 export default function Session({ sessionId }) {
   const dispatch = useDispatch();
   const { services } = useSelector((state) => state.services);
+  const canCancel = useHasPermission("cancel Appointments");
+  const canEnd = useHasPermission("end Appointments");
 
   const session = useSelector(
     (state) =>
@@ -67,8 +70,8 @@ export default function Session({ sessionId }) {
 
   const closeVisit = () => {
     dispatch(endAppointment(appointmentId));
-    dispatch(submitAppointmentData({appointmentId, sessionId}))
-    dispatch(deleteSession(sessionId)); 
+    dispatch(submitAppointmentData({ appointmentId, sessionId }));
+    dispatch(deleteSession(sessionId));
   };
 
   const cancelVisit = () => {
@@ -77,12 +80,12 @@ export default function Session({ sessionId }) {
   };
 
   const tabs = [
-    {
+    canEnd && {
       icon: <FaCheckCircle className="text-primary text-base" />,
       title: "Close Visit",
       click: closeVisit,
     },
-    {
+    canCancel && {
       icon: <FaCircleXmark className="text-primary text-base" />,
       title: "Cancel Visit",
       click: cancelVisit,

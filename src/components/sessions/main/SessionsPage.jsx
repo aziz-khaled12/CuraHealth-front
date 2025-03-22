@@ -12,12 +12,14 @@ import {
   startAppointment,
   updateAppointment,
 } from "../../../redux/appointmentsSlice";
+import useHasPermission from "../../../hooks/useHasPermission";
 
 const SessionsPage = () => {
   const [value, setValue] = useState(0);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
 
   const sessions = useSelector((state) => state.sessions.sessions);
   console.log("sessions: ", sessions);

@@ -21,13 +21,13 @@ import SessionsPage from "./components/sessions/main/SessionsPage";
 import { fetchVitals } from "./redux/signsSlice";
 import Navbar from "./components/layout/Navbar";
 import Sidebar from "./components/layout/Sidebar";
+import Unauthorized from "./components/layout/Unauthorized";
 
-// Create a Dashboard Layout that uses Outlet
 const DashboardLayout = () => {
   const location = useLocation();
   const isCalendarPage = location.pathname === "/calendar";
   const isSessionsPage = location.pathname === "/office/sessions";
-  
+
   return (
     <div className="flex flex-col h-screen w-full">
       <div className="w-full">
@@ -56,8 +56,8 @@ function App() {
   const customTheme = createTheme({
     palette: {
       primary: {
-        main: "#0D3B66", // Your custom primary color
-        contrastText: "#FFFFFF", // Text color on primary background
+        main: "#0D3B66",
+        contrastText: "#FFFFFF",
       },
     },
   });
@@ -88,10 +88,7 @@ function App() {
           {/* Protected routes with shared layout */}
           <Route element={<PortectedRoutes />}>
             <Route element={<DashboardLayout />}>
-              {/* Dashboard as index route */}
               <Route index element={<Dashboard />} />
-              
-              {/* All other protected routes */}
               <Route path="calendar" element={<Calendar />} />
               <Route path="patients" element={<Patients />} />
               <Route path="patients/:id" element={<PatientDetails />} />
@@ -104,6 +101,7 @@ function App() {
               <Route path="office/sessions" element={<SessionsPage />} />
             </Route>
           </Route>
+              <Route path="unauthorized" element={<Unauthorized />} />
         </Routes>
       </ThemeProvider>
     </div>

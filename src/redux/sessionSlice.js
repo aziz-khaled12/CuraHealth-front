@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   sessions: [],
   vitals: [],
+  services: [],
   diagnoses: [],
   medicaments: [],
   physicalSigns: [],
@@ -22,6 +23,7 @@ const sessionSlice = createSlice({
       // Initialize each category with an empty data array for the new session
       state.sessions.push(sessionData);
       state.vitals.push({ sessionId, data: [] });
+      state.services.push({ sessionId, data: [] });
       state.diagnoses.push({ sessionId, data: [] });
       state.medicaments.push({ sessionId, data: [] });
       state.physicalSigns.push({ sessionId, data: [] });

@@ -3,6 +3,7 @@ import MedicalHistoryCard from "./MedicalHistoryCard";
 import MedicalHistoryModal from "./MedicalHistoryModal";
 import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import useHasPermission from "../../hooks/useHasPermission";
 
 const MedicalHistory = ({ patient }) => {
   const [selectedSession, setSelectedSession] = useState(null);
@@ -30,20 +31,23 @@ const MedicalHistory = ({ patient }) => {
     files: [],
   };
 
-  console.log("patient", patient);
+  const canSeeAllRecords = useHasPermission("see All Patient Records");
   return (
     <>
       <div className="w-full flex items-center justify-between">
         <h2 className="text-2xl font-semibold text-darkText">
           Medical History
         </h2>
-        <Button
-          variant="outlined"
-          sx={{ textTransform: "none" }}
-          onClick={() => navigate(`/patients/${patient.PatientID}/records`)}
-        >
-          See All Records
-        </Button>
+        {canSeeAllRecords && (
+           <Button
+           variant="outlined"
+           sx={{ textTransform: "none" }}
+           onClick={() => navigate(`/patients/${patient.PatientID}/records`)}
+         >
+           See All Records
+         </Button>
+        )}
+       
       </div>
       <div className="w-full mt-4">
 

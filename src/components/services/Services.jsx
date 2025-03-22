@@ -5,15 +5,16 @@ import Header from "../random/Header";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { MdAdd } from "react-icons/md";
 import { useSelector } from "react-redux";
+import useHasPermission from "../../hooks/useHasPermission";
 
 const Services = () => {
   const [open, setOpen] = useState(false);
 
   const { services } = useSelector((state) => state.services);
 
-  useEffect(() => {
-    console.log(services);
-  }, [services]);
+  const canAdd = useHasPermission("add Service");
+  const canModify = useHasPermission("modify Service");
+  const canDelete = useHasPermission("delete Service");
 
   const columns = [
     {
@@ -51,16 +52,17 @@ const Services = () => {
           title={"Services"}
           subTitle={"Manage your Services and Prices"}
         />
-
-        <Button
-          startIcon={<MdAdd />}
-          onClick={handleOpen}
-          variant="contained"
-          sx={{ textTransform: "none" }}
-          className="!bg-primary"
-        >
-          New Service
-        </Button>
+        {canAdd && (
+          <Button
+            startIcon={<MdAdd />}
+            onClick={handleOpen}
+            variant="contained"
+            sx={{ textTransform: "none" }}
+            className="!bg-primary"
+          >
+            New Service
+          </Button>
+        )}
       </Box>
 
       <Box sx={{ height: "69vh" }}>

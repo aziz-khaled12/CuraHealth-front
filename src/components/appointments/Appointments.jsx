@@ -8,15 +8,19 @@ import Header from "../random/Header";
 import { useDispatch, useSelector } from "react-redux";
 import { format, parseISO } from "date-fns";
 import { fetchAppointments } from "../../redux/appointmentsSlice";
+import useHasPermission from "../../hooks/useHasPermission";
 
 const Appointments = () => {
   const [open, setOpen] = useState(false);
   const dispatch = useDispatch();
   const { appointments } = useSelector((state) => state.appointments);
-
+  const canSeeTodayAppointments = useHasPermission(
+    "see today Appointment list"
+  );
+  const canAddAppointments = useHasPermission("add new Appointment");
   useEffect(() => {
     if (appointments.length === 0) {
-      dispatch(fetchAppointments());
+      dispatch(fetchAppointments({ today: canSeeTodayAppointments }));
     }
   }, [dispatch]);
 
@@ -98,16 +102,17 @@ const Appointments = () => {
               title={"Appointments"}
               subTitle={"Manage your appointments"}
             />
-
-            <Button
-              startIcon={<MdAdd />}
-              onClick={handleOpen}
-              variant="contained"
-              sx={{ textTransform: "none" }}
-              className="!bg-primary"
-            >
-              New Appointment
-            </Button>
+            {canAddAppointments && (
+              <Button
+                startIcon={<MdAdd />}
+                onClick={handleOpen}
+                variant="contained"
+                sx={{ textTransform: "none" }}
+                className="!bg-primary"
+              >
+                New Appointment
+              </Button>
+            )}
           </Box>
 
           <Box sx={{ height: "69vh" }}>
@@ -118,7 +123,6 @@ const Appointments = () => {
                 columns={columns}
                 autoPageSize
                 getRowId={(row) => row.appointmnt_id}
-                
               />
             )}
           </Box>

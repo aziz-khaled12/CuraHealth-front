@@ -2,10 +2,12 @@ import React from "react";
 import { Paper, Chip, Button } from "@mui/material";
 import { CalendarToday, AccessTime, Medication, Description, Assignment } from "@mui/icons-material";
 import { format } from "date-fns";
+import useHasPermission from "../../hooks/useHasPermission";
 
 const MedicalHistoryCard = ({ session, onSelectSession }) => {
   const startTime = format(session.startedAt, "hh:mm a");
   const startDate = format(session.startedAt, "dd/MM/yyyy");
+  const canSeeDetails = useHasPermission("see recent Patient Records details");
   
   return (
     <>
@@ -100,11 +102,16 @@ const MedicalHistoryCard = ({ session, onSelectSession }) => {
             <p className="text-sm">{session.services.join(", ")}</p>
           </div>
         </div>
-        <div className="bg-blue-50 p-2 flex justify-end">
-          <Button size="small" color="primary" onClick={() => onSelectSession(session)} startIcon={<Description />}>
-            View Full session
-          </Button>
-        </div>
+        {
+          canSeeDetails && (
+            <div className="bg-blue-50 p-2 flex justify-end">
+              <Button size="small" color="primary" onClick={() => onSelectSession(session)} startIcon={<Description />}>
+                View Full session
+              </Button>
+            </div>
+          )
+        }
+        
       </Paper>
     </>
   );

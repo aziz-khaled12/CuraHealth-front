@@ -18,6 +18,9 @@ const PatientDetails = ({ appointment }) => {
     state.patients.patients.find((p) => p.PatientID === appointment.patient_id)
   );
 
+  const canStartAppointment = useHasPermission("start Appointments");
+  const canSeeRecords = useHasPermission("see All Patient Records");
+
   const formattedDate = format(patient.BirthDay, "d MMMM yyyy");
 
   const handleStartSession = async (appointment) => {
@@ -148,20 +151,27 @@ const PatientDetails = ({ appointment }) => {
       </div>
 
       <div className="flex items-center gap-3">
-        <Button
-          variant="contained"
-          startIcon={<FaFileMedical />}
-          sx={{ textTransform: "none", borderRadius: "8px", px: 3 }}
-        >
-          Medical History
-        </Button>
-        <Button
-          variant="outlined"
-          sx={{ textTransform: "none", borderRadius: "8px", px: 3 }}
-          onClick={() => handleStartSession(appointment)}
-        >
-          Start Appointment
-        </Button>
+        {canSeeRecords && (
+          <Button
+            All
+            Patient
+            Records
+            variant="contained"
+            startIcon={<FaFileMedical />}
+            sx={{ textTransform: "none", borderRadius: "8px", px: 3 }}
+          >
+            Medical History
+          </Button>
+        )}
+        {canStartAppointment && (
+          <Button
+            variant="outlined"
+            sx={{ textTransform: "none", borderRadius: "8px", px: 3 }}
+            onClick={() => handleStartSession(appointment)}
+          >
+            Start Appointment
+          </Button>
+        )}
       </div>
     </>
   );

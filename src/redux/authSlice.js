@@ -4,6 +4,58 @@ import { jwtDecode } from "jwt-decode"; // Corrected import, it's a default expo
 
 const url = import.meta.env.VITE_BACK_END_URL;
 
+// Define permissions for each role
+const PERMISSIONS = {
+  Doctor: [
+    "see Patients list",
+    "see Patient details",
+    "see recent Patient Records",
+    "see All Patient Records",
+    "see recent Patient Records details",
+    "see all patient records details",
+    "download Patient records",
+    "see All Appointment list",
+    "see today Appointment list",
+    "add new Appointment",
+    "modify Appointments",
+    "cancel Appointments",
+    "start Appointments",
+    "end Appointments",
+    "see Rapports",
+    "see Office",
+  ],
+  nurse: [
+    "see Patients list",
+    "see Patient details",
+    "see recent Patient Records",
+    "see recent Patient Records details",
+    "see today Appointment list",
+    "see Rapports",
+  ],
+  admin: [
+    "see Patients list",
+    "add Patient",
+    "modify Patient details",
+    "remove Patient",
+    "see Patient details",
+    "see All Patient Records",
+    "download Patient records",
+    "see All Appointment list",
+    "add new Appointment",
+    "modify Appointments",
+    "delete Appointments",
+    "cancel Appointments",
+    "start Appointments",
+    "end Appointments",
+    "see Rapports",
+    "see Services",
+    "add Service",
+    "delete Service",
+    "modify Service",
+    "see Calender",
+  ],
+};
+
 // Utility function to check if the token is expired
 export function isTokenExpired(token) {
   if (!token) return true;
@@ -22,7 +74,10 @@ export const login = createAsyncThunk(
       const res = await axios.post(`${url}/api/login`, { email, password });
       const token = res.data.token;
       const decodedToken = jwtDecode(token);
-      const user = decodedToken.User;
+      let user = decodedToken.User;
+
+      // Assign permissions based on role
+      user.permissions = PERMISSIONS[user.TypeName] || [];
 
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
@@ -50,7 +105,10 @@ export const signup = createAsyncThunk(
       });
       const token = res.data.token;
       const decodedToken = jwtDecode(token);
-      const user = decodedToken.User;
+      let user = decodedToken.User;
+
+      // Assign permissions based on role
+      user.permissions = PERMISSIONS[user.TypeName] || [];
 
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
@@ -126,5 +184,4 @@ const authSlice = createSlice({
 });
 
 export const { logout, autoLogout } = authSlice.actions;
-
 export default authSlice.reducer;

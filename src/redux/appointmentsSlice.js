@@ -149,9 +149,10 @@ export const submitAppointmentData = createAsyncThunk(
 
 export const fetchAppointments = createAsyncThunk(
   "appointments/fetchAppointments",
-  async (_, { rejectWithValue }) => {
+  async (today=false, { rejectWithValue }) => {
     try {
-      const res = await axios.get(`${url}/api/All/Apponment`);
+      const fetchString = today ? `${url}/api/ThisDayApponment` : `${url}/api/All/Apponment`;
+      const res = await axios.get(fetchString);
       console.log("res: ", res);
       const appointments = res.data.appointments;
       return appointments;
@@ -160,6 +161,7 @@ export const fetchAppointments = createAsyncThunk(
     }
   }
 );
+
 
 export const appointmentsSlice = createSlice({
   name: "appointments",
