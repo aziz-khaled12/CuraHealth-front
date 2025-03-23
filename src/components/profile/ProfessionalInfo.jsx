@@ -5,7 +5,7 @@ import CardContainer from "./CardContainer";
 import FormField from "./FormField";
 import { Stack } from "@mui/material";
 
-const ProfessionalInfo = ({ doctorData, isEditing, handleChange }) => {
+const ProfessionalInfo = ({ doctorData, handleChange }) => {
   return (
     <CardContainer title="Professional Information" icon={BuildingIcon}>
       <Stack spacing={3}>
@@ -13,7 +13,6 @@ const ProfessionalInfo = ({ doctorData, isEditing, handleChange }) => {
           id="specialization"
           label="Specialization"
           value={doctorData.specialization}
-          isEditing={isEditing}
           onChange={handleChange}
         />
 
@@ -21,7 +20,6 @@ const ProfessionalInfo = ({ doctorData, isEditing, handleChange }) => {
           id="licenseNumber"
           label="License Number"
           value={doctorData.licenseNumber}
-          isEditing={isEditing}
           onChange={handleChange}
         />
 
@@ -29,7 +27,6 @@ const ProfessionalInfo = ({ doctorData, isEditing, handleChange }) => {
           id="hospital"
           label="Hospital/Clinic"
           value={doctorData.hospital}
-          isEditing={isEditing}
           onChange={handleChange}
         />
 
@@ -37,7 +34,6 @@ const ProfessionalInfo = ({ doctorData, isEditing, handleChange }) => {
           id="experience"
           label="Experience"
           value={doctorData.experience}
-          isEditing={isEditing}
           onChange={handleChange}
         />
       </Stack>

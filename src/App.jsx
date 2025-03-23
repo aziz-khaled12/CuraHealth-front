@@ -23,6 +23,7 @@ import Navbar from "./components/layout/Navbar";
 import Sidebar from "./components/layout/Sidebar";
 import Unauthorized from "./components/layout/Unauthorized";
 import Profile from "./components/profile/profile";
+import UsersManagement from "./components/user-management/UsersManagement";
 
 const DashboardLayout = () => {
   const location = useLocation();
@@ -85,7 +86,7 @@ function App() {
           {/* Public routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          
+
           {/* Protected routes with shared layout */}
           <Route element={<PortectedRoutes />}>
             <Route element={<DashboardLayout />}>
@@ -101,9 +102,10 @@ function App() {
               <Route path="office" element={<Office />} />
               <Route path="office/sessions" element={<SessionsPage />} />
               <Route path="profile" element={<Profile />} />
+              <Route path="users-management" element={<UsersManagement />} />
             </Route>
           </Route>
-              <Route path="unauthorized" element={<Unauthorized />} />
+          <Route path="unauthorized" element={<Unauthorized />} />
         </Routes>
       </ThemeProvider>
     </div>

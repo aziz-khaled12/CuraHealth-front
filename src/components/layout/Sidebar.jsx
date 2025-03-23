@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Tooltip } from "@mui/material";
-import { MdPersonalInjury, MdCalendarMonth, MdMedicalServices, MdAssignment } from "react-icons/md";
+import { MdCalendarMonth, MdMedicalServices, MdAssignment } from "react-icons/md";
 import { BiSolidDashboard } from "react-icons/bi";
 import { PiStethoscopeBold } from "react-icons/pi";
 import { FaUserInjured } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { FaUser } from "react-icons/fa6";
 
 const Sidebar = () => {
   const location = useLocation();
@@ -21,6 +22,7 @@ const Sidebar = () => {
     { id: 4, label: "Services", icon: <MdMedicalServices size={22} />, link: "services", permission: "see Services" },
     { id: 5, label: "Calendar", icon: <MdCalendarMonth size={22} />, link: "calendar", permission: "see Calender" },
     { id: 6, label: "Office", icon: <PiStethoscopeBold size={22} />, link: "office", permission: "see Office" },
+    { id: 7, label: "Users", icon: <FaUser size={22} />, link: "users-management", permission: "see Users" },
   ];
 
   // Filter menu items based on user permissions

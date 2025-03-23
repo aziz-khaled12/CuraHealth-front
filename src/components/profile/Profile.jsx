@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import { Box, Paper } from "@mui/material";
 import ProfileHeader from "./ProfileHeader";
-import ProfileTabs from "./ProfileTabs";
 import ProfileContent from "./ProfileContent";
 import ProfileFooter from "./ProfileFooter";
 
@@ -57,10 +56,10 @@ function Profile() {
   };
 
   return (
-    <Box sx={{ mb: 4 }}>
+    <Box >
       <Paper sx={{ 
         overflow: "hidden", 
-        border: 1, 
+        boxShadow: 4
       }}>
         
         <ProfileHeader 
@@ -72,7 +71,6 @@ function Profile() {
         />
 
         <Box sx={{ px: 3 }}>
-          <ProfileTabs activeTab={activeTab} setActiveTab={setActiveTab} />
           
           <ProfileContent 
             activeTab={activeTab}

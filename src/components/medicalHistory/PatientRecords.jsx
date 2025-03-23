@@ -1,19 +1,7 @@
-import {
-  Divider,
-  FormControl,
-  Grid2,
-  IconButton,
-  InputAdornment,
-  Menu,
-  MenuItem,
-  Select,
-  TextField,
-} from "@mui/material";
+import { Grid2, IconButton, Menu, MenuItem } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { FaSearch, FaSortNumericDown, FaTable } from "react-icons/fa";
 import "./records.css";
-import { IoDocumentTextOutline } from "react-icons/io5";
 import { DataGrid } from "@mui/x-data-grid";
 import { format } from "date-fns";
 import { useDispatch, useSelector } from "react-redux";

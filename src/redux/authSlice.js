@@ -23,6 +23,7 @@ const PERMISSIONS = {
     "end Appointments",
     "see Rapports",
     "see Office",
+    "see Users"
   ],
   nurse: [
     "see Patients list",
@@ -53,6 +54,8 @@ const PERMISSIONS = {
     "delete Service",
     "modify Service",
     "see Calender",
+    "see Office",
+    "see Users"
   ],
 };
 
