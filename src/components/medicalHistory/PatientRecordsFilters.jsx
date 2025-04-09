@@ -74,7 +74,7 @@ const PatientRecordsFilters = ({
         <div>
           <Typography
             variant="h6"
-            className="text-blue-700 font-semibold flex items-center"
+            className="text-primary font-semibold flex items-center"
           >
             <MdFilterAlt className="mr-2" />
             Filters
@@ -89,7 +89,7 @@ const PatientRecordsFilters = ({
             label={`${activeFiltersCount} active`}
             color="primary"
             size="small"
-            className="bg-blue-50 text-blue-700"
+            className="bg-blue-50 text-primary"
           />
         )}
       </div>
@@ -110,7 +110,7 @@ const PatientRecordsFilters = ({
             className="bg-gray-50 rounded-md hover:bg-gray-100 transition-colors"
             InputProps={{
               startAdornment: (
-                <MdCalendarMonth className="mr-2 text-blue-500" />
+                <MdCalendarMonth className="mr-2 !text-2xl text-primary" />
               ),
             }}
           />
@@ -238,7 +238,7 @@ const PatientRecordsFilters = ({
           color="primary"
           onClick={handleApply}
           startIcon={<MdFilterAlt />}
-          className="bg-blue-600 hover:bg-blue-700 transition-colors shadow-md"
+          className="bg-primary hover:bg-primary/95 transition-colors shadow-md"
         >
           Apply Filters
         </Button>

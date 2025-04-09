@@ -20,10 +20,10 @@ const PatientDetails = () => {
     patient && (
       <>
         <div>
-          <Header
+          {/* <Header
             title={"Patients"}
             subTitle={`${patient.FirstName} ${patient.LastName}`}
-          />
+          /> */}
           <div className="flex w-full gap-4">
             <PatientInfo patient={patient} />
             <Documents></Documents>

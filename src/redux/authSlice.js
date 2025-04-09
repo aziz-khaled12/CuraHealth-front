@@ -7,6 +7,7 @@ const url = import.meta.env.VITE_BACK_END_URL;
 // Define permissions for each role
 const PERMISSIONS = {
   Doctor: [
+    "add Patient",
     "see Patients list",
     "see Patient details",
     "see recent Patient Records",
@@ -26,6 +27,7 @@ const PERMISSIONS = {
     "see Users"
   ],
   nurse: [
+    "add Patient",
     "see Patients list",
     "see Patient details",
     "see recent Patient Records",

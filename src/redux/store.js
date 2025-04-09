@@ -8,6 +8,7 @@ import tasksReducer from "./tasksSlice.js";
 import signsReducer from "./signsSlice.js";
 import sessionReducer from "./sessionSlice.js";
 import appointmentsDataReducer from "./appointmentDataSlice.js";
+import usersReducer from "./usersSlice.js";
 
 const store = configureStore({
   reducer: {
@@ -20,8 +21,8 @@ const store = configureStore({
     tasks: tasksReducer,
     signs: signsReducer,
     sessions: sessionReducer,
+    users: usersReducer,
   },
 });
 
 export default store;
-

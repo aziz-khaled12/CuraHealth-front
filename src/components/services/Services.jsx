@@ -48,10 +48,10 @@ const Services = () => {
           marginBottom: "16px",
         }}
       >
-        <Header
+        {/* <Header
           title={"Services"}
           subTitle={"Manage your Services and Prices"}
-        />
+        /> */}
         {canAdd && (
           <Button
             startIcon={<MdAdd />}

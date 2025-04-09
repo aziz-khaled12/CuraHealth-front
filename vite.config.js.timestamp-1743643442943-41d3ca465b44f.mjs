@@ -1,0 +1,36 @@
+// vite.config.js
+import { defineConfig } from "file:///E:/Code/CuraHealth/node_modules/vite/dist/node/index.js";
+import react from "file:///E:/Code/CuraHealth/node_modules/@vitejs/plugin-react/dist/index.mjs";
+import tailwindcss from "file:///E:/Code/CuraHealth/node_modules/tailwindcss/lib/index.js";
+import autoprefixer from "file:///E:/Code/CuraHealth/node_modules/autoprefixer/lib/autoprefixer.js";
+var vite_config_default = defineConfig({
+  plugins: [react()],
+  // prevent vite from obscuring rust errors
+  clearScreen: false,
+  // Tauri expects a fixed port, fail if that port is not available
+  server: {
+    strictPort: true
+  },
+  // to access the Tauri environment variables set by the CLI with information about the current target
+  envPrefix: ["VITE_", "TAURI_PLATFORM", "TAURI_ARCH", "TAURI_FAMILY", "TAURI_PLATFORM_VERSION", "TAURI_PLATFORM_TYPE", "TAURI_DEBUG"],
+  build: {
+    // Tauri uses Chromium on Windows and WebKit on macOS and Linux
+    target: process.env.TAURI_PLATFORM == "windows" ? "chrome105" : "safari13",
+    // don't minify for debug builds
+    minify: !process.env.TAURI_DEBUG ? "esbuild" : false,
+    // produce sourcemaps for debug builds
+    sourcemap: !!process.env.TAURI_DEBUG
+  },
+  css: {
+    postcss: {
+      plugins: [
+        tailwindcss(),
+        autoprefixer()
+      ]
+    }
+  }
+});
+export {
+  vite_config_default as default
+};
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsidml0ZS5jb25maWcuanMiXSwKICAic291cmNlc0NvbnRlbnQiOiBbImNvbnN0IF9fdml0ZV9pbmplY3RlZF9vcmlnaW5hbF9kaXJuYW1lID0gXCJFOlxcXFxDb2RlXFxcXEN1cmFIZWFsdGhcIjtjb25zdCBfX3ZpdGVfaW5qZWN0ZWRfb3JpZ2luYWxfZmlsZW5hbWUgPSBcIkU6XFxcXENvZGVcXFxcQ3VyYUhlYWx0aFxcXFx2aXRlLmNvbmZpZy5qc1wiO2NvbnN0IF9fdml0ZV9pbmplY3RlZF9vcmlnaW5hbF9pbXBvcnRfbWV0YV91cmwgPSBcImZpbGU6Ly8vRTovQ29kZS9DdXJhSGVhbHRoL3ZpdGUuY29uZmlnLmpzXCI7aW1wb3J0IHsgZGVmaW5lQ29uZmlnIH0gZnJvbSAndml0ZSdcbmltcG9ydCByZWFjdCBmcm9tICdAdml0ZWpzL3BsdWdpbi1yZWFjdCdcbmltcG9ydCB0YWlsd2luZGNzcyBmcm9tICd0YWlsd2luZGNzcyc7XG5pbXBvcnQgYXV0b3ByZWZpeGVyIGZyb20gJ2F1dG9wcmVmaXhlcic7XG5cbi8vIGh0dHBzOi8vdml0ZWpzLmRldi9jb25maWcvXG5leHBvcnQgZGVmYXVsdCBkZWZpbmVDb25maWcoe1xuICBwbHVnaW5zOiBbcmVhY3QoKV0sXG4gICAgLy8gcHJldmVudCB2aXRlIGZyb20gb2JzY3VyaW5nIHJ1c3QgZXJyb3JzXG4gICAgY2xlYXJTY3JlZW46IGZhbHNlLFxuICAgIC8vIFRhdXJpIGV4cGVjdHMgYSBmaXhlZCBwb3J0LCBmYWlsIGlmIHRoYXQgcG9ydCBpcyBub3QgYXZhaWxhYmxlXG4gICAgc2VydmVyOiB7XG4gICAgICBzdHJpY3RQb3J0OiB0cnVlLFxuICAgIH0sXG4gICAgLy8gdG8gYWNjZXNzIHRoZSBUYXVyaSBlbnZpcm9ubWVudCB2YXJpYWJsZXMgc2V0IGJ5IHRoZSBDTEkgd2l0aCBpbmZvcm1hdGlvbiBhYm91dCB0aGUgY3VycmVudCB0YXJnZXRcbiAgICBlbnZQcmVmaXg6IFsnVklURV8nLCAnVEFVUklfUExBVEZPUk0nLCAnVEFVUklfQVJDSCcsICdUQVVSSV9GQU1JTFknLCAnVEFVUklfUExBVEZPUk1fVkVSU0lPTicsICdUQVVSSV9QTEFURk9STV9UWVBFJywgJ1RBVVJJX0RFQlVHJ10sXG4gICAgYnVpbGQ6IHtcbiAgICAgIC8vIFRhdXJpIHVzZXMgQ2hyb21pdW0gb24gV2luZG93cyBhbmQgV2ViS2l0IG9uIG1hY09TIGFuZCBMaW51eFxuICAgICAgdGFyZ2V0OiBwcm9jZXNzLmVudi5UQVVSSV9QTEFURk9STSA9PSAnd2luZG93cycgPyAnY2hyb21lMTA1JyA6ICdzYWZhcmkxMycsXG4gICAgICAvLyBkb24ndCBtaW5pZnkgZm9yIGRlYnVnIGJ1aWxkc1xuICAgICAgbWluaWZ5OiAhcHJvY2Vzcy5lbnYuVEFVUklfREVCVUcgPyAnZXNidWlsZCcgOiBmYWxzZSxcbiAgICAgIC8vIHByb2R1Y2Ugc291cmNlbWFwcyBmb3IgZGVidWcgYnVpbGRzXG4gICAgICBzb3VyY2VtYXA6ICEhcHJvY2Vzcy5lbnYuVEFVUklfREVCVUcsXG4gICAgfSxcbiAgICBjc3M6IHtcbiAgICAgIHBvc3Rjc3M6IHtcbiAgICAgICAgcGx1Z2luczogW1xuICAgICAgICAgIHRhaWx3aW5kY3NzKCksXG4gICAgICAgICAgYXV0b3ByZWZpeGVyKCksXG4gICAgICAgIF0sXG4gICAgICB9LFxuICAgIH0sXG59KVxuIl0sCiAgIm1hcHBpbmdzIjogIjtBQUE4TyxTQUFTLG9CQUFvQjtBQUMzUSxPQUFPLFdBQVc7QUFDbEIsT0FBTyxpQkFBaUI7QUFDeEIsT0FBTyxrQkFBa0I7QUFHekIsSUFBTyxzQkFBUSxhQUFhO0FBQUEsRUFDMUIsU0FBUyxDQUFDLE1BQU0sQ0FBQztBQUFBO0FBQUEsRUFFZixhQUFhO0FBQUE7QUFBQSxFQUViLFFBQVE7QUFBQSxJQUNOLFlBQVk7QUFBQSxFQUNkO0FBQUE7QUFBQSxFQUVBLFdBQVcsQ0FBQyxTQUFTLGtCQUFrQixjQUFjLGdCQUFnQiwwQkFBMEIsdUJBQXVCLGFBQWE7QUFBQSxFQUNuSSxPQUFPO0FBQUE7QUFBQSxJQUVMLFFBQVEsUUFBUSxJQUFJLGtCQUFrQixZQUFZLGNBQWM7QUFBQTtBQUFBLElBRWhFLFFBQVEsQ0FBQyxRQUFRLElBQUksY0FBYyxZQUFZO0FBQUE7QUFBQSxJQUUvQyxXQUFXLENBQUMsQ0FBQyxRQUFRLElBQUk7QUFBQSxFQUMzQjtBQUFBLEVBQ0EsS0FBSztBQUFBLElBQ0gsU0FBUztBQUFBLE1BQ1AsU0FBUztBQUFBLFFBQ1AsWUFBWTtBQUFBLFFBQ1osYUFBYTtBQUFBLE1BQ2Y7QUFBQSxJQUNGO0FBQUEsRUFDRjtBQUNKLENBQUM7IiwKICAibmFtZXMiOiBbXQp9Cg==

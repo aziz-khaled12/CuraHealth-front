@@ -4,7 +4,6 @@ import { Add as AddIcon } from "@mui/icons-material";
 import UserTable from "./UserTable";
 import UserPermissions from "./UserPermissions";
 import UserForm from "./UserForm";
-import Header from "../random/Header";
 
 const UsersManagement = () => {
   const [users, setUsers] = useState([
@@ -46,7 +45,7 @@ const UsersManagement = () => {
   const [isPermissionsOpen, setIsPermissionsOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
 
-  const handleAddUser = () => {
+ const handleAddUser = () => {
     setSelectedUser(null);
     setIsFormOpen(true);
   };
@@ -98,28 +97,10 @@ const UsersManagement = () => {
 
   return (
     <Box>
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        mb={3}
-      >
-        <Header
-          title={"User Management"}
-          subTitle={"Manage your staff accounts and permissions"}
-        ></Header>
-
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={handleAddUser}
-        >
-          Add User
-        </Button>
-      </Box>
-
+    
       <UserTable
         users={users}
+        onAdd={handleAddUser}
         onEdit={handleEditUser}
         onDelete={handleDeleteUser}
         onManagePermissions={handleManagePermissions}

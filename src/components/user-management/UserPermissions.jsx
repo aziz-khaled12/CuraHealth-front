@@ -36,22 +36,52 @@ const UserPermissions = ({ user, onSave, onCancel }) => {
     {
       title: "Patient Management",
       permissions: [
-        { id: "canViewPatients", label: "View Patients" },
-        { id: "canEditPatients", label: "Edit Patients" },
+        { id: "addPatient", label: "Add Patient" },
+        { id: "viewPatientsList", label: "View Patients List" },
+        { id: "viewPatientDetails", label: "View Patient Details" },
+        { id: "editPatientDetails", label: "Edit Patient Details" },
+        { id: "removePatient", label: "Remove Patient" },
       ],
     },
     {
       title: "Medical Records",
       permissions: [
-        { id: "canViewMedicalRecords", label: "View Medical Records" },
-        { id: "canEditMedicalRecords", label: "Edit Medical Records" },
+        { id: "viewRecentRecords", label: "View Recent Records" },
+        { id: "viewAllRecords", label: "View All Records" },
+        { id: "viewRecentRecordDetails", label: "View Recent Record Details" },
+        { id: "viewAllRecordDetails", label: "View All Record Details" },
+        { id: "downloadRecords", label: "Download Patient Records" },
       ],
     },
     {
-      title: "Clinical Operations",
+      title: "Appointments",
       permissions: [
-        { id: "canPrescribeMedication", label: "Prescribe Medication" },
-        { id: "canScheduleAppointments", label: "Schedule Appointments" },
+        { id: "viewAllAppointments", label: "View All Appointments" },
+        { id: "viewTodayAppointments", label: "View Today's Appointments" },
+        { id: "addAppointment", label: "Add New Appointment" },
+        { id: "editAppointments", label: "Modify Appointments" },
+        { id: "deleteAppointments", label: "Delete Appointments" },
+        { id: "cancelAppointments", label: "Cancel Appointments" },
+        { id: "startAppointments", label: "Start Appointments" },
+        { id: "endAppointments", label: "End Appointments" },
+      ],
+    },
+    {
+      title: "Services",
+      permissions: [
+        { id: "viewServices", label: "View Services" },
+        { id: "addService", label: "Add Service" },
+        { id: "deleteService", label: "Delete Service" },
+        { id: "editService", label: "Modify Service" },
+      ],
+    },
+    {
+      title: "Administrative",
+      permissions: [
+        { id: "viewCalendar", label: "View Calendar" },
+        { id: "viewOffice", label: "View Office" },
+        { id: "viewUsers", label: "View Users" },
+        { id: "viewRapports", label: "View Rapports" },
       ],
     },
   ];

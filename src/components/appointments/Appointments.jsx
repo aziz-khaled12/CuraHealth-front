@@ -94,14 +94,14 @@ const Appointments = () => {
             sx={{
               display: "flex",
               alignItems: "center",
-              justifyContent: "space-between",
+              justifyContent: "end",
               marginBottom: "16px",
             }}
           >
-            <Header
+            {/* <Header
               title={"Appointments"}
               subTitle={"Manage your appointments"}
-            />
+            /> */}
             {canAddAppointments && (
               <Button
                 startIcon={<MdAdd />}

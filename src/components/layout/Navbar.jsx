@@ -1,81 +1,172 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
-  Button,
-  FormControl,
-  InputAdornment,
+  Breadcrumbs,
+  Link,
+  Typography,
+  Avatar,
+  Menu,
   MenuItem,
-  OutlinedInput,
-  Select,
+  Tooltip,
+  IconButton,
 } from "@mui/material";
-import { CiSearch } from "react-icons/ci";
-import AvatarWithList from "../random/AvatarWithList";
-
+import { FiChevronRight, FiHome, FiUser, FiBell } from "react-icons/fi";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
-  const [selectedSearch, setSelectedSearch] = useState("all");
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [breadcrumbs, setBreadcrumbs] = useState([]);
+  const open = Boolean(anchorEl);
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const settings = ["Profile", "Account", "Dashboard", "Logout"];
-  const handleChange = (event) => {
-    setSelectedSearch(event.target.value);
+
+  // Generate breadcrumbs based on current route
+  useEffect(() => {
+    const pathnames = location.pathname.split("/").filter((x) => x);
+
+    // Create breadcrumb array with paths
+    const breadcrumbItems = pathnames.map((name, index) => {
+      const routeTo = `/${pathnames.slice(0, index + 1).join("/")}`;
+      const formattedName = name.charAt(0).toUpperCase() + name.slice(1);
+
+      return {
+        name: formattedName,
+        path: routeTo,
+      };
+    });
+
+    setBreadcrumbs(breadcrumbItems);
+  }, [location]);
+
+  const handleOpenMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+  };
+
+  const handleBreadcrumbClick = (path) => {
+    navigate(path);
   };
 
   return (
-    <nav className="flex items-center justify-between w-full p-4">
-      <div className={`lg:text-2xl md:text-xl font-semibold text-center`}>Cura Health</div>
+    <div className="px-8 py-3 shadow-sm">
+      <nav className="flex items-center justify-between w-full  bg-white">
+        <div className="text-xl font-bold text-primary">Cura Health</div>
 
-      <div className="flex gap-5 max-h-[45px]">
-        <div className="border border-solid border-[#DCDFE3] rounded-md">
-          <FormControl className="w-[100px] lg:w-[166px] p-0 m-0" >
-            <Select
-              value={selectedSearch}
-              sx={{
-                maxHeight: "40px",
-                fontSize: "14px",
-                borderRadius: "6px 0px 0px 6px",
-              }}
-              onChange={handleChange}
-              inputProps={{ "aria-label": "Without label" }}
-            >
-              <MenuItem value={"all"}>All</MenuItem>
-              <MenuItem value={"name"}>Name</MenuItem>
-              <MenuItem value={"phoneNum"}>Phone Number</MenuItem>
-            </Select>
-          </FormControl>
+        <div className="flex items-center gap-6">
+          <div className="hidden md:flex">
+            <Tooltip title="Notifications">
+              <IconButton className="relative">
+                <FiBell className="text-xl text-gray-600" />
+                <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+              </IconButton>
+            </Tooltip>
+          </div>
 
-          <FormControl className="w-[200px] lg:w-[260px] m-0 p-0" variant="outlined">
-            <OutlinedInput
-              id="outlined-adornment-weight"
-              placeholder="Search"
-              sx={{
-                maxHeight: "40px",
-                fontSize: "14px",
-                borderRadius: "0 6px 6px 0",
-              }}
-              startAdornment={
-                <InputAdornment position="start">
-                  <CiSearch className="text-2xl" />
-                </InputAdornment>
-              }
-              aria-describedby="outlined-weight-helper-text"
-            />
-          </FormControl>
+          <div className="flex items-center gap-3">
+            <Tooltip title="Account settings">
+              <IconButton
+                onClick={handleOpenMenu}
+                size="small"
+                aria-controls={open ? "account-menu" : undefined}
+                aria-haspopup="true"
+                aria-expanded={open ? "true" : undefined}
+              >
+                <Avatar
+                  sx={{ width: 40, height: 40, bgcolor: "#6366F1" }}
+                  alt="Ahmed Twati"
+                >
+                  AT
+                </Avatar>
+              </IconButton>
+            </Tooltip>
+            <div className="hidden md:block leading-4">
+              <div className="text-sm font-medium text-gray-800">
+                Ahmed Twati
+              </div>
+              <div className="text-xs font-medium text-gray-500">Doctor</div>
+            </div>
+          </div>
+
+          <Menu
+            anchorEl={anchorEl}
+            id="account-menu"
+            open={open}
+            onClose={handleCloseMenu}
+            PaperProps={{
+              elevation: 0,
+              sx: {
+                overflow: "visible",
+                filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.1))",
+                mt: 1.5,
+                borderRadius: 1,
+                minWidth: 180,
+                "& .MuiMenuItem-root": {
+                  px: 2,
+                  py: 1.5,
+                  fontSize: "0.875rem",
+                },
+              },
+            }}
+            transformOrigin={{ horizontal: "right", vertical: "top" }}
+            anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+          >
+            {settings.map((setting, index) => (
+              <MenuItem key={setting} onClick={handleCloseMenu}>
+                {setting === "Profile" && <FiUser className="mr-2" />}
+                {setting}
+              </MenuItem>
+            ))}
+          </Menu>
         </div>
-        <Button
-          variant="contained"
-          className="!bg-primary !hidden lg:!block !text-primaryText"
-          sx={{ maxHeight: "40px", textTransform: "none", width: "100px" }}
+      </nav>
+      {/* Integrated Breadcrumbs */}
+      <div className="w-full">
+      <Breadcrumbs
+        separator={<FiChevronRight className="!text-gray-400 !text-sm" />}
+        aria-label="breadcrumb"
+      >
+        <Link
+          component="button"
+          underline="hover"
+          color="inherit"
+          onClick={() => handleBreadcrumbClick("/")}
+          className="flex items-center !text-sm !text-gray-600 !hover:text-primary"
         >
-          Search
-        </Button>
-      </div>
+          <FiHome className="mr-1" />
+          Home
+        </Link>
 
-      <div className="flex items-center gap-3">
-        <AvatarWithList settings={settings} />
-        <div className="leading-4">
-          <div className="text-sm lg:text-md font-medium text-darkText ">Ahmed Twati</div>
-          <div className="text-xs lg:text-sm font-medium text-lightText ">Doctor</div>
-        </div>
+        {breadcrumbs.map((breadcrumb, index) => {
+          const isLast = index === breadcrumbs.length - 1;
+
+          return isLast ? (
+            <Typography
+              key={index}
+              className="!text-sm !font-medium !text-gray-800"
+            >
+              {breadcrumb.name}
+            </Typography>
+          ) : (
+            <Link
+              key={index}
+              component="button"
+              underline="hover"
+              color="inherit"
+              onClick={() => handleBreadcrumbClick(breadcrumb.path)}
+              className="!text-sm !text-gray-600 !hover:text-primary"
+            >
+              {breadcrumb.name}
+            </Link>
+          );
+        })}
+      </Breadcrumbs>
       </div>
-    </nav>
+     
+    </div>
   );
 };
 

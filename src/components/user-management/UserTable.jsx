@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import {
   IconButton,
@@ -15,13 +15,26 @@ import {
   DialogActions,
 } from "@mui/material";
 import { MoreHoriz, Edit, Delete, Shield, Search } from "@mui/icons-material";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUsers } from "../../redux/usersSlice";
+import { Add as AddIcon } from "@mui/icons-material";
 
-const UserTable = ({ users, onEdit, onDelete, onManagePermissions }) => {
+
+const UserTable = ({ onEdit, onDelete, onManagePermissions, onAdd }) => {
+  const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
   const [userToDelete, setUserToDelete] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [menuUser, setMenuUser] = useState(null);
+
+
+ 
+  useEffect(() => {
+    dispatch(fetchUsers());
+  }, []);
+
+  const { users } = useSelector((state) => state.users);
 
   const handleMenuOpen = (event, user) => {
     setAnchorEl(event.currentTarget);
@@ -51,8 +64,8 @@ const UserTable = ({ users, onEdit, onDelete, onManagePermissions }) => {
 
     const matchesFilter =
       filterType === "all" ||
-      (filterType === "Doctor" && user.type === "DOCTOR") ||
-      (filterType === "Nurse" && user.type === "NURSE");
+      (filterType === "Doctor" && user.type === "Doctor") ||
+      (filterType === "Nurse" && user.type === "Nurse");
 
     return matchesSearch && matchesFilter;
   });
@@ -84,35 +97,45 @@ const UserTable = ({ users, onEdit, onDelete, onManagePermissions }) => {
     },
   ];
 
-  console.log("filteredUsers: ", filteredUsers);  
+  console.log("filteredUsers: ", filteredUsers);
 
   return (
     <div style={{ height: 500, width: "100%" }}>
-      <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
-        <TextField
-          label="Search users"
-          variant="outlined"
-          size="small"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <Search fontSize="small" style={{ marginRight: 5 }} />
-            ),
-          }}
-        />
-        <FormControl size="small">
-          <InputLabel>Filter</InputLabel>
-          <Select
-            value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
-          >
-            <MenuItem value="all">All Users</MenuItem>
-            <MenuItem value="Doctor">Doctors</MenuItem>
-            <MenuItem value="Nurse">Nurses</MenuItem>
-          </Select>
-        </FormControl>
+      <div className="w-full flex items-cnter justify-between mb-4">
+        <div className="flex items-center gap-4">
+          <TextField
+            label="Search users"
+            variant="outlined"
+            size="small"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <Search fontSize="small" style={{ marginRight: 5 }} />
+              ),
+            }}
+          />
+          <FormControl size="small">
+            <InputLabel>Filter</InputLabel>
+            <Select
+              value={filterType}
+              onChange={(e) => setFilterType(e.target.value)}
+            >
+              <MenuItem value="all">All Users</MenuItem>
+              <MenuItem value="Doctor">Doctors</MenuItem>
+              <MenuItem value="Nurse">Nurses</MenuItem>
+            </Select>
+          </FormControl>
+        </div>
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={onAdd}
+        >
+          Add User
+        </Button>
       </div>
+
       <DataGrid
         rows={filteredUsers}
         columns={columns}

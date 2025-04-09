@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import Header from "../random/Header";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import InfoIcon from "@mui/icons-material/Info";
@@ -21,6 +20,9 @@ const Patients = () => {
   const [editOpen, setEditOpen] = useState(false);
   const { patients } = useSelector((state) => state.patients);
   const [dataToEdit, setDataToEdit] = useState();
+  
+  // Reference for parent container height calculation
+  const [containerRef, setContainerRef] = useState(null);
 
   const canAddPatient = useHasPermission("add Patient");
   const canModifyPatient = useHasPermission("modify Patient details");
@@ -57,7 +59,6 @@ const Patients = () => {
       {
         field: "Sex",
         headerName: "Sex",
-
         flex: 0.5,
       },
       {
@@ -97,18 +98,23 @@ const Patients = () => {
         ),
       },
     ],
-    []
+    [canModifyPatient, canRemovePatient, canSeePatientDetails]
   );
 
   const handleDetails = (patientID) => {
     navigate(`/patients/${patientID}`);
   };
 
+  const handleDelete = (row) => {
+    // Implement delete functionality
+    console.log("Delete:", row);
+  };
+
   useEffect(() => {
     if (patients.length === 0) {
       dispatch(fetchPatients());
     }
-  }, [dispatch]);
+  }, [dispatch, patients.length]);
 
   const handleOpen = () => {
     setOpen(true);
@@ -116,7 +122,7 @@ const Patients = () => {
 
   const handleModify = (prevData) => {
     const selectedPatient = patients.filter(
-      (patient) => patient.id == prevData
+      (patient) => patient.id === prevData
     );
     setDataToEdit(selectedPatient);
     setEditOpen(true);
@@ -127,8 +133,7 @@ const Patients = () => {
   }
 
   return (
-    <div>
-      {" "}
+    <div className="flex flex-col h-full w-full" ref={setContainerRef}>
       <Box
         sx={{
           display: "flex",
@@ -136,8 +141,8 @@ const Patients = () => {
           justifyContent: "space-between",
           marginBottom: "16px",
         }}
+        className="flex-shrink-0"
       >
-        <Header title={"Patients"} subTitle={"Add, edit or delete patients"} />
         {canAddPatient && (
           <Button
             startIcon={<MdAdd />}
@@ -150,7 +155,9 @@ const Patients = () => {
           </Button>
         )}
       </Box>
-      <Box height={600}>
+      
+      {/* Responsive DataGrid container */}
+      <Box className="flex-grow w-full h-full">
         {patients && (
           <DataGrid
             rows={patients}
@@ -158,9 +165,35 @@ const Patients = () => {
             slots={{ toolbar: GridToolbar }}
             columns={columns}
             autoPageSize
+            sx={{
+              height: '100%',
+              width: '100%',
+              '& .MuiDataGrid-root': {
+                border: 'none',
+              },
+              '& .MuiDataGrid-cell': {
+                borderBottom: '1px solid #f0f0f0',
+              },
+              '& .MuiDataGrid-columnHeaders': {
+                backgroundColor: '#fafafa',
+                borderBottom: 'none',
+              },
+              '& .MuiDataGrid-virtualScroller': {
+                backgroundColor: '#fff',
+              },
+              '& .MuiDataGrid-footerContainer': {
+                borderTop: '1px solid #f0f0f0',
+                backgroundColor: '#fafafa',
+              },
+              '& .MuiDataGrid-toolbarContainer': {
+                padding: '8px',
+                backgroundColor: '#fafafa',
+              },
+            }}
           />
         )}
       </Box>
+      
       {open && canAddPatient && <AddNewModal open={open} setOpen={setOpen} />}
       {canModifyPatient && editOpen && dataToEdit && (
         <ModifyModal

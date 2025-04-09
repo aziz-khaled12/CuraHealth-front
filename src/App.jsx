@@ -24,6 +24,8 @@ import Sidebar from "./components/layout/Sidebar";
 import Unauthorized from "./components/layout/Unauthorized";
 import Profile from "./components/profile/profile";
 import UsersManagement from "./components/user-management/UsersManagement";
+import BreadCrumbs from "./components/random/Breadcrumbs";
+import Test from "./Test";
 
 const DashboardLayout = () => {
   const location = useLocation();
@@ -31,18 +33,24 @@ const DashboardLayout = () => {
   const isSessionsPage = location.pathname === "/office/sessions";
 
   return (
-    <div className="flex flex-col h-screen w-full">
-      <div className="w-full">
+    <div className="flex flex-col h-screen w-full overflow-hidden">
+      {/* Navbar - fixed height */}
+      <div className="w-full flex-shrink-0">
         <Navbar />
       </div>
-      <div className="w-full h-full flex">
-        <div className="flex-grow overflow-hidden">
+
+      {/* Content area - takes remaining height */}
+      <div className="w-full flex flex-1 overflow-hidden">
+        {/* Sidebar */}
+        <div className="flex-shrink-0 h-full overflow-y-auto">
           <Sidebar />
         </div>
+
+        {/* Main content */}
         <main
-          className={`flex-grow w-full h-[90vh] bg-lightBg ${
+          className={`flex-grow h-full ${
             isCalendarPage || isSessionsPage ? "p-0" : "p-8"
-          } overflow-scroll custom-scrollbar`}
+          } overflow-y-auto custom-scrollbar`}
         >
           <Outlet />
         </main>
@@ -106,6 +114,7 @@ function App() {
             </Route>
           </Route>
           <Route path="unauthorized" element={<Unauthorized />} />
+          <Route path="test" element={<Test />} />
         </Routes>
       </ThemeProvider>
     </div>
