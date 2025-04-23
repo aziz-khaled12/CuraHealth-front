@@ -18,24 +18,32 @@ import {
 import {
   updateAppointment,
   deleteAppointment,
+  fetchAppointments,
 } from "../../redux/appointmentsSlice";
 import AddNewModal from "../appointmentsModals/AddNewModal";
 import ModifyModal from "../appointmentsModals/ModifyModal";
 
 const Calendar = () => {
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchAppointments({ today: true }));
+  }, []);
+
   const appointments = useSelector((state) =>
     state.appointments.appointments.map((appointment) => ({
       ...appointment,
       title: `${appointment.first_name} ${appointment.last_name}`,
-      startDate: new Date(appointment.created_at),
-      endDate: new Date(appointment.created_at).setMinutes(new Date(appointment.created_at).getMinutes() + 30),
+      startDate: new Date(new Date(appointment.for_time).getTime() - 30 * 60 * 1000),
+      endDate: new Date(appointment.for_time),
     }))
   );
 
-  useEffect(() => {
-    console.log(appointments);
-  }, [appointments]);
+
+  console.log(appointments)
+
+
+
 
   const [open, setOpen] = useState(false);
   const [cellData, setCellData] = useState("");
@@ -62,8 +70,7 @@ const Calendar = () => {
 
   const Appointment = ({ children, ...restProps }) => (
     <Appointments.Appointment
-    style={{ backgroundColor: "#0D3B66" }}
-    
+      style={{ backgroundColor: "#0D3B66" }}
       onDoubleClick={() => {
         handleOpen(restProps.data);
       }}
@@ -134,40 +141,42 @@ const Calendar = () => {
   );
 
   return (
-    <React.Fragment>
-      <Paper sx={{ height: "100%" }}>
-        <Scheduler data={appointments} height={"auto"}>
-          <ViewState />
-          <EditingState onCommitChanges={onCommitChanges} />
-          <IntegratedEditing />
-          <Toolbar />
-          <DateNavigator />
-          <DayView
-            startDayHour={9}
-            endDayHour={19}
-            timeTableCellComponent={TimeTableCell}
-          />
-          <Appointments appointmentComponent={Appointment} />
-          <AppointmentTooltip
-            showDeleteButton
-            showOpenButton
-            layoutComponent={customAppointmentTooltip}
-          />
-          <DragDropProvider allowDrag={allowDrag} allowResize={allowResize} />
-        </Scheduler>
-      </Paper>
+    appointments.length > 0 && (
+      <React.Fragment>
+        <Paper sx={{ height: "100%" }}>
+          <Scheduler data={appointments} height={"auto"}>
+            <ViewState />
+            <EditingState onCommitChanges={onCommitChanges} />
+            <IntegratedEditing  />
+            <Toolbar />
+            <DateNavigator />
+            <DayView
+              startDayHour={9}
+              endDayHour={23}
+              timeTableCellComponent={TimeTableCell}
+            />
+            <Appointments appointmentComponent={Appointment} />
+            <AppointmentTooltip
+              showDeleteButton
+              showOpenButton
+              layoutComponent={customAppointmentTooltip}
+            />
+            <DragDropProvider allowDrag={allowDrag} allowResize={allowResize} />
+          </Scheduler>
+        </Paper>
 
-      {cellData && open && (
-        <AddNewModal open={open} setOpen={setOpen} cellData={cellData} />
-      )}
-      {cellData && editOpen && (
-        <ModifyModal
-          open={editOpen}
-          setOpen={setEditOpen}
-          cellData={cellData}
-        />
-      )}
-    </React.Fragment>
+        {cellData && open && (
+          <AddNewModal open={open} setOpen={setOpen} cellData={cellData} />
+        )}
+        {cellData && editOpen && (
+          <ModifyModal
+            open={editOpen}
+            setOpen={setEditOpen}
+            cellData={cellData}
+          />
+        )}
+      </React.Fragment>
+    )
   );
 };
 

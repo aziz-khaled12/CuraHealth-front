@@ -1,11 +1,14 @@
 import { useState } from "react";
-import { Button, Container, Typography, Box } from "@mui/material";
-import { Add as AddIcon } from "@mui/icons-material";
+import { Box } from "@mui/material";
 import UserTable from "./UserTable";
 import UserPermissions from "./UserPermissions";
 import UserForm from "./UserForm";
+import UserServices from "./UserServices";
+import { attachPermission } from "../../redux/permissionsSlice";
+import { useDispatch } from "react-redux";
 
 const UsersManagement = () => {
+  const dispatch = useDispatch();
   const [users, setUsers] = useState([
     {
       id: "1",
@@ -43,9 +46,10 @@ const UsersManagement = () => {
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isPermissionsOpen, setIsPermissionsOpen] = useState(false);
+  const [isServicesOpen, setIsServicesOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
 
- const handleAddUser = () => {
+  const handleAddUser = () => {
     setSelectedUser(null);
     setIsFormOpen(true);
   };
@@ -58,6 +62,10 @@ const UsersManagement = () => {
   const handleManagePermissions = (user) => {
     setSelectedUser(user);
     setIsPermissionsOpen(true);
+  };
+  const handleManageServices = (user) => {
+    setSelectedUser(user);
+    setIsServicesOpen(true);
   };
 
   const handleDeleteUser = (userId) => {
@@ -86,24 +94,17 @@ const UsersManagement = () => {
     setIsFormOpen(false);
   };
 
-  const handleSavePermissions = (userId, permissions) => {
-    setUsers(
-      users.map((user) =>
-        user.id === userId ? { ...user, permissions } : user
-      )
-    );
-    setIsPermissionsOpen(false);
-  };
+
 
   return (
     <Box>
-    
       <UserTable
         users={users}
         onAdd={handleAddUser}
         onEdit={handleEditUser}
         onDelete={handleDeleteUser}
         onManagePermissions={handleManagePermissions}
+        onManageServices={handleManageServices}
       />
 
       {isFormOpen && (
@@ -117,10 +118,13 @@ const UsersManagement = () => {
       {isPermissionsOpen && selectedUser && (
         <UserPermissions
           user={selectedUser}
-          onSave={(permissions) =>
-            handleSavePermissions(selectedUser.id, permissions)
-          }
           onCancel={() => setIsPermissionsOpen(false)}
+        />
+      )}
+      {isServicesOpen && selectedUser && (
+        <UserServices
+          user={selectedUser}
+          onCancel={() => setIsServicesOpen(false)}
         />
       )}
     </Box>

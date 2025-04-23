@@ -1,24 +1,24 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
-let nextId = 1;
-const token = localStorage.getItem("token");
 const url = import.meta.env.VITE_BACK_END_URL;
+
+
 
 export const fetchAppointmentsData = createAsyncThunk(
   "appointmentsData/fetchAppointmentsData",
   async (_, { rejectWithValue }) => {
     try {
-      const [motifs, singePhysic, diagnostic, singeFunctionnal, medicaments] =
+      const [motifs, singePhysic, diagnostic, singeFunctionnal, medicaments, unites] =
         await Promise.all([
           axios.get(`${url}/api/All/Motifs`),
           axios.get(`${url}/api/All/SingePhysic`),
           axios.get(`${url}/api/All/Diagnostic`),
           axios.get(`${url}/api/All/SingeFunctionnal`),
           axios.get(`${url}/api/All/DWA`),
+          axios.get(`${url}/api/All/unite`)
         ]);
 
-        console.log(singeFunctionnal.data.singe_functionnal);
 
       const normalizeData = (data, idKey, nameKey) =>
         data.map((item) => ({
@@ -31,6 +31,7 @@ export const fetchAppointmentsData = createAsyncThunk(
         physicalSigns: normalizeData(singePhysic.data.singe_Physic, "SingePhysicID", "NameSingePhysic"),
         diagnoses: normalizeData(diagnostic.data.diagnostics, "DiagnosticID", "NameDiagnostic"),
         functionalSigns: normalizeData(singeFunctionnal.data.singe_functionnal, "SingeFunctionnalID", "NameSingeFunctionnal"),
+        unites: normalizeData(unites.data.unites, "UniteID", "NameUnite"),
         medicaments: medicaments.data.DWAs,
       };
     } catch (err) {
@@ -47,6 +48,7 @@ export const appointmentsDataSlice = createSlice({
     diagnoses: [],
     functionalSigns: [],
     medicaments: [],
+    unites: [],
     status: "idle",
     error: null,
   },
@@ -60,6 +62,7 @@ export const appointmentsDataSlice = createSlice({
         state.diagnoses = action.payload.diagnoses;
         state.functionalSigns = action.payload.functionalSigns;
         state.medicaments = action.payload.medicaments;
+        state.unites = action.payload.unites;
       })
       .addCase(fetchAppointmentsData.pending, (state, action) => {
         state.status = "loading";

@@ -30,10 +30,13 @@ export const fetchVitals = createAsyncThunk(
   }
 );
 
+
+
 export const signSlice = createSlice({
   name: "signs",
   initialState: {
     generalSigns: [],
+    unites: [],
     status: "idle",
     error: null,
   },
@@ -71,6 +74,8 @@ export const signSlice = createSlice({
         state.status = "failed";
         state.error = action.payload;
       });
+
+      
   },
 });
 

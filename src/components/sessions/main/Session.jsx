@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Vitals from "./Vitals";
 import { Box, Button, Divider, Stack } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
@@ -15,9 +15,14 @@ import {
   submitAppointmentData,
 } from "../../../redux/appointmentsSlice";
 import useHasPermission from "../../../hooks/useHasPermission";
+import { fetchServices } from "../../../redux/servicesSlice";
+import TestDocs from "../../random/TestDocs";
 
 export default function Session({ sessionId }) {
   const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(fetchServices());
+  }, [])
   const { services } = useSelector((state) => state.services);
   const canCancel = useHasPermission("cancel Appointments");
   const canEnd = useHasPermission("end Appointments");
@@ -69,8 +74,8 @@ export default function Session({ sessionId }) {
   ];
 
   const closeVisit = () => {
-    dispatch(endAppointment(appointmentId));
     dispatch(submitAppointmentData({ appointmentId, sessionId }));
+    dispatch(endAppointment(appointmentId));
     dispatch(deleteSession(sessionId));
   };
 
@@ -99,6 +104,10 @@ export default function Session({ sessionId }) {
       title: "Invoices",
     },
   ];
+
+  useEffect(() => {
+    console.log("Session data: ", session)
+  }, [session])
 
   return (
     <Box className="w-full flex gap-4 items-start justify-between min-h-[40vh] bg-lightBg">
@@ -152,6 +161,7 @@ export default function Session({ sessionId }) {
 
           {/* Medicaments Section */}
           <Medicaments id={sessionId} availableMedicaments={medicaments} />
+          <TestDocs sessionId={sessionId}/>
         </section>
       </Box>
 

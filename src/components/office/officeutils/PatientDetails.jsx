@@ -9,6 +9,7 @@ import {
   updateAppointment,
 } from "../../../redux/appointmentsSlice";
 import { addSession } from "../../../redux/sessionSlice";
+import useHasPermission from "../../../hooks/useHasPermission";
 
 const PatientDetails = ({ appointment }) => {
   const dispatch = useDispatch();
@@ -18,10 +19,12 @@ const PatientDetails = ({ appointment }) => {
     state.patients.patients.find((p) => p.PatientID === appointment.patient_id)
   );
 
+  console.log("appointment:", appointment);
+
   const canStartAppointment = useHasPermission("start Appointments");
   const canSeeRecords = useHasPermission("see All Patient Records");
 
-  const formattedDate = format(patient.BirthDay, "d MMMM yyyy");
+  const formattedDate = format(appointment.birth_day, "d MMMM yyyy");
 
   const handleStartSession = async (appointment) => {
     const sessionId = Date.now().toString();

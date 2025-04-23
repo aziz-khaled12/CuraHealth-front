@@ -15,9 +15,9 @@ const Medicaments = ({ id, availableMedicaments = [] }) => {
   );
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    console.log("selected Medicaments: ", data);
-  }, [data]);
+
+  const { unites } = useSelector((state) => state.appointmentsData);
+  console.log(unites)
 
   const handleChange = (updatedMedicaments) => {
     const modifyData = {
@@ -40,6 +40,7 @@ const Medicaments = ({ id, availableMedicaments = [] }) => {
       <MedicamentList
         medicaments={data || []}
         onListChange={handleChange}
+        unites={unites}
       />
     </Stack>
   );

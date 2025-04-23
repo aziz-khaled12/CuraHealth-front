@@ -7,7 +7,6 @@ import PortectedRoutes from "./utils/PortectedRoutes";
 import Login from "./components/auth/Login";
 import Signup from "./components/auth/Signup";
 import Calendar from "./components/calendar/Calendar";
-import Layout from "./components/layout/Layout";
 import Appointments from "./components/appointments/Appointments";
 import Patients from "./components/patients/Patients";
 import Services from "./components/services/Services";
@@ -24,7 +23,6 @@ import Sidebar from "./components/layout/Sidebar";
 import Unauthorized from "./components/layout/Unauthorized";
 import Profile from "./components/profile/profile";
 import UsersManagement from "./components/user-management/UsersManagement";
-import BreadCrumbs from "./components/random/Breadcrumbs";
 import Test from "./Test";
 
 const DashboardLayout = () => {
@@ -35,7 +33,7 @@ const DashboardLayout = () => {
   return (
     <div className="flex flex-col h-screen w-full overflow-hidden">
       {/* Navbar - fixed height */}
-      <div className="w-full flex-shrink-0">
+      <div className="w-full flex-shrink-0 z-10">
         <Navbar />
       </div>
 
@@ -50,7 +48,7 @@ const DashboardLayout = () => {
         <main
           className={`flex-grow h-full ${
             isCalendarPage || isSessionsPage ? "p-0" : "p-8"
-          } overflow-y-auto custom-scrollbar`}
+          } overflow-y-auto  bg-lightBg custom-scrollbar`}
         >
           <Outlet />
         </main>

@@ -1,16 +1,46 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
 
 let nextId = 1;
+const token = localStorage.getItem("token");
+const url = import.meta.env.VITE_BACK_END_URL;
+
+export const fetchServices = createAsyncThunk(
+  "services/fetchServices",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await axios.get(`${url}/api/All/service`);
+      const services = res.data.service.map((service) => {
+        return {
+          id: service.ServiceID,
+          name: service.NameService,
+        }
+      });
+      console.log(services)
+      return services;
+    } catch (err) {
+      return rejectWithValue(err.response.data.error || "Something went wrong");
+    }
+  }
+);
+
+export const attachService = createAsyncThunk(
+  "services/attachService",
+  async (attachData, { rejectWithValue }) => {
+    try {
+      const res = await axios.post(`${url}/api/AttatchServiceToUser`, attachData, {
+        headers: { Authorization: `${token}` },
+      });      
+    } catch (err) {
+      return rejectWithValue(err.response.data.error || "Something went wrong");
+    }
+  }
+);
 
 export const serviceSlice = createSlice({
   name: "services",
   initialState: {
-    services: [
-      { id: 1, name: "Normal Appointment", price: "1500" },
-      { id: 2, name: "Blood Analyzes", price: "3000" },
-      { id: 3, name: "IRM", price: "4000" },
-      { id: 4, name: "Radio", price: "1500" },
-    ],
+    services: [],
     status: "idle",
     error: null,
   },
@@ -35,6 +65,20 @@ export const serviceSlice = createSlice({
       const id = action.payload;
       state.services = state.services.filter((service) => service.id !== id);
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchServices.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchServices.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.services = action.payload;
+      })
+      .addCase(fetchServices.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      });
   },
 });
 

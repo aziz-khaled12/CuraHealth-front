@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   sessions: [],
+  files: [],
   vitals: [],
   services: [],
   diagnoses: [],
@@ -22,6 +23,7 @@ const sessionSlice = createSlice({
 
       // Initialize each category with an empty data array for the new session
       state.sessions.push(sessionData);
+      state.files.push({ sessionId, data: [] });
       state.vitals.push({ sessionId, data: [] });
       state.services.push({ sessionId, data: [] });
       state.diagnoses.push({ sessionId, data: [] });
@@ -36,6 +38,15 @@ const sessionSlice = createSlice({
 
       // Remove session data from each category
       state.sessions = state.sessions.filter(
+        (s) => s.sessionId !== sessionId
+      );
+      state.vitals = state.vitals.filter(
+        (s) => s.sessionId !== sessionId
+      );
+      state.files = state.files.filter(
+        (s) => s.sessionId !== sessionId
+      );
+      state.services = state.services.filter(
         (s) => s.sessionId !== sessionId
       );
       state.diagnoses = state.diagnoses.filter(
@@ -59,7 +70,6 @@ const sessionSlice = createSlice({
       const { sessionId, category, newData } = action.payload;
       console.log(action.payload);
       const categoryArray = state[category];
-
       console.log(categoryArray)
 
       if (categoryArray) {

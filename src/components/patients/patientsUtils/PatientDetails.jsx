@@ -16,6 +16,7 @@ const PatientDetails = () => {
     state.patients.patients.find((patient) => patient.PatientID == id)
   );
   const canSeeRecentRecords = useHasPermission("see recent Patient Records");
+  console.log("canSeeRecentRecords", canSeeRecentRecords);
   return (
     patient && (
       <>

@@ -51,8 +51,6 @@ const Login = () => {
     }
   };
 
-  console.log("rendered");
-
   return (
     <>
       <div className="w-full min-h-screen flex items-center justify-center flex-col m-auto">

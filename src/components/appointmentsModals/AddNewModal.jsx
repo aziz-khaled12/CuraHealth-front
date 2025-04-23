@@ -23,16 +23,19 @@ import {
 } from "../../redux/appointmentsSlice";
 
 import { fetchPatients } from "../../redux/patientsSlice";
+import { fetchServices } from "../../redux/servicesSlice";
 const AddNewModal = ({ open, setOpen, cellData }) => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
+    dispatch(fetchServices());
     dispatch(fetchAppointmentCategories());
     dispatch(fetchPatients());
   }, []);
   const { categories } = useSelector((state) => state.appointments);
   const { patients } = useSelector((state) => state.patients);
+  const { services } = useSelector((state) => state.services);
 
   const [startDate, setStartDate] = useState(
     cellData ? cellData.startDate : new Date()
@@ -50,37 +53,22 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
 
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [category, setCategory] = useState(categories[1]);
+  const [service, setService] = useState(services[1]);
 
   const handleSubmitAppointment = () => {
-    // if (appointmentTitle && startDate && endDate) {
-    //   const newAppointment = {
-    //     title: appointmentTitle,
-    //     patient: selectedPatient,
-    //     age: calculateAge(selectedPatient.BirthDay),
-    //     category: category,
-    //     createdAt: new Date().toLocaleString(),
-    //     modifiedAt: null,
-    //     status: "Scheduled",
-    //     startDate: startDate.toLocaleString(),
-    //     endDate: endDate.toLocaleString(),
-    //   };
-    //   console.log("appointment: ", newAppointment);
-    //   dispatch(addAppointment(newAppointment));
-    //   handleClose();
-    // }
+
 
     const newAppointment = {
       DoctorID: user.UserID,
       PatientID: selectedPatient.PatientID,
-      ForTime: new Date(),
+      ForTime: endDate,
       ApponmentCategoryID: category.ApponmentCategoryID,
+      ServiceID: service.id,
     };
 
     dispatch(createAppointment(newAppointment));
     handleClose();
   };
-
-  console.log("user: ", user);
 
   const handlePatientSelect = (event, value) => {
     if (value) {
@@ -95,10 +83,11 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
     );
     setCategory(selectedCategory);
   };
-
-  useEffect(() => {
-    console.log("category: ", category);
-  }, [category]);
+  const handleServiceChange = (event, value) => {
+    if (value) {
+      setService(value);
+    }
+  };
 
   const handleClose = () => {
     setOpen(false);
@@ -186,6 +175,33 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
                   placeholder="Patient ID"
                   value={selectedPatient ? selectedPatient.PatientID : ""}
                 />
+              </div>
+              <div className="flex flex-col items-start w-full">
+                <h1 className="text-base font-medium mb-3">Service</h1>
+                <Autocomplete
+                  sx={{ margin: "0" }}
+                  fullWidth
+                  freeSolo
+                  options={services}
+                  getOptionLabel={(option) => option.name}
+                  onChange={handleServiceChange}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      fullWidth
+                      placeholder="Service"
+                      variant="outlined"
+                    />
+                  )}
+                  renderOption={(props, option) => (
+                    <>
+                      <MenuItem {...props} key={option.id}>
+                        {option.name}
+                      </MenuItem>
+                    </>
+                  )}
+                />
+              
               </div>
             </div>
 

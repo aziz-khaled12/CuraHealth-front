@@ -10,9 +10,10 @@ import {
 } from "@mui/material";
 import { DatePicker, LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateAppointment } from "../../redux/appointmentsSlice";
+import { fetchPatients } from "../../redux/patientsSlice";
 
 const categories = [
   { name: "Emergency" },
@@ -26,7 +27,11 @@ const ModifyModal = ({ open, setOpen, cellData }) => {
 
   const dispatch = useDispatch()
 
-  const fakePatients = useSelector((state) => {state.patients.patients})
+  useEffect(() => {
+    dispatch(fetchPatients())
+  }, [dispatch])
+
+  const { patients } = useSelector((state) => state.patients)
   const [selectedPatient, setSelectedPatient] = useState(cellData.patient);
   const [appointmentTitle, setAppointmentTitle] = useState(cellData.title);
   const [startDate, setStartDate] = useState(
@@ -58,7 +63,7 @@ const ModifyModal = ({ open, setOpen, cellData }) => {
   const handlePatientSelect = (event, value) => {
     if (value) {
       setSelectedPatient(value);
-      setAppointmentTitle(value.fullName);
+      setAppointmentTitle(value.name);
     }
   };
 
@@ -72,6 +77,8 @@ const ModifyModal = ({ open, setOpen, cellData }) => {
     setStartDate(new Date());
     setEndDate(new Date());
   };
+
+  console.log(patients)
 
   return (
 
@@ -97,21 +104,21 @@ const ModifyModal = ({ open, setOpen, cellData }) => {
               sx={{ margin: "0" }}
               fullWidth
               freeSolo
-              options={fakePatients}
-              getOptionLabel={(option) => option.fullName}
+              options={patients}
+              getOptionLabel={(option) => `${option.FirstName} ${option.LastName}`}
               onChange={handlePatientSelect}
               renderInput={(params) => (
                 <TextField
                   {...params}
                   fullWidth
-                  placeholder={cellData.patient.fullName}
+                  placeholder={`${cellData.first_name} ${cellData.last_name}`}
                   variant="outlined"
                 />
               )}
               renderOption={(props, option) => (
                 <>
                   <MenuItem {...props} key={option.id}>
-                    {option.fullName}
+                  {`${option.FirstName} ${option.LastName}`}
                   </MenuItem>
                 </>
               )}

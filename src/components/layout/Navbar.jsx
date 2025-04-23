@@ -11,10 +11,13 @@ import {
 } from "@mui/material";
 import { FiChevronRight, FiHome, FiUser, FiBell } from "react-icons/fi";
 import { useLocation, useNavigate } from "react-router-dom";
+import { logout } from "../../redux/authSlice";
+import { useDispatch } from "react-redux";
 
 const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [breadcrumbs, setBreadcrumbs] = useState([]);
+  const dispatch = useDispatch();
   const open = Boolean(anchorEl);
   const location = useLocation();
   const navigate = useNavigate();
@@ -115,7 +118,7 @@ const Navbar = () => {
             anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
           >
             {settings.map((setting, index) => (
-              <MenuItem key={setting} onClick={handleCloseMenu}>
+              <MenuItem key={setting} onClick={setting === "Logout" ? () => dispatch(logout()) : handleCloseMenu}>
                 {setting === "Profile" && <FiUser className="mr-2" />}
                 {setting}
               </MenuItem>

@@ -12,7 +12,6 @@ const prepareUserData = (user) => {
     type: user.TypeName,
     specialization: "",
     licenseNumber: "",
-    createdAt: new Date(),
   };
 };
 // Async action for fetch users

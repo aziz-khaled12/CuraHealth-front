@@ -11,80 +11,111 @@ import {
   Typography,
   Divider,
 } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  attachPermission,
+  fetchPermissions,
+} from "../../redux/permissionsSlice";
+import axios from "axios";
 
-const UserPermissions = ({ user, onSave, onCancel }) => {
-  const [permissions, setPermissions] = useState({});
+const url = import.meta.env.VITE_BACK_END_URL;
+const UserPermissions = ({ user, onCancel }) => {
+  const dispatch = useDispatch();
+  const [userPermissions, setUserPermissions] = useState([]);
 
   useEffect(() => {
-    if (user && user.permissions) {
-      setPermissions({ ...user.permissions });
-    }
-  }, [user]);
+    dispatch(fetchPermissions());
+  }, [dispatch]);
 
-  const handlePermissionChange = (permission) => (event) => {
-    setPermissions((prev) => ({
-      ...prev,
-      [permission]: event.target.checked,
-    }));
+  const fetchUserPermissions = async () => {
+    try {
+      if (user) {
+        const res = await axios.get(`${url}/api/permitions?id=${user.id}`);
+        const permissions = res.data.permitions.map((permission) => {
+          return {
+            id: permission.PermitionID,
+            name: permission.NamePermition,
+          };
+        });
+        setUserPermissions(permissions);
+      }
+    } catch (error) {
+      console.error("Error fetching user permissions:", error);
+    }
   };
 
-  const handleSubmit = () => {
-    onSave(permissions);
+  useEffect(() => {
+    fetchUserPermissions();
+  }, [user]);
+
+  const { permissions } = useSelector((state) => state.permissions);
+
+  const handleSavePermissions = async (userId, permissionId) => {
+    const attachData = {
+      UserID: userId,
+      PermitionID: [permissionId],
+    };
+    await dispatch(attachPermission(attachData)); // wait for attach to complete
+    await fetchUserPermissions(); // then refetch
   };
 
   const permissionGroups = [
     {
       title: "Patient Management",
-      permissions: [
-        { id: "addPatient", label: "Add Patient" },
-        { id: "viewPatientsList", label: "View Patients List" },
-        { id: "viewPatientDetails", label: "View Patient Details" },
-        { id: "editPatientDetails", label: "Edit Patient Details" },
-        { id: "removePatient", label: "Remove Patient" },
-      ],
+      permissions: permissions
+        .filter(
+          (permission) =>
+            /patient/i.test(permission.name) && !/record/i.test(permission.name)
+        )
+        .map((permission) => ({
+          id: permission.id,
+          label: permission.name,
+        })),
     },
     {
       title: "Medical Records",
-      permissions: [
-        { id: "viewRecentRecords", label: "View Recent Records" },
-        { id: "viewAllRecords", label: "View All Records" },
-        { id: "viewRecentRecordDetails", label: "View Recent Record Details" },
-        { id: "viewAllRecordDetails", label: "View All Record Details" },
-        { id: "downloadRecords", label: "Download Patient Records" },
-      ],
+      permissions: permissions
+        .filter((permission) => /record/i.test(permission.name))
+        .map((permission) => ({
+          id: permission.id,
+          label: permission.name,
+        })),
     },
     {
       title: "Appointments",
-      permissions: [
-        { id: "viewAllAppointments", label: "View All Appointments" },
-        { id: "viewTodayAppointments", label: "View Today's Appointments" },
-        { id: "addAppointment", label: "Add New Appointment" },
-        { id: "editAppointments", label: "Modify Appointments" },
-        { id: "deleteAppointments", label: "Delete Appointments" },
-        { id: "cancelAppointments", label: "Cancel Appointments" },
-        { id: "startAppointments", label: "Start Appointments" },
-        { id: "endAppointments", label: "End Appointments" },
-      ],
+      permissions: permissions
+        .filter((permission) => /appointment/i.test(permission.name))
+        .map((permission) => ({
+          id: permission.id,
+          label: permission.name,
+        })),
     },
     {
       title: "Services",
-      permissions: [
-        { id: "viewServices", label: "View Services" },
-        { id: "addService", label: "Add Service" },
-        { id: "deleteService", label: "Delete Service" },
-        { id: "editService", label: "Modify Service" },
-      ],
+      permissions: permissions
+        .filter((permission) => /service/i.test(permission.name))
+        .map((permission) => ({
+          id: permission.id,
+          label: permission.name,
+        })),
     },
     {
       title: "Administrative",
-      permissions: [
-        { id: "viewCalendar", label: "View Calendar" },
-        { id: "viewOffice", label: "View Office" },
-        { id: "viewUsers", label: "View Users" },
-        { id: "viewRapports", label: "View Rapports" },
-      ],
+      permissions: permissions
+        .filter(
+          (permission) =>
+            /calender/i.test(permission.name) ||
+            /office/i.test(permission.name) ||
+            /user/i.test(permission.name) ||
+            /rapport/i.test(permission.name)
+        )
+        .map((permission) => ({
+          id: permission.id,
+          label: permission.name,
+        })),
     },
   ];
+
 
   return (
     <Dialog open={true} onClose={onCancel} maxWidth="sm" fullWidth>
@@ -100,8 +131,12 @@ const UserPermissions = ({ user, onSave, onCancel }) => {
                   key={permission.id}
                   control={
                     <Checkbox
-                      checked={permissions[permission.id] || false}
-                      onChange={handlePermissionChange(permission.id)}
+                      checked={userPermissions.some(
+                        (perm) => perm.id === permission.id
+                      )}
+                      onChange={() => {
+                        handleSavePermissions(user.id, permission.id);
+                      }}
                     />
                   }
                   label={permission.label}
@@ -115,12 +150,9 @@ const UserPermissions = ({ user, onSave, onCancel }) => {
         <Button onClick={onCancel} color="secondary" variant="outlined">
           Cancel
         </Button>
-        <Button onClick={handleSubmit} color="primary" variant="contained">
-          Save Permissions
-        </Button>
       </DialogActions>
     </Dialog>
   );
-}
+};
 
 export default UserPermissions;

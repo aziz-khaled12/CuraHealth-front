@@ -18,6 +18,8 @@ const ChipsSelect = ({ name = "", data = [], title = "", id }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selected, setSelected] = useState(false);
 
+  console.log(data)
+
   const dispatch = useDispatch();
 
   // Select the relevant category (e.g., diagnoses, medicaments) and find the session by ID

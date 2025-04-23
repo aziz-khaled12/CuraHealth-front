@@ -3,17 +3,23 @@ import React, { useEffect, useState } from "react";
 import VitalsInput from "../sessionUtils/VitalsInput";
 import { useDispatch, useSelector } from "react-redux";
 import { updateSessionAttribute } from "../../../redux/sessionSlice";
+import { fetchVitals } from "../../../redux/signsSlice";
 // import { modifySession } from "../../../redux/sessionSlice";
 
 const Vitals = ({ id }) => {
   const [selected, setSelected] = useState(false);
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    dispatch(fetchVitals());
+  }, [dispatch]);
+
   const { generalSigns } = useSelector((state) => state.signs);
-  const vitals = useSelector((state) => state.sessions.vitals.find((vital) => vital.sessionId === id).data)
+  const vitals = useSelector(
+    (state) =>
+      state.sessions.vitals.find((vital) => vital.sessionId === id).data
+  );
   const [formData, setFormData] = useState(vitals || []);
-
-
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -33,10 +39,6 @@ const Vitals = ({ id }) => {
       })
     );
   };
-
-  useEffect(() => {
-    console.log("vitals", vitals)
-  }, [vitals])
 
   return (
     <Box className="w-full bg-white border border-[#B4B4B4] p-4 rounded-lg">

@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import useHasPermission from "../../hooks/useHasPermission";
 
 const MedicalHistory = ({ patient }) => {
+
+  
   const [selectedSession, setSelectedSession] = useState(null);
   const navigate = useNavigate();
   const fakeSession = {
@@ -32,6 +34,9 @@ const MedicalHistory = ({ patient }) => {
   };
 
   const canSeeAllRecords = useHasPermission("see All Patient Records");
+  console.log("canSeeAllRecords", canSeeAllRecords);
+
+
   return (
     <>
       <div className="w-full flex items-center justify-between">

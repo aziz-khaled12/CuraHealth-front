@@ -24,7 +24,7 @@ const PERMISSIONS = {
     "end Appointments",
     "see Rapports",
     "see Office",
-    "see Users"
+    "see Users",
   ],
   nurse: [
     "add Patient",
@@ -57,7 +57,7 @@ const PERMISSIONS = {
     "modify Service",
     "see Calender",
     "see Office",
-    "see Users"
+    "see Users",
   ],
 };
 
@@ -82,7 +82,9 @@ export const login = createAsyncThunk(
       let user = decodedToken.User;
 
       // Assign permissions based on role
-      user.permissions = PERMISSIONS[user.TypeName] || [];
+      user.permissions = res.data.permitions ? res.data.permitions.map((permission) => {
+        return permission.NamePermition;
+      }) : ["see Users"];
 
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));

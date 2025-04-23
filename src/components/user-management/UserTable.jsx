@@ -20,7 +20,7 @@ import { fetchUsers } from "../../redux/usersSlice";
 import { Add as AddIcon } from "@mui/icons-material";
 
 
-const UserTable = ({ onEdit, onDelete, onManagePermissions, onAdd }) => {
+const UserTable = ({ onEdit, onDelete, onManagePermissions, onManageServices, onAdd }) => {
   const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
@@ -76,12 +76,7 @@ const UserTable = ({ onEdit, onDelete, onManagePermissions, onAdd }) => {
     { field: "type", headerName: "Type", flex: 1 },
     { field: "specialization", headerName: "Specialization", flex: 1 },
     { field: "licenseNumber", headerName: "License", flex: 1 },
-    {
-      field: "createdAt",
-      headerName: "Created",
-      flex: 1,
-      valueGetter: (params) => new Date(params.value).toLocaleDateString(),
-    },
+   
     {
       field: "actions",
       headerName: "Actions",
@@ -97,7 +92,6 @@ const UserTable = ({ onEdit, onDelete, onManagePermissions, onAdd }) => {
     },
   ];
 
-  console.log("filteredUsers: ", filteredUsers);
 
   return (
     <div style={{ height: 500, width: "100%" }}>
@@ -154,6 +148,11 @@ const UserTable = ({ onEdit, onDelete, onManagePermissions, onAdd }) => {
         <MenuItem onClick={() => onManagePermissions(menuUser)}>
           <Shield fontSize="small" /> Permissions
         </MenuItem>
+        {menuUser?.type === "Doctor" && (
+          <MenuItem onClick={() => onManageServices(menuUser)}>
+            <Shield fontSize="small" /> Services
+          </MenuItem>
+        )}
         <MenuItem onClick={() => confirmDelete(menuUser.id)}>
           <Delete fontSize="small" /> Delete
         </MenuItem>

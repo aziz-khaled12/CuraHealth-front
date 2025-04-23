@@ -1,10 +1,35 @@
 import { createAsyncThunk, createSlice, isAnyOf } from "@reduxjs/toolkit";
 import axios from "axios";
 import { selectSessionById } from "../components/sessions/sessionUtils/sessionSelectors";
+import { parseISO } from "date-fns";
 
 let nextId = 1;
 const token = localStorage.getItem("token");
 const url = import.meta.env.VITE_BACK_END_URL;
+
+const transformAppointments = (appointments) => {
+  return appointments.map((appt) => {
+    const patient = appt.Patient || {};
+    const doctor = appt.Doctor || {};
+    const category = appt.ApponmentCategory || {};
+
+    return {
+      appointmnt_id: appt.AppointmntID,
+      patientName: `${patient.FirstName || ""} ${
+        patient.LastName || ""
+      }`.trim(),
+      first_name: patient.FirstName || "",
+      last_name: patient.LastName || "",
+      birth_day: parseISO(patient.BirthDay || "0001-01-01T00:00:00Z"),
+      date: parseISO(appt.CreatedAt),
+      created_at: parseISO(appt.CreatedAt),
+      name_category: category.NameCategory || "",
+      phone_num: patient.PhoneNum || "",
+      email: patient.Email || "",
+      doctor_name: doctor.Name || "",
+    };
+  });
+};
 
 export const fetchAppointmentCategories = createAsyncThunk(
   "appointment/fetchAppointmentCategories",
@@ -65,9 +90,7 @@ const transformMedicament = (medicament) => ({
     LeVoie: medicament.voie || "",
     Instraction: medicament.instructions || "",
     UniteID:
-      medicament.Unite?.UniteID ||
-      medicament.UniteID ||
-      "db20184a-5fc9-4494-aa13-2d1364e51100",
+      medicament.unit.id
   },
 });
 
@@ -75,7 +98,7 @@ const transformMedicament = (medicament) => ({
 const prepareEndAppointmentRequest = (appointmentId, sessionData) => ({
   Appointmnt: appointmentId,
   Status: sessionData.vitals.map((v) => ({
-    status_id: v.id,
+    StatusID: v.id,
     value: v.value,
   })),
   Li3laShat: {
@@ -110,7 +133,6 @@ export const endAppointment = createAsyncThunk(
   }
 );
 
-// API call to submit session data after ending appointment
 export const submitAppointmentData = createAsyncThunk(
   "appointments/submitAppointmentData",
   async ({ appointmentId, sessionId }, { rejectWithValue, getState }) => {
@@ -118,30 +140,40 @@ export const submitAppointmentData = createAsyncThunk(
       const state = getState();
       const sessionData = selectSessionById(state, sessionId);
 
-      console.log(sessionData);
 
       if (!sessionData) throw new Error("Session not found");
+      if (!sessionData.files || !Array.isArray(sessionData.files)) {
+        throw new Error("Invalid session files data");
+      }
 
       const requestData = prepareEndAppointmentRequest(
         appointmentId,
         sessionData
       );
 
-      console.log(requestData);
+      const formData = new FormData();
 
-      const res = await axios.post(
-        `${url}/api/AppointmmentIsDone`,
-        requestData,
-        {
-          headers: { Authorization: `${token}` },
-        }
-      );
+      formData.append("jsonData", JSON.stringify(requestData));
+
+      sessionData.files.forEach((file) => {
+        formData.append("files", file.binary);
+      });
+
+
+      const res = await axios.post(`${url}/api/AppointmmentIsDone`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `${token}`,
+        },
+      });
 
       console.log("Submit Appointment Data Response:", res);
       return res.data;
     } catch (err) {
       return rejectWithValue(
-        err.response?.data?.error || "Failed to submit appointment data"
+        err.response?.data?.error ||
+          err.message ||
+          "Failed to submit appointment data"
       );
     }
   }
@@ -149,19 +181,20 @@ export const submitAppointmentData = createAsyncThunk(
 
 export const fetchAppointments = createAsyncThunk(
   "appointments/fetchAppointments",
-  async (today=false, { rejectWithValue }) => {
+  async (today = false, { rejectWithValue }) => {
     try {
-      const fetchString = today ? `${url}/api/ThisDayApponment` : `${url}/api/All/Apponment`;
+      const fetchString = today
+        ? `${url}/api/All/Apponment`
+        : `${url}/api/All/Apponment`;
       const res = await axios.get(fetchString);
-      console.log("res: ", res);
       const appointments = res.data.appointments;
+      console.log("appointments: ", appointments);
       return appointments;
     } catch (err) {
       return rejectWithValue(err.response.data.error || "Something went wrong");
     }
   }
 );
-
 
 export const appointmentsSlice = createSlice({
   name: "appointments",
@@ -184,7 +217,7 @@ export const appointmentsSlice = createSlice({
     updateAppointment: (state, action) => {
       const { id, ...changes } = action.payload;
       const existingAppointment = state.appointments.find(
-        (appointment) => appointment.id === id
+        (appointment) => appointment.appointmnt_id === id
       );
       if (existingAppointment) {
         Object.assign(existingAppointment, changes);

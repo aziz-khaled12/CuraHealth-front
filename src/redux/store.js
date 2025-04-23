@@ -9,8 +9,10 @@ import signsReducer from "./signsSlice.js";
 import sessionReducer from "./sessionSlice.js";
 import appointmentsDataReducer from "./appointmentDataSlice.js";
 import usersReducer from "./usersSlice.js";
+import permissionsReducer from "./permissionsSlice.js";
 
 const store = configureStore({
+  
   reducer: {
     appointments: appointmentsReducer,
     appointmentsData: appointmentsDataReducer,
@@ -22,6 +24,7 @@ const store = configureStore({
     signs: signsReducer,
     sessions: sessionReducer,
     users: usersReducer,
+    permissions: permissionsReducer,
   },
 });
 
