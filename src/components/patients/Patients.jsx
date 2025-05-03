@@ -120,11 +120,8 @@ const Patients = () => {
     setOpen(true);
   };
 
-  const handleModify = (prevData) => {
-    const selectedPatient = patients.filter(
-      (patient) => patient.id === prevData
-    );
-    setDataToEdit(selectedPatient);
+  const handleModify = (patientID) => {
+    setDataToEdit(patientID);
     setEditOpen(true);
   };
 
@@ -138,8 +135,8 @@ const Patients = () => {
         sx={{
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between",
-          marginBottom: "16px",
+          justifyContent: "end",
+          marginBottom: "1rem",
         }}
         className="flex-shrink-0"
       >
@@ -199,7 +196,7 @@ const Patients = () => {
         <ModifyModal
           open={editOpen}
           setOpen={setEditOpen}
-          prevData={dataToEdit}
+          patientId={dataToEdit}
         />
       )}
     </div>

@@ -20,6 +20,7 @@ export const fetchUsers = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const res = await axios.get(`${url}/api/All/user`);
+      console.log("res: ", res.data);
       const users = res.data.USERS.map((user) => prepareUserData(user));
       console.log(users);
       return users;

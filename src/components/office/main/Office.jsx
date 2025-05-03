@@ -12,10 +12,15 @@ import PatientDetails from "../officeUtils/PatientDetails";
 
 const Office = () => {
   const dispatch = useDispatch();
+
+  const fetchData = async () => {
+    await dispatch(fetchPatients());
+    await dispatch(fetchAppointments());
+    await dispatch(fetchAppointmentsData());
+  }
+
   useEffect(() => {
-    dispatch(fetchPatients());
-    dispatch(fetchAppointments());
-    dispatch(fetchAppointmentsData());
+    fetchData();
   }, []);
 
   const { appointments } = useSelector((state) => state.appointments);
@@ -64,43 +69,52 @@ const Office = () => {
     setActiveTab(newValue);
   };
 
-  // Function to calculate progress of the day
+  const [dayProgress, setDayProgress] = useState(0);
+
+
   const calculateDayProgress = () => {
+    const temp = new Date();
+    const startOfDay = new Date(temp.setHours(8, 0, 0, 0));
+    const endOfDay = new Date(temp.setHours(17, 0, 0, 0));
     const now = new Date();
-    const startOfDay = new Date(now.setHours(8, 0, 0, 0));
-    const endOfDay = new Date(now.setHours(17, 0, 0, 0));
     const totalMinutes = differenceInMinutes(endOfDay, startOfDay);
     const elapsedMinutes = differenceInMinutes(now, startOfDay);
     return Math.min(100, Math.max(0, (elapsedMinutes / totalMinutes) * 100));
   };
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDayProgress(calculateDayProgress());
+    }, 60000);
+
+    setDayProgress(calculateDayProgress());
+
+    return () => clearInterval(interval); 
+  }, []);
+
+
   return (
     <div>
-      {/* Header with search and notifications */}
+
       <OfficeHeader searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
 
-      {/* Day progress */}
       <Paper className="p-4 mb-6" elevation={0}>
         <div className="flex justify-between items-center mb-2">
           <Typography variant="body2" color="text.secondary">
             Working hours progress (8:00 AM - 5:00 PM)
           </Typography>
           <Typography variant="body2" fontWeight="medium">
-            {Math.round(calculateDayProgress())}%
+            {Math.round(dayProgress)}%
           </Typography>
         </div>
         <LinearProgress
           variant="determinate"
-          value={calculateDayProgress()}
+          value={dayProgress}
           sx={{ height: 8, borderRadius: 4 }}
         />
       </Paper>
 
-
-
-      {/* Main content */}
       <div className="flex flex-col lg:flex-row gap-6">
-        {/* Appointments list */}
         <Paper className="lg:w-2/5 p-4" elevation={0}>
           <AppointmentsList
             activeTab={activeTab}
@@ -111,7 +125,6 @@ const Office = () => {
           />
         </Paper>
 
-        {/* Patient details */}
         <Paper className="lg:w-3/5 p-6" elevation={0}>
           <Typography variant="h6" sx={{ marginBottom: 2 }}>
             Next Appointment

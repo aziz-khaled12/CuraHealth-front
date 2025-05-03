@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Routes, Route, useLocation, Outlet } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { createTheme, ThemeProvider } from "@mui/material";
@@ -11,7 +11,6 @@ import Appointments from "./components/appointments/Appointments";
 import Patients from "./components/patients/Patients";
 import Services from "./components/services/Services";
 import Office from "./components/office/main/Office";
-import Dashboard from "./components/random/Dashboard";
 import Rapports from "./components/random/Rapports";
 import "./App.css";
 import PatientDetails from "./components/patients/patientsUtils/PatientDetails";
@@ -24,42 +23,14 @@ import Unauthorized from "./components/layout/Unauthorized";
 import Profile from "./components/profile/profile";
 import UsersManagement from "./components/user-management/UsersManagement";
 import Test from "./Test";
-
-const DashboardLayout = () => {
-  const location = useLocation();
-  const isCalendarPage = location.pathname === "/calendar";
-  const isSessionsPage = location.pathname === "/office/sessions";
-
-  return (
-    <div className="flex flex-col h-screen w-full overflow-hidden">
-      {/* Navbar - fixed height */}
-      <div className="w-full flex-shrink-0 z-10">
-        <Navbar />
-      </div>
-
-      {/* Content area - takes remaining height */}
-      <div className="w-full flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <div className="flex-shrink-0 h-full overflow-y-auto">
-          <Sidebar />
-        </div>
-
-        {/* Main content */}
-        <main
-          className={`flex-grow h-full ${
-            isCalendarPage || isSessionsPage ? "p-0" : "p-8"
-          } overflow-y-auto  bg-lightBg custom-scrollbar`}
-        >
-          <Outlet />
-        </main>
-      </div>
-    </div>
-  );
-};
+import Layout from "./components/layout/Layout";
+import { jwtDecode } from "jwt-decode";
+import Dashboard from "./components/dashboard/Dashboard";
 
 function App() {
   const dispatch = useDispatch();
   const { accessToken } = useSelector((state) => state.auth);
+  const logoutTimerRef = useRef(null);
 
   const customTheme = createTheme({
     palette: {
@@ -71,15 +42,39 @@ function App() {
   });
 
   useEffect(() => {
-    if (accessToken) {
+    const setLogoutTimer = () => {
+      if (!accessToken) {
+        dispatch(autoLogout());
+        return;
+      }
+
       const isExpired = isTokenExpired(accessToken);
       if (isExpired) {
         dispatch(autoLogout());
+        return;
       }
-    } else {
-      dispatch(autoLogout());
-    }
-  }, [dispatch, accessToken]);
+
+      const decodedToken = jwtDecode(accessToken);
+      const expiresIn = decodedToken.exp * 1000 - Date.now();
+
+      if (logoutTimerRef.current) {
+        clearTimeout(logoutTimerRef.current);
+      }
+
+      logoutTimerRef.current = setTimeout(() => {
+        dispatch(autoLogout());
+      }, expiresIn);
+    };
+
+    setLogoutTimer();
+
+    // Cleanup on unmount or token change
+    return () => {
+      if (logoutTimerRef.current) {
+        clearTimeout(logoutTimerRef.current);
+      }
+    };
+  }, [accessToken, dispatch]);
 
   useEffect(() => {
     dispatch(fetchVitals());
@@ -87,22 +82,25 @@ function App() {
 
   return (
     <div>
+      <div
+        id="pdf-container"
+        className="hidden print:block absolute top-0 left-0 bg-white w-[794px] min-h-[1123px]"
+      >
+        {/* React will render into here when needed */}
+      </div>{" "}
       <ThemeProvider theme={customTheme}>
         <Routes>
-          {/* Public routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
 
-          {/* Protected routes with shared layout */}
           <Route element={<PortectedRoutes />}>
-            <Route element={<DashboardLayout />}>
+            <Route element={<Layout />}>
               <Route index element={<Dashboard />} />
               <Route path="calendar" element={<Calendar />} />
               <Route path="patients" element={<Patients />} />
               <Route path="patients/:id" element={<PatientDetails />} />
               <Route path="patients/:id/records" element={<PatientRecords />} />
               <Route path="appointments" element={<Appointments />} />
-              <Route path="dashboard" element={<Dashboard />} />
               <Route path="services" element={<Services />} />
               <Route path="rapports" element={<Rapports />} />
               <Route path="office" element={<Office />} />

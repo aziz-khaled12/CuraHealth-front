@@ -111,9 +111,6 @@ const AddNewModal = ({ open, setOpen }) => {
                     sx={{ width: "100%" }}
                     placeholder="Select Date"
                     onChange={(newValue) => setFormData((prevState) => ({...prevState, birthday: newValue}))}
-                      
-
-
                     name="birthday"
                     value={formData.birthday}
                     renderInput={(params) => (

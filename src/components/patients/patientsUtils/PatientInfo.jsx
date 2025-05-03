@@ -4,7 +4,7 @@ import { calculateAge } from "../../../utils/TimeManipulationFunctions";
 import { format } from "date-fns";
 
 const PatientInfo = ({ patient }) => {
-  console.log(patient)
+  console.log(patient);
   const patientFields = [
     {
       label: "Birthday",
@@ -24,7 +24,9 @@ const PatientInfo = ({ patient }) => {
     },
     {
       label: "Etat Civil",
-      value: patient.EtatCivileName,
+      value: patient.EtatCivileName
+      ? patient.EtatCivileName
+      : patient.EtatCivile.NameEtatCivile,
     },
     {
       label: "National Id Number",
@@ -41,14 +43,20 @@ const PatientInfo = ({ patient }) => {
         <div>
           <h1 className="font-semibold text-2xl">{`${patient.FirstName} ${patient.LastName}`}</h1>
           <p className="text-sm text-gray-500">{`${age} years • ${
-            patient.Sex === 'M' ? "Male" : "Female"
-          } • ${patient.BloodTypeName}`}</p>
+            patient.Sex === "M" ? "Male" : "Female"
+          } • ${
+            patient.BloodTypeName
+              ? patient.BloodTypeName
+              : patient.BloodType.NameBloodType
+          }`}</p>
         </div>
       </div>
 
       <div className="flex flex-wrap gap-4 mt-8">
         <div className="flex gap-2 flex-col flex-1">
-          <h1 className="font-medium text-primary text-lg">Personal Inforamtion</h1>
+          <h1 className="font-medium text-primary text-lg">
+            Personal Inforamtion
+          </h1>
           <Divider orientation="horizontal" flexItem></Divider>
           <div className="w-full flex flex-col text-sm gap-4">
             {patientFields.map((field, index) => (
@@ -61,12 +69,16 @@ const PatientInfo = ({ patient }) => {
         </div>
 
         <div className="flex gap-2 flex-col flex-1">
-          <h1 className="font-medium text-primary text-lg">Medical Inforamtion</h1>
+          <h1 className="font-medium text-primary text-lg">
+            Medical Inforamtion
+          </h1>
           <Divider orientation="horizontal" flexItem></Divider>
           <div className="w-full flex flex-col text-sm gap-4">
             <div className="w-full flex items-center">
               <p className="flex-1 text-gray-500">Blood Type:</p>
-              <p className="flex-[2]">{patient.BloodTypeName}</p>
+              <p className="flex-[2]">{patient.BloodTypeName
+              ? patient.BloodTypeName
+              : patient.BloodType.NameBloodType}</p>
             </div>
 
             <div className="w-full flex items-center">

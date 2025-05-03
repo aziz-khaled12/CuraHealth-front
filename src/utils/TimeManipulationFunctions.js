@@ -66,3 +66,6 @@ export const calculateAge = (birthday) => {
 };
 
 
+export const isNullTime = (timeString) => {
+  return timeString.startsWith('0001-01-01');
+};

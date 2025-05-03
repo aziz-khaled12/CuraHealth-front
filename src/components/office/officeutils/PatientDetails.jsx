@@ -41,12 +41,13 @@ const PatientDetails = ({ appointment }) => {
     };
     dispatch(updateAppointment({ ...appointment, status: "On Going" }));
     dispatch(addSession({ sessionId, sessionData: newSession }));
-    dispatch(startAppointment(appointment.appointmnt_id));
+    dispatch(startAppointment({AppointmntID: appointment.appointmnt_id, ServiceID: appointment.service_id}));
 
     navigate(`/office/sessions`);
   };
 
   return (
+    patient && 
     <>
       <div className="mb-4">
         <div className="flex items-center gap-4 mb-2">

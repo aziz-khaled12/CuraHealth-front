@@ -54,7 +54,7 @@ const SessionsPage = () => {
     };
     dispatch(updateAppointment({ ...appointment, status: "On Going" }));
     dispatch(addSession({ sessionId, sessionData: newSession }));
-    dispatch(startAppointment(appointment.appointmnt_id));
+    dispatch(startAppointment({AppointmntID: appointment.appointmnt_id, ServiceID: appointment.service_id}));
     setDrawerOpen(false);
   };
 

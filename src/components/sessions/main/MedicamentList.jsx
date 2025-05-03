@@ -24,6 +24,10 @@ const MedicamentList = ({ medicaments, onListChange, unites }) => {
     onListChange(updatedMedicaments);
   };
 
+  useEffect(() => {
+    console.log("Medicaments updated:", medicaments);
+  }, [medicaments]);
+
   if (medicaments.length === 0) {
     return (
       <Paper

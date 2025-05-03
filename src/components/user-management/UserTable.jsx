@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import {
   IconButton,
   Menu,
@@ -74,8 +74,6 @@ const UserTable = ({ onEdit, onDelete, onManagePermissions, onManageServices, on
     { field: "userName", headerName: "Name", flex: 1 },
     { field: "email", headerName: "Email", flex: 1 },
     { field: "type", headerName: "Type", flex: 1 },
-    { field: "specialization", headerName: "Specialization", flex: 1 },
-    { field: "licenseNumber", headerName: "License", flex: 1 },
    
     {
       field: "actions",
@@ -133,8 +131,34 @@ const UserTable = ({ onEdit, onDelete, onManagePermissions, onManageServices, on
       <DataGrid
         rows={filteredUsers}
         columns={columns}
+        slots={{ toolbar: GridToolbar }}
         pageSize={5}
         getRowId={(row) => row.id}
+        sx={{
+          height: '100%',
+          width: '100%',
+          '& .MuiDataGrid-root': {
+            border: 'none',
+          },
+          '& .MuiDataGrid-cell': {
+            borderBottom: '1px solid #f0f0f0',
+          },
+          '& .MuiDataGrid-columnHeaders': {
+            backgroundColor: '#fafafa',
+            borderBottom: 'none',
+          },
+          '& .MuiDataGrid-virtualScroller': {
+            backgroundColor: '#fff',
+          },
+          '& .MuiDataGrid-footerContainer': {
+            borderTop: '1px solid #f0f0f0',
+            backgroundColor: '#fafafa',
+          },
+          '& .MuiDataGrid-toolbarContainer': {
+            padding: '8px',
+            backgroundColor: '#fafafa',
+          },
+        }}
       />
 
       <Menu

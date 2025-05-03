@@ -9,19 +9,33 @@ export const fetchVitals = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const res = await axios.get(`${url}/api/StatusType`);
-      const generalSigns = res.data.status;
+      const statuses = res.data.status;
       console.log("general Signs", generalSigns);
+      let appointmentStatus = [];
+      let patientStatus = [];
 
-      // Transform the data back to the original format
-      const formattedSigns = generalSigns.map((sign) => ({
-        id: sign.StatusID,
-        name: sign.StatusName,
-        type: sign.StatusDataType,
-        placeholder: sign.Info?.placeholder || "",
-        unit: sign.Info?.unit || "",
-      }));
+      statuses.forEach((status) => {
+        if (status?.Info.target === "Appointment") {
+          appointmentStatus.push({
+            id: status.StatusID,
+            name: status.StatusName,
+            type: status.StatusDataType,
+            placeholder: status.Info?.placeholder || "",
+            unit: status.Info?.unit || "",
+          });
+        } else if (status?.Info.target === "Patient") {
+          patientStatus.push({
+            id: status.StatusID,
+            name: status.StatusName,
+            type: status.StatusDataType,
+            unit: status.Info?.unit || "",
+          });
+        }
+      });
+      
+     
 
-      return formattedSigns;
+      return {appointmentStatus, patientStatus};
     } catch (err) {
       return rejectWithValue(
         err.response?.data?.error || "Something went wrong"
@@ -36,6 +50,7 @@ export const signSlice = createSlice({
   name: "signs",
   initialState: {
     generalSigns: [],
+    patientSigns: [],
     unites: [],
     status: "idle",
     error: null,
@@ -65,7 +80,8 @@ export const signSlice = createSlice({
       .addCase(fetchVitals.fulfilled, (state, action) => {
         state.status = "succeeded";
         console.log(action.payload);
-        state.generalSigns = action.payload;
+        state.generalSigns = action.payload.appointmentStatus;
+        state.patientSigns = action.payload.patientStatus;
       })
       .addCase(fetchVitals.pending, (state) => {
         state.status = "loading";

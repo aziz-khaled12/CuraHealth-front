@@ -22,6 +22,7 @@ import {
 } from "../../redux/appointmentsSlice";
 import AddNewModal from "../appointmentsModals/AddNewModal";
 import ModifyModal from "../appointmentsModals/ModifyModal";
+import { isNullTime } from "../../utils/TimeManipulationFunctions";
 
 const Calendar = () => {
   const dispatch = useDispatch();
@@ -34,8 +35,8 @@ const Calendar = () => {
     state.appointments.appointments.map((appointment) => ({
       ...appointment,
       title: `${appointment.first_name} ${appointment.last_name}`,
-      startDate: new Date(new Date(appointment.for_time).getTime() - 30 * 60 * 1000),
-      endDate: new Date(appointment.for_time),
+      startDate: appointment.start_time && isNullTime(appointment.start_time) ? new Date(new Date(appointment.for_time).getTime() - 30 * 60 * 1000): new Date(appointment.start_time),
+      endDate: appointment.end_time && isNullTime(appointment.end_time) ? new Date(appointment.for_time) : new Date(appointment.end_time),
     }))
   );
 

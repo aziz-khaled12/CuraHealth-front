@@ -11,21 +11,26 @@ import {
   Box,
   Paper,
   Typography,
+  Autocomplete,
 } from "@mui/material";
 import { MdFilterAlt, MdRefresh, MdCalendarMonth } from "react-icons/md";
 
 const PatientRecordsFilters = ({
   date,
   setDate,
+  recordTypes,
   recordType,
   setRecordType,
+  doctors,
   doctor,
   setDoctor,
   status,
   setStatus,
   diagnosis,
+  diagnosises,
   setDiagnosis,
   medication,
+  medications,
   setMedication,
 }) => {
   // Count active filters for badge
@@ -39,6 +44,10 @@ const PatientRecordsFilters = ({
     if (medication) count++;
     return count;
   };
+  console.log("doctors: ", doctors);
+  console.log("diagnosises: ", diagnosises);
+  console.log("recordTypes: ", recordTypes);
+  console.log("medications: ", medications);
 
   // Reset all filters
   const handleReset = () => {
@@ -117,45 +126,41 @@ const PatientRecordsFilters = ({
         </div>
 
         {/* Record Type */}
-        <FormControl
+        <Autocomplete
           fullWidth
-          variant="outlined"
-          className="bg-gray-50 rounded-md hover:bg-gray-100 transition-colors"
-        >
-          <InputLabel>Record Type</InputLabel>
-          <Select
-            value={recordType}
-            onChange={(e) => setRecordType(e.target.value)}
-            label="Record Type"
-          >
-            <MenuItem value="">All record types</MenuItem>
-            <MenuItem value="consultation">Consultation</MenuItem>
-            <MenuItem value="lab-results">Lab Results</MenuItem>
-            <MenuItem value="imaging">Imaging</MenuItem>
-            <MenuItem value="prescription">Prescription</MenuItem>
-            <MenuItem value="follow-up">Follow-up</MenuItem>
-            <MenuItem value="annual-physical">Annual Physical</MenuItem>
-          </Select>
-        </FormControl>
+          options={recordTypes.map((type) => type.name)}
+          value={recordType}
+          onChange={(event, newValue) => {
+            setRecordType(newValue);
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Record Type"
+              variant="outlined"
+              className="bg-gray-50 rounded-md hover:bg-gray-100 transition-colors"
+            />
+          )}
+        />
+
 
         {/* Doctor */}
-        <FormControl
+        <Autocomplete
           fullWidth
-          variant="outlined"
-          className="bg-gray-50 rounded-md hover:bg-gray-100 transition-colors"
-        >
-          <InputLabel>Doctor</InputLabel>
-          <Select
-            value={doctor}
-            onChange={(e) => setDoctor(e.target.value)}
-            label="Doctor"
-          >
-            <MenuItem value="">All doctors</MenuItem>
-            <MenuItem value="dr-chen">Dr. Michael Chen</MenuItem>
-            <MenuItem value="dr-johnson">Dr. Sarah Johnson</MenuItem>
-            <MenuItem value="dr-williams">Dr. Emily Williams</MenuItem>
-          </Select>
-        </FormControl>
+          options={doctors.map((doc) => doc.userName)}
+          value={doctor}
+          onChange={(event, newValue) => {
+            setDoctor(newValue);
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Doctor"
+              variant="outlined"
+              className="bg-gray-50 rounded-md hover:bg-gray-100 transition-colors"
+            />
+          )}
+        />
 
         {/* Record Status */}
         <FormControl
@@ -178,45 +183,40 @@ const PatientRecordsFilters = ({
         </FormControl>
 
         {/* Diagnosis */}
-        <FormControl
+        <Autocomplete
           fullWidth
-          variant="outlined"
-          className="bg-gray-50 rounded-md hover:bg-gray-100 transition-colors"
-        >
-          <InputLabel>Diagnosis</InputLabel>
-          <Select
-            value={diagnosis}
-            onChange={(e) => setDiagnosis(e.target.value)}
-            label="Diagnosis"
-          >
-            <MenuItem value="">All diagnoses</MenuItem>
-            <MenuItem value="hypertension">Hypertension</MenuItem>
-            <MenuItem value="routine-checkup">Routine Checkup</MenuItem>
-            <MenuItem value="chest-xray">Chest X-ray</MenuItem>
-            <MenuItem value="diabetes">Diabetes</MenuItem>
-            <MenuItem value="asthma">Asthma</MenuItem>
-          </Select>
-        </FormControl>
+          options={diagnosises.map((diag) => diag.name)}
+          value={diagnosis}
+          onChange={(event, newValue) => {
+            setDiagnosis(newValue);
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Diagnosis"
+              variant="outlined"
+              className="bg-gray-50 rounded-md hover:bg-gray-100 transition-colors"
+            />
+          )}
+        />
 
         {/* Medication */}
-        <FormControl
+        <Autocomplete
           fullWidth
-          variant="outlined"
-          className="bg-gray-50 rounded-md hover:bg-gray-100 transition-colors"
-        >
-          <InputLabel>Medication</InputLabel>
-          <Select
-            value={medication}
-            onChange={(e) => setMedication(e.target.value)}
-            label="Medication"
-          >
-            <MenuItem value="">All medications</MenuItem>
-            <MenuItem value="lisinopril">Lisinopril</MenuItem>
-            <MenuItem value="aspirin">Aspirin</MenuItem>
-            <MenuItem value="atorvastatin">Atorvastatin</MenuItem>
-            <MenuItem value="metformin">Metformin</MenuItem>
-          </Select>
-        </FormControl>
+          options={medications.map((med) => med.NameDWA)}
+          value={medication}
+          onChange={(event, newValue) => {
+            setMedication(newValue);
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Medication"
+              variant="outlined"
+              className="bg-gray-50 rounded-md hover:bg-gray-100 transition-colors"
+            />
+          )}
+        />
       </div>
 
       <Divider className="my-6" />

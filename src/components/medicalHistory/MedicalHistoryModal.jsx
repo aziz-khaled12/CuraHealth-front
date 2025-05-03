@@ -1,21 +1,15 @@
 import React, { useState } from "react";
-import {
-  Modal,
-  Box,
-  Typography,
-  Backdrop,
-} from "@mui/material";
+import { Modal, Box, Typography, Backdrop, Button } from "@mui/material";
 import { format } from "date-fns";
-import { useSelector } from "react-redux";
-import { 
-  FaTimes, 
-  FaHospital, 
-  FaMedkit, 
-  FaClipboardList, 
-  FaPills, 
-  FaImage, 
-  FaChartLine, 
-  FaHeartbeat, 
+import {
+  FaTimes,
+  FaHospital,
+  FaMedkit,
+  FaClipboardList,
+  FaPills,
+  FaImage,
+  FaChartLine,
+  FaHeartbeat,
   FaFileAlt,
   FaCalendarAlt,
   FaAngleLeft,
@@ -25,8 +19,11 @@ import {
   FaSearch,
   FaDownload,
   FaPrint,
-  FaEllipsisV
+  FaEllipsisV,
 } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { downloadPDF, printPDF } from "../../utils/pdfHandler";
+import ViewerModal from "../random/ViewerModal";
 
 function TabPanel({ children, value, index, ...other }) {
   return (
@@ -46,9 +43,12 @@ function TabPanel({ children, value, index, ...other }) {
 }
 
 export function MedicalHistoryModal({ session, onClose }) {
+  const url = import.meta.env.VITE_BACK_END_URL;
   const [tabValue, setTabValue] = useState(0);
   const [selectedFile, setSelectedFile] = useState(null);
   const [viewerOpen, setViewerOpen] = useState(false);
+  const fileURLS = session.files.map((file) => {return `${url}/files/appointmnt/${session.id}/${file}`} )
+
 
   if (!session) return null;
 
@@ -65,6 +65,7 @@ export function MedicalHistoryModal({ session, onClose }) {
     setViewerOpen(false);
     setSelectedFile(null);
   };
+
 
   const getCategoryIcon = () => {
     switch (session.category) {
@@ -89,43 +90,57 @@ export function MedicalHistoryModal({ session, onClose }) {
   };
 
   const tabConfig = [
-    { 
-      id: 0, 
-      label: "Overview", 
-      icon: <FaChartLine /> 
+    {
+      id: 0,
+      label: "Overview",
+      icon: <FaChartLine />,
     },
-    { 
-      id: 1, 
-      label: "Vitals", 
-      icon: <FaHeartbeat /> 
+    {
+      id: 1,
+      label: "Vitals",
+      icon: <FaHeartbeat />,
     },
-    { 
-      id: 2, 
-      label: "Prescriptions", 
-      icon: <FaPills /> 
+    {
+      id: 2,
+      label: "Prescriptions",
+      icon: <FaPills />,
     },
-    { 
-      id: 3, 
-      label: "Documents", 
-      icon: <FaFileAlt /> 
-    }
+    {
+      id: 3,
+      label: "Documents",
+      icon: <FaFileAlt />,
+    },
   ];
+
+  const clinic = {
+    name: "Cura Health Medical Center",
+    address: "123 Healthcare Avenue, Medical District",
+    contact: "Tel: (123) 456-7890 • Email: info@curahealth.com",
+  };
+
+
+
+  const navigate = useNavigate();
+  console.log("session", session);
 
   return (
     <>
-      <Modal 
-        open={!!session} 
+      <Modal
+        open={!!session}
         onClose={onClose}
         BackdropComponent={Backdrop}
-        BackdropProps={{ 
+        BackdropProps={{
           timeout: 500,
-          style: { backdropFilter: "blur(3px)", backgroundColor: "rgba(0, 0, 0, 0.6)" }
+          style: {
+            backdropFilter: "blur(3px)",
+            backgroundColor: "rgba(0, 0, 0, 0.6)",
+          },
         }}
       >
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[95%] max-w-6xl h-[90vh] bg-white rounded-xl shadow-2xl flex flex-col overflow-hidden">
           {/* Header */}
           <div className="p-5 flex items-center border-b border-gray-200 bg-white">
-            <div 
+            <div
               className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg mr-4"
               style={{ backgroundColor: getCategoryColor() }}
             >
@@ -137,33 +152,44 @@ export function MedicalHistoryModal({ session, onClose }) {
                   {session.category} Consultation
                 </h2>
                 <span className="ml-3 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-semibold">
-                  Ref: #MC-{Math.floor(Math.random() * 10000)}
+                  Ref: {session.id}
                 </span>
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
                 <div className="flex items-center gap-1">
                   <FaCalendarAlt className="opacity-70" />
-                  <span>{format(session.startedAt, "dd MMMM yyyy, hh:mm a")}</span>
+                  <span>
+                    {format(session.startedAt, "dd MMMM yyyy, hh:mm a")}
+                  </span>
                 </div>
                 <span className="mx-2">•</span>
                 <div className="flex items-center gap-1">
                   <FaUser className="opacity-70" />
-                  <span>Dr. {session.doctorName || "Jennifer Smith"}</span>
+                  <span>Dr. {session.doctor || "Jennifer Smith"}</span>
                 </div>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <button className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
+              <button
+                className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                onClick={() => printPDF(session, clinic)}
+              >
                 <FaPrint className="text-gray-600" />
               </button>
-              <button className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
+              <button
+                className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                onClick={() => downloadPDF(session, clinic)}
+
+              >
                 <FaDownload className="text-gray-600" />
               </button>
-              <button className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
+              <button
+              onClick={() => navigate("/test")}
+              className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
                 <FaEllipsisV className="text-gray-600" />
               </button>
-              <button 
-                onClick={onClose} 
+              <button
+                onClick={onClose}
                 className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-blue-100 text-gray-600 hover:text-primary transition-colors ml-1"
               >
                 <FaTimes />
@@ -184,7 +210,11 @@ export function MedicalHistoryModal({ session, onClose }) {
                   }`}
                   onClick={() => handleTabChange(tab.id)}
                 >
-                  <span className={`text-lg ${tabValue === tab.id ? "text-primary" : "text-gray-400"}`}>
+                  <span
+                    className={`text-lg ${
+                      tabValue === tab.id ? "text-primary" : "text-gray-400"
+                    }`}
+                  >
                     {tab.icon}
                   </span>
                   <span>{tab.label}</span>
@@ -204,7 +234,9 @@ export function MedicalHistoryModal({ session, onClose }) {
                       <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-sm">
                         <FaInfoCircle />
                       </div>
-                      <h3 className="font-semibold text-blue-800">Consultation Cause</h3>
+                      <h3 className="font-semibold text-blue-800">
+                        Consultation Cause
+                      </h3>
                     </div>
                     <span className="text-xs font-medium text-primary bg-blue-100 px-2 py-1 rounded-full">
                       {session.consultationCause?.length || 0} items
@@ -262,7 +294,9 @@ export function MedicalHistoryModal({ session, onClose }) {
                       <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-sm">
                         <FaInfoCircle />
                       </div>
-                      <h3 className="font-semibold text-blue-800">Services Provided</h3>
+                      <h3 className="font-semibold text-blue-800">
+                        Services Provided
+                      </h3>
                     </div>
                     <span className="text-xs font-medium text-primary bg-blue-100 px-2 py-1 rounded-full">
                       {session.services?.length || 0} services
@@ -294,7 +328,9 @@ export function MedicalHistoryModal({ session, onClose }) {
                     </div>
                     <h3 className="font-semibold text-blue-800">Vital Signs</h3>
                   </div>
-                  <div className="text-xs font-medium text-primary">Last updated: {format(new Date(), "dd MMM yyyy")}</div>
+                  <div className="text-xs font-medium text-primary">
+                    Last updated: {format(new Date(), "dd MMM yyyy")}
+                  </div>
                 </div>
                 <div className="p-5">
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -308,22 +344,27 @@ export function MedicalHistoryModal({ session, onClose }) {
                             <FaHeartbeat className="text-2xl" />
                           </div>
                           <div>
-                            <div className="text-sm text-gray-500">{vital.name}</div>
-                            <div className="text-2xl font-bold text-gray-800 mt-1">{vital.value}</div>
-                            {vital.range && (
-                              <div className="text-xs text-gray-400 mt-1">Normal range: {vital.range}</div>
-                            )}
+                            <div className="text-sm text-gray-500">
+                              {vital.name}
+                            </div>
+                            <div className="text-2xl font-bold text-gray-800 mt-1">{`${vital.value} ${vital.unit}`}</div>
                           </div>
                         </div>
                         {vital.status && (
-                          <div className={`mt-3 text-xs font-medium rounded-full px-3 py-1 inline-block ${
-                            vital.status === "normal" 
-                              ? "bg-blue-100 text-blue-700" 
-                              : vital.status === "alert" 
-                                ? "bg-red-100 text-red-700" 
+                          <div
+                            className={`mt-3 text-xs font-medium rounded-full px-3 py-1 inline-block ${
+                              vital.status === "normal"
+                                ? "bg-blue-100 text-blue-700"
+                                : vital.status === "alert"
+                                ? "bg-red-100 text-red-700"
                                 : "bg-yellow-100 text-yellow-700"
-                          }`}>
-                            {vital.status === "normal" ? "Normal" : vital.status === "alert" ? "Requires Attention" : "Slightly Elevated"}
+                            }`}
+                          >
+                            {vital.status === "normal"
+                              ? "Normal"
+                              : vital.status === "alert"
+                              ? "Requires Attention"
+                              : "Slightly Elevated"}
                           </div>
                         )}
                       </div>
@@ -341,16 +382,18 @@ export function MedicalHistoryModal({ session, onClose }) {
                     <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-sm">
                       <FaPills />
                     </div>
-                    <h3 className="font-semibold text-blue-800">Prescribed Medications</h3>
+                    <h3 className="font-semibold text-blue-800">
+                      Prescribed Medications
+                    </h3>
                   </div>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                       <FaSearch className="w-4 h-4 text-gray-500" />
                     </div>
-                    <input 
-                      type="text" 
-                      className="py-1.5 pl-10 pr-4 bg-white border border-gray-300 rounded-full text-sm focus:ring-primary focus:border-primary w-48" 
-                      placeholder="Search medications..." 
+                    <input
+                      type="text"
+                      className="py-1.5 pl-10 pr-4 bg-white border border-gray-300 rounded-full text-sm focus:ring-primary focus:border-primary w-48"
+                      placeholder="Search medications..."
                     />
                   </div>
                 </div>
@@ -374,30 +417,24 @@ export function MedicalHistoryModal({ session, onClose }) {
                                     {prescription.name}
                                   </h4>
                                   <div className="mt-2 space-x-2">
-                                    <span className="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                                      Dosage: {prescription.dosage}
-                                    </span>
                                     {prescription.frequency && (
                                       <span className="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
                                         {prescription.frequency}
                                       </span>
                                     )}
-                                    {prescription.duration && (
+                                    {prescription.quantity && (
                                       <span className="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                                        {prescription.duration}
+                                        {`${prescription.quantity} ${prescription.unit}`}
                                       </span>
                                     )}
                                   </div>
                                 </div>
                               </div>
-                              <div className="mt-4 md:mt-0">
-                                <button className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
-                                  Refill Request
-                                </button>
-                              </div>
                             </div>
                             <div className="mt-4 pt-4 border-t border-gray-100">
-                              <h5 className="text-sm font-semibold text-gray-700 mb-2">Instructions:</h5>
+                              <h5 className="text-sm font-semibold text-gray-700 mb-2">
+                                Instructions:
+                              </h5>
                               <p className="text-gray-600">
                                 {prescription.instructions}
                               </p>
@@ -419,17 +456,19 @@ export function MedicalHistoryModal({ session, onClose }) {
                     <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-sm">
                       <FaFileAlt />
                     </div>
-                    <h3 className="font-semibold text-blue-800">Medical Documents</h3>
+                    <h3 className="font-semibold text-blue-800">
+                      Medical Documents
+                    </h3>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                         <FaSearch className="w-4 h-4 text-gray-500" />
                       </div>
-                      <input 
-                        type="text" 
-                        className="py-1.5 pl-10 pr-4 bg-white border border-gray-300 rounded-full text-sm focus:ring-primary focus:border-primary w-48" 
-                        placeholder="Search documents..." 
+                      <input
+                        type="text"
+                        className="py-1.5 pl-10 pr-4 bg-white border border-gray-300 rounded-full text-sm focus:ring-primary focus:border-primary w-48"
+                        placeholder="Search documents..."
                       />
                     </div>
                     <button className="px-4 py-1.5 bg-blue-100 text-blue-700 rounded-full text-sm font-medium hover:bg-blue-200 transition-colors flex items-center gap-1">
@@ -440,11 +479,11 @@ export function MedicalHistoryModal({ session, onClose }) {
                 </div>
                 <div className="p-5">
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    {session.files?.map((file, index) => (
+                    {fileURLS.map((file, index) => (
                       <div
                         key={index}
                         className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden cursor-pointer hover:shadow-md hover:-translate-y-1 transition-all duration-200 group"
-                        onClick={() => handleFileSelect(file.url)}
+                        onClick={() => handleFileSelect(file)}
                       >
                         <div className="h-32 bg-blue-50 border-b border-gray-200 flex items-center justify-center">
                           <div className="w-16 h-16 rounded-full bg-primary text-white flex items-center justify-center group-hover:bg-primary transition-colors shadow-md">
@@ -473,7 +512,7 @@ export function MedicalHistoryModal({ session, onClose }) {
           </div>
         </div>
       </Modal>
-
+      
       {viewerOpen && (
         <ViewerModal
           open={viewerOpen}
@@ -481,6 +520,7 @@ export function MedicalHistoryModal({ session, onClose }) {
           onClose={handleViewerClose}
         />
       )}
+     
     </>
   );
 }

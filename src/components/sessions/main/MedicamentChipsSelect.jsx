@@ -17,6 +17,7 @@ const MedicamentChipsSelect = ({
   title = "Medicaments",
   selectedMedicaments = [],
   onMedicamentsChange,
+  unites = []
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selected, setSelected] = useState(false);
@@ -33,7 +34,7 @@ const MedicamentChipsSelect = ({
             ...chip,
             instructions: chip.GeneralInstraction.Instraction || "",
             quantity: chip.GeneralInstraction.Quantity || 1,
-            unit: chip.GeneralInstraction.Unite?.NameUnite || "pieces",
+            unit: chip.GeneralInstraction.Unite?.NameUnite || unites[0] || "",
             posologie: chip.GeneralInstraction.Pososition || "",
             voie: chip.GeneralInstraction.LeVoie || "",
           },

@@ -4,7 +4,6 @@ import { Box, Button, Modal } from "@mui/material";
 import { CheckCircle, Cancel, Schedule } from "@mui/icons-material";
 import { MdAdd } from "react-icons/md";
 import AddNewModal from "../appointmentsModals/AddNewModal";
-import Header from "../random/Header";
 import { useDispatch, useSelector } from "react-redux";
 import { format, parseISO } from "date-fns";
 import { fetchAppointments } from "../../redux/appointmentsSlice";
@@ -13,7 +12,6 @@ import useHasPermission from "../../hooks/useHasPermission";
 const Appointments = () => {
   const [open, setOpen] = useState(false);
   const dispatch = useDispatch();
-  const { appointments } = useSelector((state) => state.appointments);
   const canSeeTodayAppointments = useHasPermission(
     "see today Appointment list"
   );
@@ -23,6 +21,8 @@ const Appointments = () => {
       dispatch(fetchAppointments({ today: canSeeTodayAppointments }));
     }
   }, [dispatch]);
+  const { appointments } = useSelector((state) => state.appointments);
+
 
   const handleOpen = () => {
     setOpen(true);
@@ -37,7 +37,7 @@ const Appointments = () => {
       },
       {
         field: "patientName",
-        headerName: "Patient Name",
+        headerName: "Patient",
         flex: 1.5, // More space for the patient's name
         valueGetter: (value, row) => `${row.first_name} ${row.last_name}`,
       },
@@ -47,18 +47,14 @@ const Appointments = () => {
         flex: 1, // More space for the patient's name
         valueGetter: (value, row) => format(row.birth_day, "yyyy-MM-dd"),
       },
-      {
-        field: "date",
-        headerName: "Date",
-        flex: 1, // Standard space for the date
-        valueGetter: (value, row) => format(row.created_at, "yyyy-MM-dd"),
-      },
+      
       {
         field: "created_at",
-        headerName: "Time",
-        flex: 1, // Moderate space for the time
-        valueGetter: (value, row) => format(row.created_at, "hh:mm a"),
+        headerName: "Created At",
+        flex: 1.5, // Standard space for the date
+        valueGetter: (value, row) => format(row.created_at, "yyyy-MM-dd hh:mm a"),
       },
+     
       {
         field: "name_category",
         headerName: "Category",
@@ -86,7 +82,7 @@ const Appointments = () => {
   return (
     appointments && (
       <>
-        <div className={`w-full transition-all duration-100 ease-in-out`}>
+        <div className="flex flex-col h-full w-full">
           {open && (
             <AddNewModal open={open} setOpen={setOpen} cellData={null} />
           )}
@@ -95,7 +91,7 @@ const Appointments = () => {
               display: "flex",
               alignItems: "center",
               justifyContent: "end",
-              marginBottom: "16px",
+              marginBottom: "1rem",
             }}
           >
             {/* <Header
@@ -115,7 +111,7 @@ const Appointments = () => {
             )}
           </Box>
 
-          <Box sx={{ height: "69vh" }}>
+          <Box className="flex-grow w-full h-full">
             {appointments && (
               <DataGrid
                 rows={appointments}
@@ -123,6 +119,31 @@ const Appointments = () => {
                 columns={columns}
                 autoPageSize
                 getRowId={(row) => row.appointmnt_id}
+                sx={{
+                  height: '100%',
+                  width: '100%',
+                  '& .MuiDataGrid-root': {
+                    border: 'none',
+                  },
+                  '& .MuiDataGrid-cell': {
+                    borderBottom: '1px solid #f0f0f0',
+                  },
+                  '& .MuiDataGrid-columnHeaders': {
+                    backgroundColor: '#fafafa',
+                    borderBottom: 'none',
+                  },
+                  '& .MuiDataGrid-virtualScroller': {
+                    backgroundColor: '#fff',
+                  },
+                  '& .MuiDataGrid-footerContainer': {
+                    borderTop: '1px solid #f0f0f0',
+                    backgroundColor: '#fafafa',
+                  },
+                  '& .MuiDataGrid-toolbarContainer': {
+                    padding: '8px',
+                    backgroundColor: '#fafafa',
+                  },
+                }}
               />
             )}
           </Box>

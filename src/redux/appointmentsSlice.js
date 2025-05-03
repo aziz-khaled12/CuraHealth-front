@@ -62,11 +62,12 @@ export const createAppointment = createAsyncThunk(
 
 export const startAppointment = createAsyncThunk(
   "appointments/startAppointment",
-  async (appointmentId, { rejectWithValue }) => {
+  async (startData, { rejectWithValue }) => {
     try {
+      console.log("startData: ", startData);
       const res = await axios.post(
         `${url}/api/StartAppointmnt`,
-        { AppointmntID: appointmentId },
+        {...startData},
         {
           headers: { Authorization: `${token}` },
         }

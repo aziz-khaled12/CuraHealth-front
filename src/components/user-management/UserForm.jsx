@@ -15,8 +15,6 @@ import {
     email: "",
     userName: "",
     type: "Nurse",
-    specialization: "",
-    licenseNumber: "",
     password: "",
   });
 
@@ -55,15 +53,6 @@ import {
 
     if (!user && !formData.password) {
       newErrors.password = "Password is required";
-    }
-
-    if (formData.type === "Doctor") {
-      if (!formData.specialization) {
-        newErrors.specialization = "Specialization is required for doctors";
-      }
-      if (!formData.licenseNumber) {
-        newErrors.licenseNumber = "License number is required for doctors";
-      }
     }
 
     setErrors(newErrors);
@@ -126,30 +115,7 @@ import {
             <MenuItem value={"Doctor"}>Doctor</MenuItem>
             <MenuItem value={"Nurse"}>Nurse</MenuItem>
           </TextField>
-          {formData.type === "Doctor" && (
-            <>
-              <TextField
-                fullWidth
-                label="Specialization"
-                name="specialization"
-                value={formData.specialization}
-                onChange={handleChange}
-                error={!!errors.specialization}
-                helperText={errors.specialization}
-                margin="normal"
-              />
-              <TextField
-                fullWidth
-                label="License Number"
-                name="licenseNumber"
-                value={formData.licenseNumber}
-                onChange={handleChange}
-                error={!!errors.licenseNumber}
-                helperText={errors.licenseNumber}
-                margin="normal"
-              />
-            </>
-          )}
+          
         </form>
       </DialogContent>
       <DialogActions>

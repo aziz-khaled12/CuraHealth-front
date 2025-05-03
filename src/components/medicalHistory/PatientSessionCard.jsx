@@ -11,12 +11,14 @@ import {
   FaChevronRight,
 } from "react-icons/fa";
 import useHasPermission from "../../hooks/useHasPermission";
+import { useNavigate } from "react-router-dom";
 
 const PatientSessionCard = ({ session, handleViewDetails }) => {
   // Status badge styles based on status
 
   const canSeeDetails = useHasPermission("see recent Patient Records details");
   const canDownloadRecords = useHasPermission("download Patient records");
+  const navigate = useNavigate();
   
   const getStatusStyles = (status) => {
     switch (status?.toLowerCase()) {
@@ -109,12 +111,12 @@ const PatientSessionCard = ({ session, handleViewDetails }) => {
 
       {/* Card Footer */}
       <div className="bg-gradient-to-r from-blue-50 to-blue-100 flex justify-between items-center p-3 border-t border-blue-200">
-        <div>
+        <div className="flex-1">
           <div className="text-xs text-primary font-medium">
-            Ref: #{Math.floor(Math.random() * 10000)}
+            Ref: {session.id}
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-2">
           {canSeeDetails && (
             <button
               className="flex h-8 items-center gap-1.5 rounded-full border border-blue-300 bg-white px-3 text-sm font-medium text-blue-700 hover:bg-blue-50 transition-colors shadow-sm"

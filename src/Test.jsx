@@ -1,7 +1,9 @@
 import React, { useRef } from "react";
 import { usePDF } from "react-to-pdf";
-import MedicalRecordTemplate from "./components/random/MedicalRecordTemplate";
+import MedicalRecordTemplate from "./pdf/MedicalRecordTemplate";
 import { FaDownload, FaPrint } from "react-icons/fa";
+import PageOne from "./pdf/PageOne";
+import PageTwo from "./pdf/PageTwo";
 
 const Test = () => {
   // Reference to the content we want to convert to PDF
@@ -86,7 +88,8 @@ const Test = () => {
           boxSizing: "border-box",
         }}
       >
-        <MedicalRecordTemplate record={medicalRecord} clinic={clinicInfo} />
+        <PageOne record={medicalRecord} clinic={clinicInfo} />
+        <PageTwo record={medicalRecord} clinic={clinicInfo} />
       </div>
     </div>
   );

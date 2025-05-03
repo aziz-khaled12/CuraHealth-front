@@ -36,6 +36,7 @@ const Medicaments = ({ id, availableMedicaments = [] }) => {
         data={availableMedicaments}
         selectedMedicaments={data || []}
         onMedicamentsChange={handleChange}
+        unites={unites}
       />
       <MedicamentList
         medicaments={data || []}

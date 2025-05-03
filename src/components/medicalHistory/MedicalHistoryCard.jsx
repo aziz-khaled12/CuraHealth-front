@@ -1,6 +1,12 @@
 import React from "react";
 import { Paper, Chip, Button } from "@mui/material";
-import { CalendarToday, AccessTime, Medication, Description, Assignment } from "@mui/icons-material";
+import {
+  CalendarToday,
+  AccessTime,
+  Medication,
+  Description,
+  Assignment,
+} from "@mui/icons-material";
 import { format } from "date-fns";
 import useHasPermission from "../../hooks/useHasPermission";
 
@@ -8,7 +14,7 @@ const MedicalHistoryCard = ({ session, onSelectSession }) => {
   const startTime = format(session.startedAt, "hh:mm a");
   const startDate = format(session.startedAt, "dd/MM/yyyy");
   const canSeeDetails = useHasPermission("see recent Patient Records details");
-  
+
   return (
     <>
       <Paper className="rounded-lg border border-blue-100 overflow-hidden">
@@ -50,68 +56,25 @@ const MedicalHistoryCard = ({ session, onSelectSession }) => {
               Consultation Cause: {session.consultationCause.join(", ")}
             </div>
           </div>
-          <hr className="my-3 border-blue-100" />
-          <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <h4 className="text-xs font-medium text-gray-500 mb-2">Vitals</h4>
-              <div className="grid grid-cols-2 gap-2 text-sm">
-                {session.vitals.map((vital, index) => (
-                  <div key={index} className="flex justify-between">
-                    <span className="text-gray-500">{vital.name}:</span>
-                    <span>{vital.value}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div>
-              <h4 className="text-xs font-medium text-gray-500 mb-2">
-                Medications
-              </h4>
-              <div className="space-y-1">
-                {session.medicaments.map((medication, index) => (
-                  <div key={index} className="flex items-center text-sm">
-                    <Medication
-                      fontSize="small"
-                      className="mr-1 text-primary"
-                    />
-                    <span>
-                      {medication.name} ({medication.dosage})
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-          <hr className="my-3 border-blue-100" />
-          <div>
-            <h4 className="text-xs font-medium text-gray-500 mb-2">
-              Physical Signs
-            </h4>
-            <p className="text-sm">{session.physicalSigns.join(", ")}</p>
-          </div>
-          <hr className="my-3 border-blue-100" />
-          <div>
-            <h4 className="text-xs font-medium text-gray-500 mb-2">
-              Functional Signs
-            </h4>
-            <p className="text-sm">{session.functionalSigns.join(", ")}</p>
-          </div>
+
           <hr className="my-3 border-blue-100" />
           <div>
             <h4 className="text-xs font-medium text-gray-500 mb-2">Services</h4>
             <p className="text-sm">{session.services.join(", ")}</p>
           </div>
         </div>
-        {
-          canSeeDetails && (
-            <div className="bg-blue-50 p-2 flex justify-end">
-              <Button size="small" color="primary" onClick={() => onSelectSession(session)} startIcon={<Description />}>
-                View Full session
-              </Button>
-            </div>
-          )
-        }
-        
+        {canSeeDetails && (
+          <div className="bg-blue-50 p-2 flex justify-end">
+            <Button
+              size="small"
+              color="primary"
+              onClick={() => onSelectSession(session)}
+              startIcon={<Description />}
+            >
+              View Full session
+            </Button>
+          </div>
+        )}
       </Paper>
     </>
   );

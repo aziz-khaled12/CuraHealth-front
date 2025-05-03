@@ -13,34 +13,39 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { useDispatch, useSelector } from "react-redux";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 
-const ModifyModal = ({ open, setOpen, prevData }) => {
+const ModifyModal = ({ open, setOpen, patientId }) => {
+  
+  const prevData = useSelector((state) =>
+    state.patients.patients.filter((patient) => patient.PatientID === patientId)
+  );
+
+  console.log("prevData", prevData);
+
+
   const dispatch = useDispatch();
-  const { bloodTypes, etatsCivil } = useSelector((state) => state.userData);
   const genders = [
-    { id: 1, name: "Male" },
-    { id: 0, name: "Femal" },
+    { id: "M", name: "Male" },
+    { id: "F", name: "Femal" },
   ];
 
-  const [formData, setFormData] = useState({
-    ...prevData,
-  });
+  const [formData, setFormData] = useState(prevData[0]);
 
   useEffect(() => {
-    setFormData(...prevData);
+    setFormData(prevData[0]);
   }, [prevData]);
-
-  console.log(prevData);
 
   useEffect(() => {
     dispatch(fetchBloodTypes());
     dispatch(fetchEtatCivil());
   }, []);
 
+  const { bloodTypes, etatsCivil } = useSelector((state) => state.userData);
+
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData((prevState) => ({
       ...prevState,
-      [name]: value, // Dynamically update the field by name
+      [name]: value,
     }));
   };
 
@@ -78,7 +83,7 @@ const ModifyModal = ({ open, setOpen, prevData }) => {
                 name="firstName"
                 onChange={handleChange}
                 placeholder="First Name"
-                value={formData.firstName}
+                value={formData.FirstName}
               />
             </div>
             <div className="flex flex-col items-start w-full">
@@ -88,7 +93,7 @@ const ModifyModal = ({ open, setOpen, prevData }) => {
                 onChange={handleChange}
                 name="lastName"
                 placeholder="Last Name"
-                value={formData.lastName}
+                value={formData.LastName}
               />
             </div>
             <div className="flex flex-col items-start w-full">
@@ -104,7 +109,7 @@ const ModifyModal = ({ open, setOpen, prevData }) => {
                     }))
                   }
                   name="birthday"
-                  value={formData.birthday}
+                  value={new Date(formData.BirthDay)}
                   renderInput={(params) => (
                     <TextField sx={{ width: "100%" }} {...params} />
                   )}
@@ -121,7 +126,7 @@ const ModifyModal = ({ open, setOpen, prevData }) => {
                 name="phoneNum"
                 onChange={handleChange}
                 placeholder="Phone Number"
-                value={formData.phoneNumber}
+                value={formData.PhoneNum}
               />
             </div>
             <div className="flex flex-col items-start w-full">
@@ -146,7 +151,7 @@ const ModifyModal = ({ open, setOpen, prevData }) => {
                 onChange={handleChange}
                 name="email"
                 placeholder="Email"
-                value={formData.email}
+                value={formData.Email}
               />
             </div>
 
@@ -205,7 +210,7 @@ const ModifyModal = ({ open, setOpen, prevData }) => {
                   name="sex"
                   onChange={handleChange}
                   hiddenLabel
-                  value={formData.sex}
+                  value={formData.Sex}
                 >
                   <MenuItem value={2}>
                     <em>Select a Gender</em>
@@ -230,7 +235,7 @@ const ModifyModal = ({ open, setOpen, prevData }) => {
                 onChange={handleChange}
                 name="address"
                 placeholder="Address"
-                value={formData.address}
+                value={formData.Address}
               />
             </div>
             <div className="flex flex-col items-start w-full">
@@ -240,7 +245,7 @@ const ModifyModal = ({ open, setOpen, prevData }) => {
                 onChange={handleChange}
                 name="city"
                 placeholder="City"
-                value={formData.city}
+                value={formData.City}
               />
             </div>
           </div>

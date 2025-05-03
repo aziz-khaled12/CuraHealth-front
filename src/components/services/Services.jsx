@@ -39,14 +39,14 @@ const Services = () => {
     setOpen(true);
   };
   return (
-    <div className={`w-full transition-all duration-100 ease-in-out`}>
+    <div className="flex flex-col h-full w-full">
       {open && <ServicesModal open={open} setOpen={setOpen} cellData={null} />}
       <Box
         sx={{
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between",
-          marginBottom: "16px",
+          justifyContent: "end",
+          marginBottom: "1rem",
         }}
       >
         {/* <Header
@@ -59,7 +59,7 @@ const Services = () => {
             onClick={handleOpen}
             variant="contained"
             sx={{ textTransform: "none" }}
-            className="!bg-primary"
+            
           >
             New Service
           </Button>
@@ -74,11 +74,28 @@ const Services = () => {
           getRowId={(row) => row.id}
           autoPageSize
           sx={{
-            width: "100%",
-            "@media (max-width: 600px)": {
-              "& .MuiDataGrid-root": {
-                fontSize: "0.8rem",
-              },
+            height: '100%',
+            width: '100%',
+            '& .MuiDataGrid-root': {
+              border: 'none',
+            },
+            '& .MuiDataGrid-cell': {
+              borderBottom: '1px solid #f0f0f0',
+            },
+            '& .MuiDataGrid-columnHeaders': {
+              backgroundColor: '#fafafa',
+              borderBottom: 'none',
+            },
+            '& .MuiDataGrid-virtualScroller': {
+              backgroundColor: '#fff',
+            },
+            '& .MuiDataGrid-footerContainer': {
+              borderTop: '1px solid #f0f0f0',
+              backgroundColor: '#fafafa',
+            },
+            '& .MuiDataGrid-toolbarContainer': {
+              padding: '8px',
+              backgroundColor: '#fafafa',
             },
           }}
         />
