@@ -17,7 +17,7 @@ const Office = () => {
     await dispatch(fetchPatients());
     await dispatch(fetchAppointments());
     await dispatch(fetchAppointmentsData());
-  }
+  };
 
   useEffect(() => {
     fetchData();
@@ -30,11 +30,15 @@ const Office = () => {
   const cancelledAppointments = appointments.filter(
     (a) => a.start_time === null
   );
-  const upcomingAppointments = appointments.filter(
-    (a) =>
-      a.start_time === "0001-01-01T00:00:00Z" ||
-      a.end_time === "0001-01-01T00:00:00Z"
-  );
+
+  const upcomingAppointments = appointments
+    .filter(
+      (a) =>
+        a.start_time === "0001-01-01T00:00:00Z" ||
+        a.end_time === "0001-01-01T00:00:00Z"
+    )
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
   const completedAppointments = appointments.filter(
     (a) =>
       a.start_time != "0001-01-01T00:00:00Z" &&
@@ -71,7 +75,6 @@ const Office = () => {
 
   const [dayProgress, setDayProgress] = useState(0);
 
-
   const calculateDayProgress = () => {
     const temp = new Date();
     const startOfDay = new Date(temp.setHours(8, 0, 0, 0));
@@ -89,13 +92,15 @@ const Office = () => {
 
     setDayProgress(calculateDayProgress());
 
-    return () => clearInterval(interval); 
+    return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    console.log("upcoming: ", upcomingAppointments);
+  }, [upcomingAppointments]);
 
   return (
     <div>
-
       <OfficeHeader searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
 
       <Paper className="p-4 mb-6" elevation={0}>

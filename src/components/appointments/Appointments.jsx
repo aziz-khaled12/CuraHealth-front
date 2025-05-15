@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { format, parseISO } from "date-fns";
 import { fetchAppointments } from "../../redux/appointmentsSlice";
 import useHasPermission from "../../hooks/useHasPermission";
+import { showAlert } from "../../redux/alertSlice";
 
 const Appointments = () => {
   const [open, setOpen] = useState(false);
@@ -16,11 +17,15 @@ const Appointments = () => {
     "see today Appointment list"
   );
   const canAddAppointments = useHasPermission("add new Appointment");
+
+
   useEffect(() => {
     if (appointments.length === 0) {
       dispatch(fetchAppointments({ today: canSeeTodayAppointments }));
     }
   }, [dispatch]);
+
+  
   const { appointments } = useSelector((state) => state.appointments);
 
 
@@ -99,6 +104,7 @@ const Appointments = () => {
               subTitle={"Manage your appointments"}
             /> */}
             {canAddAppointments && (
+              <>
               <Button
                 startIcon={<MdAdd />}
                 onClick={handleOpen}
@@ -108,6 +114,8 @@ const Appointments = () => {
               >
                 New Appointment
               </Button>
+             
+              </>
             )}
           </Box>
 

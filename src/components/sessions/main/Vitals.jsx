@@ -19,6 +19,11 @@ const Vitals = ({ id }) => {
     (state) =>
       state.sessions.vitals.find((vital) => vital.sessionId === id).data
   );
+
+  useEffect(() => {
+    console.log("vitals: ", vitals)
+    console.log("generalSigns: ", generalSigns)
+  }, [vitals, generalSigns])
   const [formData, setFormData] = useState(vitals || []);
 
   const handleChange = (e) => {

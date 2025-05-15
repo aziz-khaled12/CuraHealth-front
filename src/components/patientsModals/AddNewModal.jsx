@@ -13,6 +13,7 @@ import { addPatient } from "../../redux/patientsSlice";
 import { fetchBloodTypes, fetchEtatCivil } from "../../redux/userDataSlice";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
+import { showAlert } from "../../redux/alertSlice";
 
 const AddNewModal = ({ open, setOpen }) => {
   const dispatch = useDispatch();
@@ -21,7 +22,6 @@ const AddNewModal = ({ open, setOpen }) => {
     lastName: "",
     birthday: new Date(),
     phoneNum: "",
-    IDNum: "", //National Identity card number
     email: "",
     BloodTypeID: 0,
     EtatCivileID: 0,
@@ -34,6 +34,7 @@ const AddNewModal = ({ open, setOpen }) => {
 
 
   const { bloodTypes, etatsCivil } = useSelector((state) => state.userData);
+  const { patientStatus } = useSelector((state) => state.patients);
 
   const genders = [
     { id: 'M', name: "Male" },
@@ -63,6 +64,9 @@ const AddNewModal = ({ open, setOpen }) => {
     };
     
     dispatch(addPatient({patientData: dataToSubmit}))
+    if(patientStatus === "success"){
+      dispatch(showAlert({ message: "Patient added successfully", type: "success" }));
+    }
     handleClose()
   }
   return (
@@ -104,21 +108,7 @@ const AddNewModal = ({ open, setOpen }) => {
                   value={formData.lastName}
                 />
               </div>
-              <div className="flex flex-col items-start w-full">
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <h1 className="text-base font-medium mb-2">Birthday</h1>
-                  <DatePicker
-                    sx={{ width: "100%" }}
-                    placeholder="Select Date"
-                    onChange={(newValue) => setFormData((prevState) => ({...prevState, birthday: newValue}))}
-                    name="birthday"
-                    value={formData.birthday}
-                    renderInput={(params) => (
-                      <TextField sx={{ width: "100%" }} {...params} />
-                    )}
-                  />
-                </LocalizationProvider>
-              </div>
+             
             </div>
 
             <div className="flex w-full gap-5">
@@ -133,16 +123,19 @@ const AddNewModal = ({ open, setOpen }) => {
                 />
               </div>
               <div className="flex flex-col items-start w-full">
-                <h1 className="text-base font-medium mb-2">
-                  National Identification Number
-                </h1>
-                <TextField
-                  className="w-full"
-                  name="IDNum"
-                  onChange={handleChange}
-                  placeholder="National ID"
-                  value={formData.IDNum}
-                />
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <h1 className="text-base font-medium mb-2">Birthday</h1>
+                  <DatePicker
+                    sx={{ width: "100%" }}
+                    placeholder="Select Date"
+                    onChange={(newValue) => setFormData((prevState) => ({...prevState, birthday: newValue}))}
+                    name="birthday"
+                    value={formData.birthday}
+                    renderInput={(params) => (
+                      <TextField sx={{ width: "100%" }} {...params} />
+                    )}
+                  />
+                </LocalizationProvider>
               </div>
             </div>
 

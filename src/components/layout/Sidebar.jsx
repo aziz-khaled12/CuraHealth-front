@@ -40,13 +40,13 @@ const Sidebar = () => {
       link: "appointments",
       permission: "see All Appointment list",
     },
-    {
-      id: 3,
-      label: "Reports",
-      icon: <MdAssignment size={22} />,
-      link: "rapports",
-      permission: "see Rapports",
-    },
+    // {
+    //   id: 3,
+    //   label: "Reports",
+    //   icon: <MdAssignment size={22} />,
+    //   link: "rapports",
+    //   permission: "see Rapports",
+    // },
     {
       id: 4,
       label: "Services",
@@ -99,11 +99,10 @@ const Sidebar = () => {
 
   return (
     <div className="h-full bg-white shadow-md flex flex-col py-4 relative transition-all duration-300 w-[80px]">
-      {/* Navigation Items */}
       <div className="flex flex-col gap-2 px-3">
         {filteredMenuItems.map((item) => (
           <div
-            key={item.id}
+            key={item.id   }
             className={`relative rounded-lg overflow-hidden ${
               selected === item.id ? "bg-blue-50" : ""
             }`}
@@ -129,7 +128,6 @@ const Sidebar = () => {
         ))}
       </div>
 
-      {/* User Profile at Bottom */}
       <div className="mt-auto mx-3 pt-4 border-t border-gray-200">
         <Tooltip title={"Profile"} placement="right">
           <button

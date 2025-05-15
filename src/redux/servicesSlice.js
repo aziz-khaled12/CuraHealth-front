@@ -72,7 +72,7 @@ export const serviceSlice = createSlice({
         state.status = "loading";
       })
       .addCase(fetchServices.fulfilled, (state, action) => {
-        state.status = "succeeded";
+        state.status = "success";
         state.services = action.payload;
       })
       .addCase(fetchServices.rejected, (state, action) => {

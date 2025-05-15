@@ -10,6 +10,7 @@ import sessionReducer from "./sessionSlice.js";
 import appointmentsDataReducer from "./appointmentDataSlice.js";
 import usersReducer from "./usersSlice.js";
 import permissionsReducer from "./permissionsSlice.js";
+import alertReducer from "./alertSlice.js"
 
 const store = configureStore({
   
@@ -25,6 +26,7 @@ const store = configureStore({
     sessions: sessionReducer,
     users: usersReducer,
     permissions: permissionsReducer,
+    alert: alertReducer,
   },
 });
 

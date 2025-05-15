@@ -32,7 +32,7 @@ export const recordSlice = createSlice({
         state.status = "loading";
       })
       .addCase(fetchRecords.fulfilled, (state, action) => {
-        state.status = "succeeded";
+        state.status = "success";
         state.records = action.payload;
       })
       .addCase(fetchRecords.rejected, (state, action) => {

@@ -8,6 +8,7 @@ import {
   MenuItem,
   Select,
   FormControl,
+  FormHelperText,
 } from "@mui/material";
 import {
   DatePicker,
@@ -24,6 +25,9 @@ import {
 
 import { fetchPatients } from "../../redux/patientsSlice";
 import { fetchServices } from "../../redux/servicesSlice";
+import { fetchUsers } from "../../redux/usersSlice";
+import { showAlert } from "../../redux/alertSlice";
+
 const AddNewModal = ({ open, setOpen, cellData }) => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
@@ -32,15 +36,19 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
     dispatch(fetchServices());
     dispatch(fetchAppointmentCategories());
     dispatch(fetchPatients());
+    dispatch(fetchUsers());
   }, []);
-  const { categories } = useSelector((state) => state.appointments);
+
+  const { categories, appointmentStatus } = useSelector((state) => state.appointments);
   const { patients } = useSelector((state) => state.patients);
   const { services } = useSelector((state) => state.services);
+  const doctors = useSelector((state) =>
+    state.users.users.filter((user) => user.type === "Doctor")
+  );
 
   const [startDate, setStartDate] = useState(
     cellData ? cellData.startDate : new Date()
   );
-  const [appointmentTitle, setAppointmentTitle] = useState("");
 
   const [endDate, setEndDate] = useState(() => {
     if (cellData && cellData.endDate) {
@@ -52,14 +60,66 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
   });
 
   const [selectedPatient, setSelectedPatient] = useState(null);
+  const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [category, setCategory] = useState(categories[1]);
   const [service, setService] = useState(services[1]);
+  
+  // Form validation state
+  const [errors, setErrors] = useState({
+    patient: false,
+    doctor: false,
+    service: false,
+    category: false,
+    date: false,
+    startTime: false,
+    endTime: false,
+  });
+  
+  // Form touched state to show errors only after interaction
+  const [touched, setTouched] = useState({
+    patient: false,
+    doctor: false,
+    service: false,
+    category: false,
+    date: false,
+    startTime: false,
+    endTime: false,
+  });
+
+  // Validate the form before submission
+  const validateForm = () => {
+    const newErrors = {
+      patient: !selectedPatient,
+      doctor: !selectedDoctor,
+      service: !service,
+      category: !category,
+      date: !startDate,
+      startTime: !startDate,
+      endTime: !endDate || endDate <= startDate,
+    };
+    
+    setErrors(newErrors);
+    setTouched({
+      patient: true,
+      doctor: true,
+      service: true,
+      category: true,
+      date: true,
+      startTime: true,
+      endTime: true,
+    });
+    
+    // Return true if no errors
+    return !Object.values(newErrors).some(error => error);
+  };
 
   const handleSubmitAppointment = () => {
-
-
+    if (!validateForm()) {
+      return;
+    }
+    
     const newAppointment = {
-      DoctorID: user.UserID,
+      DoctorID: selectedDoctor.id,
       PatientID: selectedPatient.PatientID,
       ForTime: endDate,
       ApponmentCategoryID: category.ApponmentCategoryID,
@@ -67,33 +127,106 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
     };
 
     dispatch(createAppointment(newAppointment));
-    handleClose();
+    if (appointmentStatus === "success") {
+      dispatch(showAlert({message: "Appointment Added Succefuly", severity: "success"}))
+      handleClose();
+    }
   };
 
   const handlePatientSelect = (event, value) => {
+    setTouched({ ...touched, patient: true });
     if (value) {
       setSelectedPatient(value);
-      setAppointmentTitle(`${value.FirstName} ${value.LastName}`);
+      setErrors({ ...errors, patient: false });
+    } else {
+      setSelectedPatient(null);
+      setErrors({ ...errors, patient: true });
+    }
+  };
+
+  const handleDoctorSelect = (event, value) => {
+    setTouched({ ...touched, doctor: true });
+    if (value) {
+      setSelectedDoctor(value);
+      setErrors({ ...errors, doctor: false });
+    } else {
+      setSelectedDoctor(null);
+      setErrors({ ...errors, doctor: true });
     }
   };
 
   const handleCategoryChange = (e) => {
+    setTouched({ ...touched, category: true });
     const selectedCategory = categories.find(
       (cat) => cat.ApponmentCategoryID === e.target.value
     );
     setCategory(selectedCategory);
+    setErrors({ ...errors, category: !selectedCategory });
   };
+  
   const handleServiceChange = (event, value) => {
+    setTouched({ ...touched, service: true });
     if (value) {
       setService(value);
+      setErrors({ ...errors, service: false });
+    } else {
+      setService(null);
+      setErrors({ ...errors, service: true });
     }
+  };
+
+  const handleStartDateChange = (newValue) => {
+    setTouched({ ...touched, date: true, startTime: true });
+    setStartDate(newValue);
+    setErrors({ 
+      ...errors, 
+      date: !newValue,
+      startTime: !newValue,
+      // Also update endTime validation if end time is now invalid
+      endTime: touched.endTime && (!endDate || endDate <= newValue)
+    });
+    
+    // Ensure end date is also updated if necessary
+    if (!endDate || endDate <= newValue) {
+      const newEndDate = new Date(newValue);
+      newEndDate.setMinutes(newEndDate.getMinutes() + 30);
+      setEndDate(newEndDate);
+    }
+  };
+  
+  const handleEndDateChange = (newValue) => {
+    setTouched({ ...touched, endTime: true });
+    setEndDate(newValue);
+    setErrors({ 
+      ...errors, 
+      endTime: !newValue || (startDate && newValue <= startDate)
+    });
   };
 
   const handleClose = () => {
     setOpen(false);
-    setAppointmentTitle("");
     setStartDate(new Date());
     setEndDate(new Date());
+    setSelectedPatient(null);
+    setSelectedDoctor(null);
+    setErrors({
+      patient: false,
+      doctor: false,
+      service: false,
+      category: false,
+      date: false,
+      startTime: false,
+      endTime: false,
+    });
+    setTouched({
+      patient: false,
+      doctor: false,
+      service: false,
+      category: false,
+      date: false,
+      startTime: false,
+      endTime: false,
+    });
   };
 
   return (
@@ -116,33 +249,66 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
         >
           <h2 className="mb-10 text-2xl font-semibold">Add Appointment</h2>
           <div className="flex flex-col gap-8">
-            <div className="flex flex-col items-start w-full">
-              <h1 className="text-base font-medium mb-3">Patient</h1>
-              <Autocomplete
-                sx={{ margin: "0" }}
-                fullWidth
-                freeSolo
-                options={patients}
-                getOptionLabel={(option) =>
-                  `${option.FirstName} ${option.LastName}`
-                }
-                onChange={handlePatientSelect}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    fullWidth
-                    placeholder="Patient"
-                    variant="outlined"
-                  />
-                )}
-                renderOption={(props, option) => (
-                  <>
-                    <MenuItem {...props} key={option.id}>
-                      {`${option.FirstName} ${option.LastName}`}
-                    </MenuItem>
-                  </>
-                )}
-              />
+            <div className="flex gap-4">
+              <div className="flex flex-col items-start w-full">
+                <h1 className="text-base font-medium mb-3">Patient<span className="text-red-500">*</span></h1>
+                <Autocomplete
+                  sx={{ margin: "0" }}
+                  fullWidth
+                  freeSolo
+                  options={patients}
+                  getOptionLabel={(option) =>
+                    `${option.FirstName} ${option.LastName}`
+                  }
+                  onChange={handlePatientSelect}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      fullWidth
+                      placeholder="Patient"
+                      variant="outlined"
+                      error={touched.patient && errors.patient}
+                      helperText={touched.patient && errors.patient ? "Patient is required" : ""}
+                    />
+                  )}
+                  renderOption={(props, option) => (
+                    <>
+                      <MenuItem {...props} key={option.id}>
+                        {`${option.FirstName} ${option.LastName}`}
+                      </MenuItem>
+                    </>
+                  )}
+                />
+              </div>
+
+              <div className="flex flex-col items-start w-full">
+                <h1 className="text-base font-medium mb-3">Doctor<span className="text-red-500">*</span></h1>
+                <Autocomplete
+                  sx={{ margin: "0" }}
+                  fullWidth
+                  freeSolo
+                  options={doctors}
+                  getOptionLabel={(option) => `${option.userName}`}
+                  onChange={handleDoctorSelect}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      fullWidth
+                      placeholder="Doctor"
+                      variant="outlined"
+                      error={touched.doctor && errors.doctor}
+                      helperText={touched.doctor && errors.doctor ? "Doctor is required" : ""}
+                    />
+                  )}
+                  renderOption={(props, option) => (
+                    <>
+                      <MenuItem {...props} key={option.id}>
+                        {`${option.userName}`}
+                      </MenuItem>
+                    </>
+                  )}
+                />
+              </div>
             </div>
 
             <div className="flex gap-4">
@@ -177,7 +343,7 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
                 />
               </div>
               <div className="flex flex-col items-start w-full">
-                <h1 className="text-base font-medium mb-3">Service</h1>
+                <h1 className="text-base font-medium mb-3">Service<span className="text-red-500">*</span></h1>
                 <Autocomplete
                   sx={{ margin: "0" }}
                   fullWidth
@@ -191,6 +357,8 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
                       fullWidth
                       placeholder="Service"
                       variant="outlined"
+                      error={touched.service && errors.service}
+                      helperText={touched.service && errors.service ? "Service is required" : ""}
                     />
                   )}
                   renderOption={(props, option) => (
@@ -201,7 +369,6 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
                     </>
                   )}
                 />
-              
               </div>
             </div>
 
@@ -237,24 +404,30 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
                 />
               </div>
               <div className="flex flex-col items-start w-full">
-                <h1 className="text-base font-medium mb-3">Category</h1>
-                <FormControl fullWidth>
+                <h1 className="text-base font-medium mb-3">Category<span className="text-red-500">*</span></h1>
+                <FormControl 
+                  fullWidth
+                  error={touched.category && errors.category}
+                >
                   <Select
                     className="w-full"
                     name="category"
                     hiddenLabel
-                    value={category?.ApponmentCategoryID || ""} // Ensure value matches the selected option
+                    value={category?.ApponmentCategoryID || ""}
                     onChange={handleCategoryChange}
                   >
                     {categories.map((category) => (
                       <MenuItem
-                        value={category.ApponmentCategoryID} // Match value with category selection
+                        value={category.ApponmentCategoryID}
                         key={category.ApponmentCategoryID}
                       >
                         {category.NameCategory}
                       </MenuItem>
                     ))}
                   </Select>
+                  {touched.category && errors.category && (
+                    <FormHelperText>Category is required</FormHelperText>
+                  )}
                 </FormControl>
               </div>
               <div className="flex flex-col items-start w-full">
@@ -283,43 +456,59 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
             <div className="flex gap-4">
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <div className="w-full flex flex-col gap-3">
-                  <h1 className="text-base font-medium">Select Date</h1>
+                  <h1 className="text-base font-medium">Select Date<span className="text-red-500">*</span></h1>
                   <DatePicker
                     fullWidth
                     placeholder="Select Date"
                     value={startDate}
-                    onChange={(newValue) => {
-                      setStartDate(newValue);
-                      setEndDate(newValue);
+                    onChange={handleStartDateChange}
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+                        margin: "normal",
+                        error: touched.date && errors.date,
+                        helperText: touched.date && errors.date ? "Date is required" : "",
+                      },
                     }}
-                    renderInput={(params) => (
-                      <TextField fullWidth margin="normal" {...params} />
-                    )}
                   />
                 </div>
 
                 <div className="w-full flex flex-col gap-3">
-                  <h1 className="font-medium text-base">Start Time</h1>
+                  <h1 className="font-medium text-base">Start Time<span className="text-red-500">*</span></h1>
                   <TimePicker
                     fullWidth
                     placeholder="Start Time"
                     value={startDate}
-                    onChange={(newValue) => setStartDate(newValue)}
-                    renderInput={(params) => (
-                      <TextField fullWidth margin="normal" {...params} />
-                    )}
+                    onChange={handleStartDateChange}
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+                        margin: "normal",
+                        error: touched.startTime && errors.startTime,
+                        helperText: touched.startTime && errors.startTime ? "Start time is required" : "",
+                      },
+                    }}
                   />
                 </div>
                 <div className="w-full flex flex-col gap-3">
-                  <h1 className="font-medium text-base">End Time</h1>
+                  <h1 className="font-medium text-base">End Time<span className="text-red-500">*</span></h1>
                   <TimePicker
                     fullWidth
                     placeholder="End Time"
                     value={endDate}
-                    onChange={(newValue) => setEndDate(newValue)}
-                    renderInput={(params) => (
-                      <TextField fullWidth margin="normal" {...params} />
-                    )}
+                    onChange={handleEndDateChange}
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+                        margin: "normal",
+                        error: touched.endTime && errors.endTime,
+                        helperText: touched.endTime && errors.endTime 
+                          ? endDate && startDate && endDate <= startDate 
+                            ? "End time must be after start time" 
+                            : "End time is required" 
+                          : "",
+                      },
+                    }}
                   />
                 </div>
               </LocalizationProvider>

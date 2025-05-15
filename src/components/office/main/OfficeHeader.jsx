@@ -1,12 +1,9 @@
 import React from "react";
-import { FaSearch, FaBell } from "react-icons/fa";
+import { FaSearch } from "react-icons/fa";
 import {
   TextField,
   InputAdornment,
-  Typography,
-  Badge,
-  IconButton,
-  Tooltip,
+  Typography
 } from "@mui/material";
 import { format } from "date-fns";
 
@@ -43,13 +40,6 @@ const OfficeHeader = ({ searchQuery, setSearchQuery }) => {
           }}
         />
 
-        <Tooltip title="Notifications">
-          <IconButton>
-            <Badge badgeContent={3} color="error">
-              <FaBell />
-            </Badge>
-          </IconButton>
-        </Tooltip>
       </div>
     </div>
   );

@@ -20,7 +20,7 @@ import { fetchUsers } from "../../redux/usersSlice";
 import { Add as AddIcon } from "@mui/icons-material";
 
 
-const UserTable = ({ onEdit, onDelete, onManagePermissions, onManageServices, onAdd }) => {
+const UserTable = ({ onEdit, onManagePermissions, onManageServices, onAdd }) => {
   const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
@@ -28,13 +28,15 @@ const UserTable = ({ onEdit, onDelete, onManagePermissions, onManageServices, on
   const [anchorEl, setAnchorEl] = useState(null);
   const [menuUser, setMenuUser] = useState(null);
 
-
- 
   useEffect(() => {
     dispatch(fetchUsers());
   }, []);
 
   const { users } = useSelector((state) => state.users);
+
+  useEffect(() => {
+    console.log("users: ", users)
+  }, [users])
 
   const handleMenuOpen = (event, user) => {
     setAnchorEl(event.currentTarget);
@@ -50,12 +52,7 @@ const UserTable = ({ onEdit, onDelete, onManagePermissions, onManageServices, on
     setUserToDelete(userId);
   };
 
-  const handleDeleteConfirmed = () => {
-    if (userToDelete) {
-      onDelete(userToDelete);
-      setUserToDelete(null);
-    }
-  };
+
 
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
@@ -132,7 +129,7 @@ const UserTable = ({ onEdit, onDelete, onManagePermissions, onManageServices, on
         rows={filteredUsers}
         columns={columns}
         slots={{ toolbar: GridToolbar }}
-        pageSize={5}
+        autoPageSize
         getRowId={(row) => row.id}
         sx={{
           height: '100%',
@@ -177,12 +174,12 @@ const UserTable = ({ onEdit, onDelete, onManagePermissions, onManageServices, on
             <Shield fontSize="small" /> Services
           </MenuItem>
         )}
-        <MenuItem onClick={() => confirmDelete(menuUser.id)}>
+        {/* <MenuItem onClick={() => confirmDelete(menuUser.id)}>
           <Delete fontSize="small" /> Delete
-        </MenuItem>
+        </MenuItem> */}
       </Menu>
 
-      <Dialog
+      {/* <Dialog
         open={Boolean(userToDelete)}
         onClose={() => setUserToDelete(null)}
       >
@@ -197,7 +194,7 @@ const UserTable = ({ onEdit, onDelete, onManagePermissions, onManageServices, on
             Delete
           </Button>
         </DialogActions>
-      </Dialog>
+      </Dialog> */}
     </div>
   );
 };

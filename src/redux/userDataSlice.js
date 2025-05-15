@@ -65,7 +65,7 @@ export const fetchEtatCivil = createAsyncThunk(
 const userDataSlice = createSlice({
   name: "userData",
   initialState: {
-    userDataStatus: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed'
+    userDataStatus: "idle", // 'idle' | 'loading' | 'success' | 'failed'
     types: [],
     bloodTypes: [],
     etatsCivil: [],

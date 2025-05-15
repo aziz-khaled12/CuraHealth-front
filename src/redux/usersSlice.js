@@ -1,4 +1,3 @@
-import { idID } from "@mui/material/locale";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
@@ -9,9 +8,8 @@ const prepareUserData = (user) => {
     id: user.UserID,
     userName: user.Name,
     email: user.Email,
-    type: user.TypeName,
-    specialization: "",
-    licenseNumber: "",
+    type:  user.TypeName,
+    TypeID:  user.TypeID,
   };
 };
 // Async action for fetch users
@@ -34,10 +32,30 @@ export const fetchUsers = createAsyncThunk(
   }
 );
 
+export const register = createAsyncThunk(
+  "users/register",
+  async ({ Email, Password, Name, TypeID }, { rejectWithValue }) => {
+    try {
+      const res = await axios.post(`${url}/api/register`, {
+        Email,
+        Password,
+        Name,
+        TypeID,
+      });
+
+      const user = prepareUserData(res.data);
+      console.log('user:', user)
+      return user;
+    } catch (err) {
+      return rejectWithValue(err.response.data.error || "Something went wrong");
+    }
+  }
+);
+
 const usersSlice = createSlice({
   name: "users",
   initialState: {
-    usersStatus: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed'
+    usersStatus: "idle", // 'idle' | 'loading' | 'success' | 'failed'
     users: [],
     error: null,
   },
@@ -45,16 +63,27 @@ const usersSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchUsers.pending, (state) => {
-        state.status = "pending";
+        state.usersStatus = "pending";
         state.error = null;
       })
       .addCase(fetchUsers.fulfilled, (state, action) => {
         console.log(action.payload);
-        state.status = "success";
+        state.usersStatus = "success";
         state.users = action.payload;
       })
       .addCase(fetchUsers.rejected, (state, action) => {
-        state.status = "failed";
+        state.usersStatus = "failed";
+        state.error = action.payload;
+      })
+      .addCase(register.pending, (state) => {
+        state.usersStatus = "loading";
+      })
+      .addCase(register.fulfilled, (state, action) => {
+        state.users.push(action.payload);
+        state.usersStatus = "success";
+      })
+      .addCase(register.rejected, (state, action) => {
+        state.usersStatus = "failed";
         state.error = action.payload;
       });
   },

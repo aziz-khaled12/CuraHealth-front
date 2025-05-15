@@ -10,12 +10,11 @@ export const fetchVitals = createAsyncThunk(
     try {
       const res = await axios.get(`${url}/api/StatusType`);
       const statuses = res.data.status;
-      console.log("general Signs", generalSigns);
       let appointmentStatus = [];
       let patientStatus = [];
 
       statuses.forEach((status) => {
-        if (status?.Info.target === "Appointment") {
+        if (status?.Info.target === "appointment") {
           appointmentStatus.push({
             id: status.StatusID,
             name: status.StatusName,
@@ -23,7 +22,7 @@ export const fetchVitals = createAsyncThunk(
             placeholder: status.Info?.placeholder || "",
             unit: status.Info?.unit || "",
           });
-        } else if (status?.Info.target === "Patient") {
+        } else if (status?.Info.target === "patient") {
           patientStatus.push({
             id: status.StatusID,
             name: status.StatusName,
@@ -78,7 +77,7 @@ export const signSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchVitals.fulfilled, (state, action) => {
-        state.status = "succeeded";
+        state.status = "success";
         console.log(action.payload);
         state.generalSigns = action.payload.appointmentStatus;
         state.patientSigns = action.payload.patientStatus;

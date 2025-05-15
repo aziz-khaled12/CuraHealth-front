@@ -56,7 +56,7 @@ export const appointmentsDataSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchAppointmentsData.fulfilled, (state, action) => {
-        state.status = "succeeded";
+        state.status = "success";
         state.consultationCauses = action.payload.consultationCauses;
         state.physicalSigns = action.payload.physicalSigns;
         state.diagnoses = action.payload.diagnoses;

@@ -77,7 +77,7 @@ export const permissionsSlice = createSlice({
         state.status = "loading";
       })
       .addCase(fetchPermissions.fulfilled, (state, action) => {
-        state.status = "succeeded";
+        state.status = "success";
         state.permissions = action.payload;
       })
       .addCase(fetchPermissions.rejected, (state, action) => {

@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react";
-import { Routes, Route, useLocation, Outlet } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { createTheme, ThemeProvider } from "@mui/material";
-import { autoLogout, isTokenExpired } from "./redux/authSlice";
+import { logout, isTokenExpired } from "./redux/authSlice";
 import PortectedRoutes from "./utils/PortectedRoutes";
 import Login from "./components/auth/Login";
 import Signup from "./components/auth/Signup";
@@ -17,8 +17,6 @@ import PatientDetails from "./components/patients/patientsUtils/PatientDetails";
 import PatientRecords from "./components/medicalHistory/PatientRecords";
 import SessionsPage from "./components/sessions/main/SessionsPage";
 import { fetchVitals } from "./redux/signsSlice";
-import Navbar from "./components/layout/Navbar";
-import Sidebar from "./components/layout/Sidebar";
 import Unauthorized from "./components/layout/Unauthorized";
 import Profile from "./components/profile/profile";
 import UsersManagement from "./components/user-management/UsersManagement";
@@ -44,13 +42,13 @@ function App() {
   useEffect(() => {
     const setLogoutTimer = () => {
       if (!accessToken) {
-        dispatch(autoLogout());
+        dispatch(logout());
         return;
       }
 
       const isExpired = isTokenExpired(accessToken);
       if (isExpired) {
-        dispatch(autoLogout());
+        dispatch(logout({ error: "Session expired, please log in again" }));
         return;
       }
 
@@ -62,7 +60,7 @@ function App() {
       }
 
       logoutTimerRef.current = setTimeout(() => {
-        dispatch(autoLogout());
+        dispatch(logout({ error: "Session expired, please log in again" }));
       }, expiresIn);
     };
 
@@ -91,7 +89,7 @@ function App() {
       <ThemeProvider theme={customTheme}>
         <Routes>
           <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+          <Route path="/register" element={<Signup />} />
 
           <Route element={<PortectedRoutes />}>
             <Route element={<Layout />}>

@@ -13,7 +13,7 @@ import {
 import { FcGoogle } from "react-icons/fc";
 import { FaApple, FaFacebook } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
-import { signup } from "../../redux/authSlice";
+import { register } from "../../redux/usersSlice";
 import { fetchTypes } from "../../redux/userDataSlice";
 import { useDispatch, useSelector } from "react-redux";
 import LoginBg from "../../assets/login.jpg";
@@ -25,17 +25,11 @@ const Signup = () => {
     (state) => state.auth
   );
 
-  const { types, userDataStatus } = useSelector((state) => state.userData);
-
   useEffect(() => {
-    console.log(types);
-    console.log(userDataStatus);
-  }, [types, userDataStatus]);
-
-  useEffect(() => {
-    // Dispatch the fetchTypes action
     dispatch(fetchTypes());
   }, []);
+
+  const { types } = useSelector((state) => state.userData);
 
   const [formData, setFormData] = useState({
     userName: "",
@@ -102,7 +96,7 @@ const Signup = () => {
 
     if (isValid) {
       dispatch(
-        signup({
+        register({
           Email: formData.email,
           Password: formData.password,
           Name: formData.userName,

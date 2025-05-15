@@ -25,8 +25,6 @@ export const addPatient = createAsyncThunk(
   "patients/addPatients",
   async ({ patientData }, { rejectWithValue }) => {
     try {
-      console.log("entered add");
-
       const res = await axios.post(`${url}/api/Patient`, patientData, {
         headers: { Authorization: `${token}` },
       });
@@ -39,89 +37,10 @@ export const addPatient = createAsyncThunk(
   }
 );
 
-
-
 export const patientsSlice = createSlice({
   name: "patients",
   initialState: {
-    patients: [
-      // {
-      //   id: "1",
-      //   fullName: "John Doe",
-      //   firstName: "John",
-      //   lastName: "Doe",
-      //   birthday: new Date(1985, 5, 15).toLocaleString(),
-      //   address: "123 Elm Street, Springfield, IL",
-      //   email: "john.doe@example.com",
-      //   phoneNumber: "555-1234",
-      //   sex: 1,
-      //   bloodtype: "O-",
-      //   etatCivil: "Single",
-      //   nationalId: "986451398465",
-      //   previous: 3,
-      //   coming: 0,
-      //   sessions: [],
-      //   allergies: ["Penicillin", "Peanuts"],
-      //   chronicConditions: ["Hypertension", "Asthma"],
-      // },
-      // {
-      //   id: "2",
-      //   fullName: "Jane Smith",
-      //   firstName: "Jane",
-      //   lastName: "Smith",
-      //   birthday: new Date(1990, 10, 22).toLocaleString(),
-      //   address: "456 Oak Avenue, Springfield, IL",
-      //   email: "jane.smith@example.com",
-      //   phoneNumber: "555-5678",
-      //   sex: 0,
-      //   bloodtype: "O+",
-      //   etatCivil: "Single",
-      //   nationalId: "986451398465",
-      //   previous: 1,
-      //   coming: 1,
-      //   sessions: [],
-      //   allergies: [],
-      //   chronicConditions: [],
-      // },
-      // {
-      //   id: "3",
-      //   fullName: "Alice Johnson",
-      //   firstName: "Alice",
-      //   lastName: "Johnson",
-      //   birthday: new Date(1982, 3, 30).toLocaleString(),
-      //   address: "789 Pine Road, Springfield, IL",
-      //   email: "alice.johnson@example.com",
-      //   phoneNumber: "555-8765",
-      //   sex: 0,
-      //   bloodtype: "AB+",
-      //   etatCivil: "Single",
-      //   nationalId: "986451398465",
-      //   previous: 6,
-      //   coming: 1,
-      //   sessions: [],
-      //   allergies: [],
-      //   chronicConditions: [],
-      // },
-      // {
-      //   id: "4",
-      //   fullName: "Bob Brown",
-      //   firstName: "Bob",
-      //   lastName: "Brown",
-      //   birthday: new Date(1978, 7, 19).toLocaleString(),
-      //   address: "101 Maple Lane, Springfield, IL",
-      //   email: "bob.brown@example.com",
-      //   phoneNumber: "555-4321",
-      //   sex: 1,
-      //   bloodtype: "B-",
-      //   etatCivil: "Single",
-      //   nationalId: "986451398465",
-      //   previous: 9,
-      //   coming: 2,
-      //   sessions: [],
-      //   allergies: [],
-      //   chronicConditions: [],
-      // },
-    ],
+    patients: [],
     patientStatus: "idle",
     error: null,
   },
@@ -137,12 +56,12 @@ export const patientsSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(addPatient.fulfilled, (state, action) => {
-        state.patientStatus = "succeeded";
+        state.patientStatus = "success";
         console.log(action.payload);
         state.patients.push(action.payload);
       })
       .addCase(fetchPatients.fulfilled, (state, action) => {
-        state.patientStatus = "succeeded";
+        state.patientStatus = "success";
         console.log("fetch: ", action.payload);
         state.patients = action.payload;
       })

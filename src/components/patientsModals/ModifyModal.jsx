@@ -14,13 +14,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 
 const ModifyModal = ({ open, setOpen, patientId }) => {
-  
   const prevData = useSelector((state) =>
     state.patients.patients.filter((patient) => patient.PatientID === patientId)
   );
 
   console.log("prevData", prevData);
-
 
   const dispatch = useDispatch();
   const genders = [
@@ -96,6 +94,19 @@ const ModifyModal = ({ open, setOpen, patientId }) => {
                 value={formData.LastName}
               />
             </div>
+          </div>
+
+          <div className="flex w-full gap-5">
+            <div className="flex flex-col items-start w-full">
+              <h1 className="text-base font-medium mb-2">Phone Number</h1>
+              <TextField
+                className="w-full"
+                name="phoneNum"
+                onChange={handleChange}
+                placeholder="Phone Number"
+                value={formData.PhoneNum}
+              />
+            </div>
             <div className="flex flex-col items-start w-full">
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <h1 className="text-base font-medium mb-2">Birthday</h1>
@@ -115,31 +126,6 @@ const ModifyModal = ({ open, setOpen, patientId }) => {
                   )}
                 />
               </LocalizationProvider>
-            </div>
-          </div>
-
-          <div className="flex w-full gap-5">
-            <div className="flex flex-col items-start w-full">
-              <h1 className="text-base font-medium mb-2">Phone Number</h1>
-              <TextField
-                className="w-full"
-                name="phoneNum"
-                onChange={handleChange}
-                placeholder="Phone Number"
-                value={formData.PhoneNum}
-              />
-            </div>
-            <div className="flex flex-col items-start w-full">
-              <h1 className="text-base font-medium mb-2">
-                National Identification Number
-              </h1>
-              <TextField
-                className="w-full"
-                name="IDNum"
-                onChange={handleChange}
-                placeholder="National ID"
-                value={formData.nationalId}
-              />
             </div>
           </div>
 

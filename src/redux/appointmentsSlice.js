@@ -168,8 +168,11 @@ export const submitAppointmentData = createAsyncThunk(
         },
       });
 
-      console.log("Submit Appointment Data Response:", res);
-      return res.data;
+      if(res.status === 200){
+        console.log("Submit Appointment Data Response:", res);
+        return res.data;
+      } 
+
     } catch (err) {
       return rejectWithValue(
         err.response?.data?.error ||
@@ -234,23 +237,23 @@ export const appointmentsSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchAppointments.fulfilled, (state, action) => {
-        state.appointmentStatus = "succeeded";
+        state.appointmentStatus = "success";
         console.log(action.payload);
         state.appointments = action.payload;
       })
       .addCase(createAppointment.fulfilled, (state, action) => {
-        state.appointmentStatus = "succeeded";
+        state.appointmentStatus = "success";
         console.log(action.payload);
         state.appointments.push(action.payload);
       })
       .addCase(fetchAppointmentCategories.fulfilled, (state, action) => {
-        state.appointmentStatus = "succeeded";
+        state.appointmentStatus = "success";
         console.log("fetch: ", action.payload);
         state.categories = action.payload;
       })
 
       .addCase(startAppointment.fulfilled, (state, action) => {
-        state.appointmentStatus = "succeeded";
+        state.appointmentStatus = "success";
         console.log("start: ", action.payload);
       })
 
