@@ -51,7 +51,6 @@ export const createAppointment = createAsyncThunk(
       const res = await axios.post(`${url}/api/Apponment`, appointmentData, {
         headers: { Authorization: `${token}` },
       });
-      console.log("res: ", res);
       const appointment = res.data.appointment;
       return appointment;
     } catch (err) {
@@ -64,17 +63,13 @@ export const startAppointment = createAsyncThunk(
   "appointments/startAppointment",
   async (startData, { rejectWithValue }) => {
     try {
-      console.log("startData: ", startData);
       const res = await axios.post(
         `${url}/api/StartAppointmnt`,
-        {...startData},
+        { ...startData },
         {
           headers: { Authorization: `${token}` },
         }
       );
-      console.log("res: ", res);
-      const appointment = res.data.appointment;
-      // return appointment;
     } catch (err) {
       return rejectWithValue(err.response.data.error || "Something went wrong");
     }
@@ -90,8 +85,7 @@ const transformMedicament = (medicament) => ({
     Quantity: medicament.quantity || 0,
     LeVoie: medicament.voie || "",
     Instraction: medicament.instructions || "",
-    UniteID:
-      medicament.unit.id
+    UniteID: medicament.unit.id,
   },
 });
 
@@ -124,7 +118,6 @@ export const endAppointment = createAsyncThunk(
         }
       );
 
-      console.log("End Appointment Response:", res);
       return res.data;
     } catch (err) {
       return rejectWithValue(
@@ -140,7 +133,6 @@ export const submitAppointmentData = createAsyncThunk(
     try {
       const state = getState();
       const sessionData = selectSessionById(state, sessionId);
-
 
       if (!sessionData) throw new Error("Session not found");
       if (!sessionData.files || !Array.isArray(sessionData.files)) {
@@ -160,7 +152,6 @@ export const submitAppointmentData = createAsyncThunk(
         formData.append("files", file.binary);
       });
 
-
       const res = await axios.post(`${url}/api/AppointmmentIsDone`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -168,11 +159,9 @@ export const submitAppointmentData = createAsyncThunk(
         },
       });
 
-      if(res.status === 200){
-        console.log("Submit Appointment Data Response:", res);
+      if (res.status === 200) {
         return res.data;
-      } 
-
+      }
     } catch (err) {
       return rejectWithValue(
         err.response?.data?.error ||
@@ -192,7 +181,6 @@ export const fetchAppointments = createAsyncThunk(
         : `${url}/api/All/Apponment`;
       const res = await axios.get(fetchString);
       const appointments = res.data.appointments;
-      console.log("appointments: ", appointments);
       return appointments;
     } catch (err) {
       return rejectWithValue(err.response.data.error || "Something went wrong");
@@ -206,6 +194,7 @@ export const appointmentsSlice = createSlice({
     appointments: [],
     categories: [],
     appointmentStatus: "idle",
+    submitStatus: "idle",
     error: null,
   },
   reducers: {
@@ -220,13 +209,19 @@ export const appointmentsSlice = createSlice({
     },
     updateAppointment: (state, action) => {
       const { id, ...changes } = action.payload;
-      const existingAppointment = state.appointments.find(
+      const index = state.appointments.findIndex(
         (appointment) => appointment.appointmnt_id === id
       );
-      if (existingAppointment) {
-        Object.assign(existingAppointment, changes);
+      if (index !== -1) {
+        console.log("before changes: ", state.appointments[index])
+        state.appointments[index] = {
+          ...state.appointments[index],
+          ...changes,
+        };
+        console.log("after changes: ", state.appointments[index])
       }
     },
+
     deleteAppointment: (state, action) => {
       const id = action.payload;
       state.appointments = state.appointments.filter(
@@ -238,28 +233,28 @@ export const appointmentsSlice = createSlice({
     builder
       .addCase(fetchAppointments.fulfilled, (state, action) => {
         state.appointmentStatus = "success";
-        console.log(action.payload);
         state.appointments = action.payload;
       })
       .addCase(createAppointment.fulfilled, (state, action) => {
         state.appointmentStatus = "success";
-        console.log(action.payload);
         state.appointments.push(action.payload);
       })
       .addCase(fetchAppointmentCategories.fulfilled, (state, action) => {
         state.appointmentStatus = "success";
-        console.log("fetch: ", action.payload);
         state.categories = action.payload;
       })
 
       .addCase(startAppointment.fulfilled, (state, action) => {
         state.appointmentStatus = "success";
-        console.log("start: ", action.payload);
+      })
+      .addCase(submitAppointmentData.fulfilled, (state, action) => {
+        state.submitStatus = "success";
       })
 
       .addMatcher(
         isAnyOf(
           createAppointment.pending,
+          submitAppointmentData.pending,
           fetchAppointmentCategories.pending,
           fetchAppointments.pending,
           startAppointment.pending

@@ -27,24 +27,23 @@ import { isNullTime } from "../../utils/TimeManipulationFunctions";
 const Calendar = () => {
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    dispatch(fetchAppointments({ today: true }));
-  }, []);
+  // useEffect(() => {
+  //   dispatch(fetchAppointments({ today: true }));
+  // }, []);
 
-  const appointments = useSelector((state) =>
-    state.appointments.appointments.map((appointment) => ({
-      ...appointment,
-      title: `${appointment.first_name} ${appointment.last_name}`,
-      startDate: appointment.start_time && isNullTime(appointment.start_time) ? new Date(new Date(appointment.for_time).getTime() - 30 * 60 * 1000): new Date(appointment.start_time),
-      endDate: appointment.end_time && isNullTime(appointment.end_time) ? new Date(appointment.for_time) : new Date(appointment.end_time),
-    }))
-  );
-
-
-  console.log(appointments)
-
-
-
+const appointments = useSelector((state) =>
+  state.appointments.appointments.map((appointment) => ({
+    id: appointment.appointmnt_id,  
+    ...appointment,
+    title: `${appointment.first_name} ${appointment.last_name}`,
+    startDate: appointment.start_time && isNullTime(appointment.start_time) 
+      ? new Date(new Date(appointment.for_time).getTime() - 30 * 60 * 1000)
+      : new Date(appointment.start_time),
+    endDate: appointment.end_time && isNullTime(appointment.end_time) 
+      ? new Date(appointment.for_time) 
+      : new Date(appointment.end_time),
+  }))
+);
 
   const [open, setOpen] = useState(false);
   const [cellData, setCellData] = useState("");
@@ -102,6 +101,7 @@ const Calendar = () => {
 
   const onCommitChanges = useCallback(
     ({ added, changed, deleted }) => {
+      console.log("onCommitChanges", { added, changed, deleted });
       if (added) {
         const appointmentData = {
           title: added.title,
@@ -113,15 +113,17 @@ const Calendar = () => {
         Object.entries(changed).forEach(([id, changes]) => {
           const serializedChanges = {};
           if (changes.startDate) {
+            console.log("start date: ", changes.startDate)
             serializedChanges.startDate = changes.startDate.toISOString();
           }
           if (changes.endDate) {
+            console.log("end date: ", changes.endDate)
             serializedChanges.endDate = changes.endDate.toISOString();
           }
           if (changes.title) {
             serializedChanges.title = changes.title;
           }
-          dispatch(updateAppointment({ id: Number(id), ...serializedChanges }));
+          dispatch(updateAppointment({ id, ...serializedChanges }));
         });
       }
       if (deleted !== undefined) {
@@ -140,6 +142,11 @@ const Calendar = () => {
     )),
     []
   );
+
+
+  useEffect(() => {
+    console.log("appointments: ", appointments)
+  }, [appointments])
 
   return (
     appointments.length > 0 && (

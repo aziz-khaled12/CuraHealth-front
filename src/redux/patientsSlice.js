@@ -37,6 +37,20 @@ export const addPatient = createAsyncThunk(
   }
 );
 
+export const updatePatient = createAsyncThunk(
+  "patients/updatePatient",
+  async ({ updateData, patientId }, { rejectWithValue }) => {
+    try {
+      const res = await axios.put(`${url}/api/patients/${patientId}`, updateData, {
+        headers: { Authorization: `${token}` },
+      });
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.error || "Something went wrong");
+    }
+  }
+);
+
 export const patientsSlice = createSlice({
   name: "patients",
   initialState: {
@@ -57,23 +71,28 @@ export const patientsSlice = createSlice({
     builder
       .addCase(addPatient.fulfilled, (state, action) => {
         state.patientStatus = "success";
-        console.log(action.payload);
         state.patients.push(action.payload);
       })
       .addCase(fetchPatients.fulfilled, (state, action) => {
         state.patientStatus = "success";
-        console.log("fetch: ", action.payload);
         state.patients = action.payload;
+      })
+      .addCase(updatePatient.fulfilled, (state, action) => {
+        state.patientStatus = "success";
+        const index = state.patients.findIndex((p) => p.PatientID === action.payload.PatientID);
+        if (index !== -1) {
+          state.patients[index] = action.payload;
+        }
       })
 
       .addMatcher(
-        isAnyOf(fetchPatients.pending, addPatient.pending),
+        isAnyOf(fetchPatients.pending, addPatient.pending, updatePatient.pending),
         (state) => {
           state.patientStatus = "loading";
         }
       )
       .addMatcher(
-        isAnyOf(fetchPatients.rejected, addPatient.rejected),
+        isAnyOf(fetchPatients.rejected, addPatient.rejected, updatePatient.rejected),
         (state, action) => {
           state.patientStatus = "failed";
           state.error = action.payload;
