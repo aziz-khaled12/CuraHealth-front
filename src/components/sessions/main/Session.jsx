@@ -54,24 +54,29 @@ export default function Session({ sessionId }) {
       name: "consultationCauses",
       title: "Consultation Cause",
       data: consultationCauses,
+      type: "Motifs",
     },
-    { name: "physicalSigns", title: "Physical Signs", data: physicalSigns },
+    { name: "physicalSigns", title: "Physical Signs", data: physicalSigns, type: "SingePhysic" },
     {
       name: "functionalSigns",
       title: "Functional Signs",
       data: functionalSigns,
+      type: "SingeFunctionnal",
     },
     {
       name: "services",
       title: "Services",
       data: services,
+      type: "Services",
     },
     {
       name: "diagnoses",
       title: "Diagnosis",
       data: diagnoses,
+      type: "Diagnostic",
     },
   ];
+
 
   const closeVisit = () => {
     dispatch(submitAppointmentData({ appointmentId, sessionId }));
@@ -155,6 +160,7 @@ export default function Session({ sessionId }) {
                 title={section.title}
                 name={section.name}
                 id={sessionId}
+                type={section.type}
               />
             );
           })}
@@ -167,9 +173,8 @@ export default function Session({ sessionId }) {
 
       {/* Patient Info Sidebar */}
       <section className="w-[25%] flex flex-col gap-4 h-[80vh]">
-        <PatientInfo />
+        <PatientInfo patientId={appointment.patient_id}/>
         <InfoSection title="Medical History" height="70%" />
-        <InfoSection title="Invoices" height="10%" />
       </section>
     </Box>
   );
