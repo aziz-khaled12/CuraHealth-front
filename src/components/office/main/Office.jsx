@@ -101,7 +101,7 @@ const Office = () => {
 
   return (
     <div>
-      <OfficeHeader searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+      <OfficeHeader  />
 
       <Paper className="p-4 mb-6" elevation={0}>
         <div className="flex justify-between items-center mb-2">

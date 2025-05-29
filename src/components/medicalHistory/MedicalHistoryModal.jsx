@@ -24,6 +24,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { downloadPDF, printPDF } from "../../utils/pdfHandler";
 import ViewerModal from "../random/ViewerModal";
+import { ContactlessOutlined } from "@mui/icons-material";
 
 function TabPanel({ children, value, index, ...other }) {
   return (
@@ -48,7 +49,7 @@ export function MedicalHistoryModal({ session, onClose }) {
   const [selectedFile, setSelectedFile] = useState(null);
   const [viewerOpen, setViewerOpen] = useState(false);
   const fileURLS = session.files.map((file) => {return `${url}/files/appointmnt/${session.id}/${file}`} )
-
+  console.log("session", session);
 
   if (!session) return null;
 

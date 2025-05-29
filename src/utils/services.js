@@ -13,8 +13,8 @@ const formatPatientRecord = (record) => {
     category: record.ApponmentCategoryName,
     status: "Completed",
     patientName: record.PatientName,
-    diagnosis: record.Li3lashat?.Diagnostic || [],
-    consultationCause: record.Li3lashat?.Motifs || [],
+    diagnosis: record.Li3laShat.Diagnostic || [],
+    consultationCause: record.Li3laShat?.Motifs || [],
 
     vitals:
       record.Status?.map((status) => {
@@ -35,8 +35,8 @@ const formatPatientRecord = (record) => {
           instructions: dwa.Instraction
         };
       }) || [],
-    physicalSigns: record.Li3lashat?.SingePhysic || [],
-    functionalSigns: record.Li3lashat?.SingeFunctionnal || [],
+    physicalSigns: record.Li3laShat?.SingePhysic || [],
+    functionalSigns: record.Li3laShat?.SingeFunctionnal || [],
     services: [record.ServiceName],
     files: record.File || [],
   };

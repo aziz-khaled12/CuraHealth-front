@@ -48,7 +48,7 @@ const UsersManagement = () => {
 
 
   return (
-    <Box>
+    <>
       <UserTable
         users={users}
         onAdd={handleAddUser}
@@ -77,7 +77,7 @@ const UsersManagement = () => {
           onCancel={() => setIsServicesOpen(false)}
         />
       )}
-    </Box>
+    </>
   );
 };
 

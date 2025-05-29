@@ -40,7 +40,7 @@ const ModifyModal = ({ open, setOpen, cellData }) => {
   const [endDate, setEndDate] = useState(
     cellData ? cellData.endDate : new Date()
   );
-  const [category, setCategory] = useState("Normal");
+  const [category, setCategory] = useState(categories[0]);
 
 
 
@@ -79,6 +79,7 @@ const ModifyModal = ({ open, setOpen, cellData }) => {
   };
 
   console.log(patients)
+  console.log(cellData)
 
   return (
 
@@ -138,7 +139,7 @@ const ModifyModal = ({ open, setOpen, cellData }) => {
                 }}
                 name="address"
                 placeholder="Address"
-                value={selectedPatient ? selectedPatient.address : ""}
+                value={selectedPatient ? selectedPatient.Address : ""}
               />
             </div>
             <div className="flex flex-col items-start w-full">
@@ -153,7 +154,7 @@ const ModifyModal = ({ open, setOpen, cellData }) => {
                 }}
                 name="id"
                 placeholder="Patient ID"
-                value={selectedPatient ? selectedPatient.id : ""}
+                value={selectedPatient ? selectedPatient.PatientID : ""}
               />
             </div>
           </div>
@@ -171,7 +172,7 @@ const ModifyModal = ({ open, setOpen, cellData }) => {
                 }}
                 name="email"
                 placeholder="Email"
-                value={selectedPatient ? selectedPatient.email : ""}
+                value={selectedPatient ? selectedPatient.Email : ""}
               />
             </div>
             <div className="flex flex-col items-start w-full">
@@ -186,7 +187,7 @@ const ModifyModal = ({ open, setOpen, cellData }) => {
                 }}
                 name="phoneNumber"
                 placeholder="Phone Number"
-                value={selectedPatient ? selectedPatient.phoneNumber : ""}
+                value={selectedPatient ? selectedPatient.PhoneNum : ""}
               />
             </div>
             <div className="flex flex-col items-start w-full">
@@ -221,7 +222,7 @@ const ModifyModal = ({ open, setOpen, cellData }) => {
                 }}
                 name="sex"
                 placeholder="Sex"
-                value={selectedPatient ? selectedPatient.sex : ""}
+                value={selectedPatient ? selectedPatient.Sex === "M" ? "Male" : "Female" : ""}
               />
             </div>
           </div>

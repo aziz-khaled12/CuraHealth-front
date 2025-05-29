@@ -27,6 +27,7 @@ import { fetchPatients } from "../../redux/patientsSlice";
 import { fetchServices } from "../../redux/servicesSlice";
 import { fetchUsers } from "../../redux/usersSlice";
 import { showAlert } from "../../redux/alertSlice";
+import { FaTimes } from "react-icons/fa";
 
 const AddNewModal = ({ open, setOpen, cellData }) => {
   const dispatch = useDispatch();
@@ -39,7 +40,9 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
     dispatch(fetchUsers());
   }, []);
 
-  const { categories, appointmentStatus } = useSelector((state) => state.appointments);
+  const { categories, appointmentStatus } = useSelector(
+    (state) => state.appointments
+  );
   const { patients } = useSelector((state) => state.patients);
   const { services } = useSelector((state) => state.services);
   const doctors = useSelector((state) =>
@@ -63,7 +66,7 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [category, setCategory] = useState(categories[1]);
   const [service, setService] = useState(services[1]);
-  
+
   // Form validation state
   const [errors, setErrors] = useState({
     patient: false,
@@ -74,7 +77,7 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
     startTime: false,
     endTime: false,
   });
-  
+
   // Form touched state to show errors only after interaction
   const [touched, setTouched] = useState({
     patient: false,
@@ -97,7 +100,7 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
       startTime: !startDate,
       endTime: !endDate || endDate <= startDate,
     };
-    
+
     setErrors(newErrors);
     setTouched({
       patient: true,
@@ -108,16 +111,16 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
       startTime: true,
       endTime: true,
     });
-    
+
     // Return true if no errors
-    return !Object.values(newErrors).some(error => error);
+    return !Object.values(newErrors).some((error) => error);
   };
 
   const handleSubmitAppointment = () => {
     if (!validateForm()) {
       return;
     }
-    
+
     const newAppointment = {
       DoctorID: selectedDoctor.id,
       PatientID: selectedPatient.PatientID,
@@ -128,7 +131,12 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
 
     dispatch(createAppointment(newAppointment));
     if (appointmentStatus === "success") {
-      dispatch(showAlert({message: "Appointment Added Succefuly", severity: "success"}))
+      dispatch(
+        showAlert({
+          message: "Appointment Added Succefuly",
+          severity: "success",
+        })
+      );
       handleClose();
     }
   };
@@ -163,7 +171,7 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
     setCategory(selectedCategory);
     setErrors({ ...errors, category: !selectedCategory });
   };
-  
+
   const handleServiceChange = (event, value) => {
     setTouched({ ...touched, service: true });
     if (value) {
@@ -178,14 +186,14 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
   const handleStartDateChange = (newValue) => {
     setTouched({ ...touched, date: true, startTime: true });
     setStartDate(newValue);
-    setErrors({ 
-      ...errors, 
+    setErrors({
+      ...errors,
       date: !newValue,
       startTime: !newValue,
       // Also update endTime validation if end time is now invalid
-      endTime: touched.endTime && (!endDate || endDate <= newValue)
+      endTime: touched.endTime && (!endDate || endDate <= newValue),
     });
-    
+
     // Ensure end date is also updated if necessary
     if (!endDate || endDate <= newValue) {
       const newEndDate = new Date(newValue);
@@ -193,13 +201,13 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
       setEndDate(newEndDate);
     }
   };
-  
+
   const handleEndDateChange = (newValue) => {
     setTouched({ ...touched, endTime: true });
     setEndDate(newValue);
-    setErrors({ 
-      ...errors, 
-      endTime: !newValue || (startDate && newValue <= startDate)
+    setErrors({
+      ...errors,
+      endTime: !newValue || (startDate && newValue <= startDate),
     });
   };
 
@@ -247,11 +255,21 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
             p: 4,
           }}
         >
-          <h2 className="mb-10 text-2xl font-semibold">Add Appointment</h2>
+           <div className="w-full flex items-center justify-between mb-10">
+            <h2 className=" text-2xl font-semibold">Add Appointment</h2>
+            <button
+              onClick={handleClose}
+              className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-blue-100 text-gray-600 hover:text-primary transition-colors"
+            >
+              <FaTimes />
+            </button>
+          </div>
           <div className="flex flex-col gap-8">
             <div className="flex gap-4">
               <div className="flex flex-col items-start w-full">
-                <h1 className="text-base font-medium mb-3">Patient<span className="text-red-500">*</span></h1>
+                <h1 className="text-base font-medium mb-3">
+                  Patient<span className="text-red-500">*</span>
+                </h1>
                 <Autocomplete
                   sx={{ margin: "0" }}
                   fullWidth
@@ -268,7 +286,11 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
                       placeholder="Patient"
                       variant="outlined"
                       error={touched.patient && errors.patient}
-                      helperText={touched.patient && errors.patient ? "Patient is required" : ""}
+                      helperText={
+                        touched.patient && errors.patient
+                          ? "Patient is required"
+                          : ""
+                      }
                     />
                   )}
                   renderOption={(props, option) => (
@@ -282,7 +304,9 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
               </div>
 
               <div className="flex flex-col items-start w-full">
-                <h1 className="text-base font-medium mb-3">Doctor<span className="text-red-500">*</span></h1>
+                <h1 className="text-base font-medium mb-3">
+                  Doctor<span className="text-red-500">*</span>
+                </h1>
                 <Autocomplete
                   sx={{ margin: "0" }}
                   fullWidth
@@ -297,7 +321,11 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
                       placeholder="Doctor"
                       variant="outlined"
                       error={touched.doctor && errors.doctor}
-                      helperText={touched.doctor && errors.doctor ? "Doctor is required" : ""}
+                      helperText={
+                        touched.doctor && errors.doctor
+                          ? "Doctor is required"
+                          : ""
+                      }
                     />
                   )}
                   renderOption={(props, option) => (
@@ -343,7 +371,9 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
                 />
               </div>
               <div className="flex flex-col items-start w-full">
-                <h1 className="text-base font-medium mb-3">Service<span className="text-red-500">*</span></h1>
+                <h1 className="text-base font-medium mb-3">
+                  Service<span className="text-red-500">*</span>
+                </h1>
                 <Autocomplete
                   sx={{ margin: "0" }}
                   fullWidth
@@ -358,7 +388,11 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
                       placeholder="Service"
                       variant="outlined"
                       error={touched.service && errors.service}
-                      helperText={touched.service && errors.service ? "Service is required" : ""}
+                      helperText={
+                        touched.service && errors.service
+                          ? "Service is required"
+                          : ""
+                      }
                     />
                   )}
                   renderOption={(props, option) => (
@@ -404,8 +438,10 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
                 />
               </div>
               <div className="flex flex-col items-start w-full">
-                <h1 className="text-base font-medium mb-3">Category<span className="text-red-500">*</span></h1>
-                <FormControl 
+                <h1 className="text-base font-medium mb-3">
+                  Category<span className="text-red-500">*</span>
+                </h1>
+                <FormControl
                   fullWidth
                   error={touched.category && errors.category}
                 >
@@ -455,9 +491,12 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
 
             <div className="flex gap-4">
               <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <div className="w-full flex flex-col gap-3">
-                  <h1 className="text-base font-medium">Select Date<span className="text-red-500">*</span></h1>
+                <div className="w-full flex flex-col">
+                  <h1 className="text-base font-medium mb-3">
+                    Select Date<span className="text-red-500">*</span>
+                  </h1>
                   <DatePicker
+                    sx={{ margin: 0 }}
                     fullWidth
                     placeholder="Select Date"
                     value={startDate}
@@ -467,15 +506,19 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
                         fullWidth: true,
                         margin: "normal",
                         error: touched.date && errors.date,
-                        helperText: touched.date && errors.date ? "Date is required" : "",
+                        helperText:
+                          touched.date && errors.date ? "Date is required" : "",
                       },
                     }}
                   />
                 </div>
 
-                <div className="w-full flex flex-col gap-3">
-                  <h1 className="font-medium text-base">Start Time<span className="text-red-500">*</span></h1>
+                <div className="w-full flex flex-col">
+                  <h1 className="font-medium text-base mb-3">
+                    Start Time<span className="text-red-500">*</span>
+                  </h1>
                   <TimePicker
+                    sx={{ margin: 0 }}
                     fullWidth
                     placeholder="Start Time"
                     value={startDate}
@@ -485,14 +528,20 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
                         fullWidth: true,
                         margin: "normal",
                         error: touched.startTime && errors.startTime,
-                        helperText: touched.startTime && errors.startTime ? "Start time is required" : "",
+                        helperText:
+                          touched.startTime && errors.startTime
+                            ? "Start time is required"
+                            : "",
                       },
                     }}
                   />
                 </div>
-                <div className="w-full flex flex-col gap-3">
-                  <h1 className="font-medium text-base">End Time<span className="text-red-500">*</span></h1>
+                <div className="w-full flex flex-col">
+                  <h1 className="font-medium text-base mb-3">
+                    End Time<span className="text-red-500">*</span>
+                  </h1>
                   <TimePicker
+                    sx={{ margin: 0 }}
                     fullWidth
                     placeholder="End Time"
                     value={endDate}
@@ -502,11 +551,12 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
                         fullWidth: true,
                         margin: "normal",
                         error: touched.endTime && errors.endTime,
-                        helperText: touched.endTime && errors.endTime 
-                          ? endDate && startDate && endDate <= startDate 
-                            ? "End time must be after start time" 
-                            : "End time is required" 
-                          : "",
+                        helperText:
+                          touched.endTime && errors.endTime
+                            ? endDate && startDate && endDate <= startDate
+                              ? "End time must be after start time"
+                              : "End time is required"
+                            : "",
                       },
                     }}
                   />

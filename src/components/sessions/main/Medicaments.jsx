@@ -1,5 +1,5 @@
+import React from "react";
 import { Stack } from "@mui/material";
-import React, { useEffect, useState } from "react";
 import MedicamentChipsSelect from "./MedicamentChipsSelect";
 import MedicamentList from "./MedicamentList";
 import { useDispatch, useSelector } from "react-redux";
@@ -29,6 +29,7 @@ const Medicaments = ({ id, availableMedicaments = [] }) => {
 
     dispatch(updateSessionAttribute(modifyData));
   };
+
 
   return (
     <Stack spacing={2} className="w-full">

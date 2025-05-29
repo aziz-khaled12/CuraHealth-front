@@ -9,12 +9,15 @@ import { BiSolidDashboard } from "react-icons/bi";
 import { PiStethoscopeBold } from "react-icons/pi";
 import { FaUserInjured } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { FaUser } from "react-icons/fa6";
+import { useDispatch, useSelector } from "react-redux";
+import { FaRightFromBracket, FaUser } from "react-icons/fa6";
+import { logout } from "../../redux/authSlice";
+import { LogoutOutlined } from "@mui/icons-material";
 
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [selected, setSelected] = useState(null);
   const { user } = useSelector((state) => state.auth); // Get user permissions
 
@@ -102,7 +105,7 @@ const Sidebar = () => {
       <div className="flex flex-col gap-2 px-3">
         {filteredMenuItems.map((item) => (
           <div
-            key={item.id   }
+            key={item.id}
             className={`relative rounded-lg overflow-hidden ${
               selected === item.id ? "bg-blue-50" : ""
             }`}
@@ -128,7 +131,7 @@ const Sidebar = () => {
         ))}
       </div>
 
-      <div className="mt-auto mx-3 pt-4 border-t border-gray-200">
+      <div className="mt-auto mx-3 pt-4 border-t border-gray-200 flex flex-col gap-2">      
         <Tooltip title={"Profile"} placement="right">
           <button
             onClick={() => navigate("/profile")}
@@ -137,6 +140,17 @@ const Sidebar = () => {
             <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-sm font-medium">
               DR
             </div>
+          </button>
+        </Tooltip>
+        
+        <Tooltip title={"Logout"} placement="right">
+          <button
+            onClick={() => dispatch(logout())}
+            className="flex items-center w-full rounded-lg py-2 px-3 text-gray-600 hover:bg-gray-100"
+          >
+            <span className="flex justify-center items-center min-w-[30px]">
+              <FaRightFromBracket size={20} className="rotate-180" />
+            </span>
           </button>
         </Tooltip>
       </div>

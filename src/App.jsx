@@ -102,6 +102,7 @@ function App() {
               <Route path="services" element={<Services />} />
               <Route path="rapports" element={<Rapports />} />
               <Route path="office" element={<Office />} />
+              <Route path="office/patients/:id/records" element={<PatientRecords />} />
               <Route path="office/sessions" element={<SessionsPage />} />
               <Route path="profile" element={<Profile />} />
               <Route path="users-management" element={<UsersManagement />} />

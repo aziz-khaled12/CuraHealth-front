@@ -213,30 +213,7 @@ const Navbar = () => {
               </div>
             )}
           </Menu>
-          <div className="flex items-center gap-3">
-            <Tooltip title="Account settings">
-              <IconButton
-                onClick={handleOpenMenu}
-                size="small"
-                aria-controls={open ? "account-menu" : undefined}
-                aria-haspopup="true"
-                aria-expanded={open ? "true" : undefined}
-              >
-                <Avatar
-                  sx={{ width: 40, height: 40, bgcolor: "#6366F1" }}
-                  alt="Ahmed Twati"
-                >
-                  AT
-                </Avatar>
-              </IconButton>
-            </Tooltip>
-            <div className="hidden md:block leading-4">
-              <div className="text-sm font-medium text-gray-800">
-                Ahmed Twati
-              </div>
-              <div className="text-xs font-medium text-gray-500">Doctor</div>
-            </div>
-          </div>
+          
 
           <Menu
             anchorEl={anchorEl}

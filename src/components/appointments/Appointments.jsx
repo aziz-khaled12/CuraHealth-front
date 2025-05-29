@@ -110,7 +110,6 @@ const Appointments = () => {
                 onClick={handleOpen}
                 variant="contained"
                 sx={{ textTransform: "none" }}
-                className="!bg-primary"
               >
                 New Appointment
               </Button>

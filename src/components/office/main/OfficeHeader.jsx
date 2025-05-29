@@ -1,13 +1,10 @@
 import React from "react";
-import { FaSearch } from "react-icons/fa";
 import {
-  TextField,
-  InputAdornment,
   Typography
 } from "@mui/material";
 import { format } from "date-fns";
 
-const OfficeHeader = ({ searchQuery, setSearchQuery }) => {
+const OfficeHeader = () => {
   return (
     <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
       <div>
@@ -17,29 +14,6 @@ const OfficeHeader = ({ searchQuery, setSearchQuery }) => {
         <Typography variant="body2" color="text.secondary">
           {format(new Date(), "EEEE, MMMM d, yyyy")}
         </Typography>
-      </div>
-
-      <div className="flex items-center gap-4">
-        <TextField
-          size="small"
-          placeholder="Search patients..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <FaSearch />
-              </InputAdornment>
-            ),
-          }}
-          sx={{
-            width: { xs: "100%", sm: "250px" },
-            "& .MuiOutlinedInput-root": {
-              borderRadius: "8px",
-            },
-          }}
-        />
-
       </div>
     </div>
   );

@@ -13,14 +13,29 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Box,
+  Typography,
+  Divider,
 } from "@mui/material";
-import { MoreHoriz, Edit, Delete, Shield, Search } from "@mui/icons-material";
+import {
+  MoreHoriz,
+  Edit,
+  Delete,
+  Shield,
+  Search,
+  Close,
+  MedicalServices,
+} from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUsers } from "../../redux/usersSlice";
 import { Add as AddIcon } from "@mui/icons-material";
 
-
-const UserTable = ({ onEdit, onManagePermissions, onManageServices, onAdd }) => {
+const UserTable = ({
+  onEdit,
+  onManagePermissions,
+  onManageServices,
+  onAdd,
+}) => {
   const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
@@ -35,8 +50,8 @@ const UserTable = ({ onEdit, onManagePermissions, onManageServices, onAdd }) => 
   const { users } = useSelector((state) => state.users);
 
   useEffect(() => {
-    console.log("users: ", users)
-  }, [users])
+    console.log("users: ", users);
+  }, [users]);
 
   const handleMenuOpen = (event, user) => {
     setAnchorEl(event.currentTarget);
@@ -51,8 +66,6 @@ const UserTable = ({ onEdit, onManagePermissions, onManageServices, onAdd }) => 
   const confirmDelete = (userId) => {
     setUserToDelete(userId);
   };
-
-
 
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
@@ -71,7 +84,7 @@ const UserTable = ({ onEdit, onManagePermissions, onManageServices, onAdd }) => 
     { field: "userName", headerName: "Name", flex: 1 },
     { field: "email", headerName: "Email", flex: 1 },
     { field: "type", headerName: "Type", flex: 1 },
-   
+
     {
       field: "actions",
       headerName: "Actions",
@@ -87,9 +100,8 @@ const UserTable = ({ onEdit, onManagePermissions, onManageServices, onAdd }) => 
     },
   ];
 
-
   return (
-    <div style={{ height: 500, width: "100%" }}>
+    <div className="flex flex-col h-full w-full">
       <div className="w-full flex items-cnter justify-between mb-4">
         <div className="flex items-center gap-4">
           <TextField
@@ -120,81 +132,141 @@ const UserTable = ({ onEdit, onManagePermissions, onManageServices, onAdd }) => 
           variant="contained"
           startIcon={<AddIcon />}
           onClick={onAdd}
+          sx={{ textTransform: "none" }}
         >
           Add User
         </Button>
       </div>
 
-      <DataGrid
-        rows={filteredUsers}
-        columns={columns}
-        slots={{ toolbar: GridToolbar }}
-        autoPageSize
-        getRowId={(row) => row.id}
-        sx={{
-          height: '100%',
-          width: '100%',
-          '& .MuiDataGrid-root': {
-            border: 'none',
-          },
-          '& .MuiDataGrid-cell': {
-            borderBottom: '1px solid #f0f0f0',
-          },
-          '& .MuiDataGrid-columnHeaders': {
-            backgroundColor: '#fafafa',
-            borderBottom: 'none',
-          },
-          '& .MuiDataGrid-virtualScroller': {
-            backgroundColor: '#fff',
-          },
-          '& .MuiDataGrid-footerContainer': {
-            borderTop: '1px solid #f0f0f0',
-            backgroundColor: '#fafafa',
-          },
-          '& .MuiDataGrid-toolbarContainer': {
-            padding: '8px',
-            backgroundColor: '#fafafa',
-          },
-        }}
-      />
+      <Box className="flex-grow w-full h-full">
+        <DataGrid
+          rows={filteredUsers}
+          columns={columns}
+          slots={{ toolbar: GridToolbar }}
+          autoPageSize
+          getRowId={(row) => row.id}
+          sx={{
+            height: "100%",
+            width: "100%",
+            "& .MuiDataGrid-root": {
+              border: "none",
+            },
+            "& .MuiDataGrid-cell": {
+              borderBottom: "1px solid #f0f0f0",
+            },
+            "& .MuiDataGrid-columnHeaders": {
+              backgroundColor: "#fafafa",
+              borderBottom: "none",
+            },
+            "& .MuiDataGrid-virtualScroller": {
+              backgroundColor: "#fff",
+            },
+            "& .MuiDataGrid-footerContainer": {
+              borderTop: "1px solid #f0f0f0",
+              backgroundColor: "#fafafa",
+            },
+            "& .MuiDataGrid-toolbarContainer": {
+              padding: "8px",
+              backgroundColor: "#fafafa",
+            },
+          }}
+        />
+      </Box>
 
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
+        PaperProps={{
+          elevation: 3,
+          sx: {
+            borderRadius: "8px",
+            minWidth: "200px",
+            padding: "4px 0",
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+            border: "1px solid rgba(0, 0, 0, 0.1)",
+          },
+        }}
+        MenuListProps={{
+          sx: {
+            padding: 0,
+          },
+        }}
+        transformOrigin={{ horizontal: "right", vertical: "top" }}
+        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
-        <MenuItem onClick={() => onEdit(menuUser)}>
-          <Edit fontSize="small" /> Edit
+        <MenuItem
+          onClick={() => onEdit(menuUser)}
+          sx={{
+            padding: "8px 16px",
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            "&:hover": {
+              backgroundColor: "rgba(0, 0, 0, 0.04)",
+            },
+          }}
+        >
+          <Edit fontSize="small" sx={{ color: "text.secondary" }} />
+          <Typography variant="body2">Edit</Typography>
         </MenuItem>
-        <MenuItem onClick={() => onManagePermissions(menuUser)}>
-          <Shield fontSize="small" /> Permissions
+
+        <MenuItem
+          onClick={() => onManagePermissions(menuUser)}
+          sx={{
+            padding: "8px 16px",
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            "&:hover": {
+              backgroundColor: "rgba(0, 0, 0, 0.04)",
+            },
+          }}
+        >
+          <Shield fontSize="small" sx={{ color: "text.secondary" }} />
+          <Typography variant="body2">Permissions</Typography>
         </MenuItem>
+
         {menuUser?.type === "Doctor" && (
-          <MenuItem onClick={() => onManageServices(menuUser)}>
-            <Shield fontSize="small" /> Services
+          <MenuItem
+            onClick={() => onManageServices(menuUser)}
+            sx={{
+              padding: "8px 16px",
+              display: "flex",
+              alignItems: "center",
+              gap: "12px",
+              "&:hover": {
+                backgroundColor: "rgba(0, 0, 0, 0.04)",
+              },
+            }}
+          >
+            <MedicalServices
+              fontSize="small"
+              sx={{ color: "text.secondary" }}
+            />
+            <Typography variant="body2">Services</Typography>
           </MenuItem>
         )}
-        {/* <MenuItem onClick={() => confirmDelete(menuUser.id)}>
-          <Delete fontSize="small" /> Delete
-        </MenuItem> */}
-      </Menu>
 
-      {/* <Dialog
-        open={Boolean(userToDelete)}
-        onClose={() => setUserToDelete(null)}
-      >
-        <DialogTitle>Confirm Deletion</DialogTitle>
-        <DialogContent>
-          Are you sure you want to delete this user? This action cannot be
-          undone.
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setUserToDelete(null)}>Cancel</Button>
-          <Button onClick={handleDeleteConfirmed} color="error">
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog> */}
+        <Divider sx={{ my: "4px" }} />
+
+        <MenuItem
+          onClick={handleMenuClose}
+          sx={{
+            padding: "8px 16px",
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            color: "text.secondary",
+            "&:hover": {
+              backgroundColor: "rgba(0, 0, 0, 0.04)",
+            },
+          }}
+        >
+          <Close fontSize="small" />
+          <Typography variant="body2">Close</Typography>
+        </MenuItem>
+      </Menu>
     </div>
   );
 };

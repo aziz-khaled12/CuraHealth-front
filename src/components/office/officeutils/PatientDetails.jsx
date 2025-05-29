@@ -10,6 +10,7 @@ import {
 } from "../../../redux/appointmentsSlice";
 import { addSession } from "../../../redux/sessionSlice";
 import useHasPermission from "../../../hooks/useHasPermission";
+import { calculateAge } from "../../../utils/TimeManipulationFunctions";
 
 const PatientDetails = ({ appointment }) => {
   const dispatch = useDispatch();
@@ -23,6 +24,7 @@ const PatientDetails = ({ appointment }) => {
 
   const canStartAppointment = useHasPermission("start Appointments");
   const canSeeRecords = useHasPermission("see All Patient Records");
+  const age = calculateAge(appointment.birth_day);
 
   const formattedDate = format(appointment.birth_day, "d MMMM yyyy");
 
@@ -42,9 +44,10 @@ const PatientDetails = ({ appointment }) => {
     dispatch(updateAppointment({ ...appointment, status: "On Going" }));
     dispatch(addSession({ sessionId, sessionData: newSession }));
     dispatch(startAppointment({AppointmntID: appointment.appointmnt_id, ServiceID: appointment.service_id}));
-
     navigate(`/office/sessions`);
   };
+
+  
 
   return (
     patient && 
@@ -62,20 +65,7 @@ const PatientDetails = ({ appointment }) => {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 mt-2">
-          <Chip
-            icon={<FaUserMd size={12} />}
-            label={patient.insuranceProvider || "No Insurance"}
-            variant="outlined"
-            color="info"
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              borderRadius: "6px",
-              fontWeight: "500",
-            }}
-          />
-        </div>
+    
       </div>
 
       <Box className="grid grid-cols-3 grid-rows-2 gap-2 gap-y-6 mb-6 bg-gray-50 p-4 rounded-lg">
@@ -109,7 +99,7 @@ const PatientDetails = ({ appointment }) => {
           <Typography variant="subtitle2" className="text-gray-600 mb-1">
             Age
           </Typography>
-          <Typography variant="body2">{appointment.age} years</Typography>
+          <Typography variant="body2">{age} years</Typography>
         </Box>
         <Box>
           <Typography variant="subtitle2" className="text-gray-600 mb-1">
@@ -121,7 +111,7 @@ const PatientDetails = ({ appointment }) => {
         </Box>
       </Box>
 
-      <Typography variant="subtitle1" className="mb-2">
+      {/* <Typography variant="subtitle1" className="mb-2">
         Medical Conditions
       </Typography>
       <div className="flex items-center gap-2 flex-wrap mb-6">
@@ -149,10 +139,9 @@ const PatientDetails = ({ appointment }) => {
           color="default"
           sx={{ borderRadius: "6px" }}
           onClick={() => {
-            /* Add logic to add condition */
           }}
         />
-      </div>
+      </div> */}
 
       <div className="flex items-center gap-3">
         {canSeeRecords && (
@@ -163,6 +152,9 @@ const PatientDetails = ({ appointment }) => {
             variant="contained"
             startIcon={<FaFileMedical />}
             sx={{ textTransform: "none", borderRadius: "8px", px: 3 }}
+            onClick={() => {
+              navigate(`/office/patients/${patient.PatientID}/records`);
+            }}
           >
             Medical History
           </Button>
