@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Modal, Box, Typography, Backdrop, Button } from "@mui/material";
+import { Modal, Backdrop, Button } from "@mui/material";
 import { format } from "date-fns";
 import {
   FaTimes,
@@ -22,9 +22,12 @@ import {
   FaEllipsisV,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { downloadPDF, printPDF } from "../../utils/pdfHandler";
+import {
+  downloadPDF,
+  printPDF,
+  printPrescription,
+} from "../../utils/pdfHandler";
 import ViewerModal from "../random/ViewerModal";
-import { ContactlessOutlined } from "@mui/icons-material";
 
 function TabPanel({ children, value, index, ...other }) {
   return (
@@ -48,7 +51,9 @@ export function MedicalHistoryModal({ session, onClose }) {
   const [tabValue, setTabValue] = useState(0);
   const [selectedFile, setSelectedFile] = useState(null);
   const [viewerOpen, setViewerOpen] = useState(false);
-  const fileURLS = session.files.map((file) => {return `${url}/files/appointmnt/${session.id}/${file}`} )
+  const fileURLS = session.files.map((file) => {
+    return `${url}/files/appointmnt/${session.id}/${file}`;
+  });
   console.log("session", session);
 
   if (!session) return null;
@@ -66,7 +71,6 @@ export function MedicalHistoryModal({ session, onClose }) {
     setViewerOpen(false);
     setSelectedFile(null);
   };
-
 
   const getCategoryIcon = () => {
     switch (session.category) {
@@ -119,7 +123,27 @@ export function MedicalHistoryModal({ session, onClose }) {
     contact: "Tel: (123) 456-7890 • Email: info@curahealth.com",
   };
 
+  const [medicationSearchTerm, setMedicationSearchTerm] = useState("");
+  const [documentSearchTerm, setDocumentSearchTerm] = useState("");
 
+  const filteredMedications =
+    session.medicaments?.filter(
+      (medication) =>
+        medication.name
+          .toLowerCase()
+          .includes(medicationSearchTerm.toLowerCase()) ||
+        medication.instructions
+          .toLowerCase()
+          .includes(medicationSearchTerm.toLowerCase()) ||
+        medication.frequency
+          ?.toLowerCase()
+          .includes(medicationSearchTerm.toLowerCase())
+    ) || [];
+
+  const filteredDocuments = fileURLS.filter((file, index) => {
+    const fileName = file.file?.name || `Document ${index + 1}`;
+    return fileName.toLowerCase().includes(documentSearchTerm.toLowerCase());
+  });
 
   const navigate = useNavigate();
   console.log("session", session);
@@ -141,10 +165,7 @@ export function MedicalHistoryModal({ session, onClose }) {
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[95%] max-w-6xl h-[90vh] bg-white rounded-xl shadow-2xl flex flex-col overflow-hidden">
           {/* Header */}
           <div className="p-5 flex items-center border-b border-gray-200 bg-white">
-            <div
-              className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg mr-4"
-              style={{ backgroundColor: getCategoryColor() }}
-            >
+            <div className="bg-primary w-12 h-12 rounded-full flex items-center justify-center shadow-lg mr-4">
               {getCategoryIcon()}
             </div>
             <div className="flex-grow">
@@ -180,15 +201,10 @@ export function MedicalHistoryModal({ session, onClose }) {
               <button
                 className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
                 onClick={() => downloadPDF(session, clinic)}
-
               >
                 <FaDownload className="text-gray-600" />
               </button>
-              <button
-              onClick={() => navigate("/test")}
-              className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
-                <FaEllipsisV className="text-gray-600" />
-              </button>
+
               <button
                 onClick={onClose}
                 className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-blue-100 text-gray-600 hover:text-primary transition-colors ml-1"
@@ -329,9 +345,6 @@ export function MedicalHistoryModal({ session, onClose }) {
                     </div>
                     <h3 className="font-semibold text-blue-800">Vital Signs</h3>
                   </div>
-                  <div className="text-xs font-medium text-primary">
-                    Last updated: {format(new Date(), "dd MMM yyyy")}
-                  </div>
                 </div>
                 <div className="p-5">
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -387,63 +400,80 @@ export function MedicalHistoryModal({ session, onClose }) {
                       Prescribed Medications
                     </h3>
                   </div>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                      <FaSearch className="w-4 h-4 text-gray-500" />
+                  <div className="flex items-center gap-3">
+                    <Button size="small" startIcon={<FaPrint className="text-white !text-base" />} onClick={() => printPrescription(session, clinic)} variant="contained" sx={{borderRadius: 99, textTransform: "none", py: "0.375rem"}} >Print Prescription</Button>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <FaSearch className="w-4 h-4 text-gray-500" />
+                      </div>
+                      <input
+                        type="text"
+                        className="py-1.5 pl-10 pr-4 bg-white border border-gray-300 rounded-full text-sm focus:ring-primary focus:border-primary w-48"
+                        placeholder="Search medications..."
+                        value={medicationSearchTerm}
+                        onChange={(e) =>
+                          setMedicationSearchTerm(e.target.value)
+                        }
+                      />
                     </div>
-                    <input
-                      type="text"
-                      className="py-1.5 pl-10 pr-4 bg-white border border-gray-300 rounded-full text-sm focus:ring-primary focus:border-primary w-48"
-                      placeholder="Search medications..."
-                    />
                   </div>
                 </div>
                 <div className="p-5">
-                  <div className="space-y-5">
-                    {session.medicaments?.map((prescription, index) => (
-                      <div
-                        key={index}
-                        className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden hover:shadow-md hover:-translate-y-1 transition-all duration-200 group"
-                      >
-                        <div className="flex">
-                          <div className="w-2 bg-primary group-hover:bg-primary transition-colors"></div>
-                          <div className="p-5 w-full">
-                            <div className="flex flex-col md:flex-row md:items-center">
-                              <div className="flex items-start flex-grow">
-                                <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center shadow-md mr-4 group-hover:bg-primary transition-colors">
-                                  <FaPills className="text-xl" />
-                                </div>
-                                <div>
-                                  <h4 className="font-bold text-gray-800 text-lg">
-                                    {prescription.name}
-                                  </h4>
-                                  <div className="mt-2 space-x-2">
-                                    {prescription.frequency && (
-                                      <span className="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                                        {prescription.frequency}
-                                      </span>
-                                    )}
-                                    {prescription.quantity && (
-                                      <span className="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                                        {`${prescription.quantity} ${prescription.unit}`}
-                                      </span>
-                                    )}
+                  <div className="space-y-5 h-[55vh] overflow-y-auto custom-scrollbar">
+                    {filteredMedications.length > 0 ? (
+                      filteredMedications.map((prescription, index) => (
+                        <div
+                          key={index}
+                          className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden hover:shadow-md hover:-translate-y-1 transition-all duration-200 group"
+                        >
+                          {/* Rest of the prescription card content remains the same */}
+                          <div className="flex">
+                            <div className="w-2 bg-primary group-hover:bg-primary transition-colors"></div>
+                            <div className="p-5 w-full">
+                              <div className="flex flex-col md:flex-row md:items-center">
+                                <div className="flex items-start flex-grow">
+                                  <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center shadow-md mr-4 group-hover:bg-primary transition-colors">
+                                    <FaPills className="text-xl" />
+                                  </div>
+                                  <div>
+                                    <h4 className="font-bold text-gray-800 text-lg">
+                                      {prescription.name}
+                                    </h4>
+                                    <div className="mt-2 space-x-2">
+                                      {prescription.frequency && (
+                                        <span className="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                                          {prescription.frequency}
+                                        </span>
+                                      )}
+                                      {prescription.quantity && (
+                                        <span className="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                                          {`${prescription.quantity} ${prescription.unit}`}
+                                        </span>
+                                      )}
+                                    </div>
                                   </div>
                                 </div>
                               </div>
-                            </div>
-                            <div className="mt-4 pt-4 border-t border-gray-100">
-                              <h5 className="text-sm font-semibold text-gray-700 mb-2">
-                                Instructions:
-                              </h5>
-                              <p className="text-gray-600">
-                                {prescription.instructions}
-                              </p>
+                              <div className="mt-4 pt-4 border-t border-gray-100">
+                                <h5 className="text-sm font-semibold text-gray-700 mb-2">
+                                  Instructions:
+                                </h5>
+                                <p className="text-gray-600">
+                                  {prescription.instructions}
+                                </p>
+                              </div>
                             </div>
                           </div>
                         </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-12">
+                        <FaPills className="mx-auto text-gray-400 text-4xl mb-4" />
+                        <p className="text-gray-500">
+                          No medications found.
+                        </p>
                       </div>
-                    ))}
+                    )}
                   </div>
                 </div>
               </div>
@@ -470,50 +500,59 @@ export function MedicalHistoryModal({ session, onClose }) {
                         type="text"
                         className="py-1.5 pl-10 pr-4 bg-white border border-gray-300 rounded-full text-sm focus:ring-primary focus:border-primary w-48"
                         placeholder="Search documents..."
+                        value={documentSearchTerm}
+                        onChange={(e) => setDocumentSearchTerm(e.target.value)}
                       />
                     </div>
-                    <button className="px-4 py-1.5 bg-blue-100 text-blue-700 rounded-full text-sm font-medium hover:bg-blue-200 transition-colors flex items-center gap-1">
-                      <FaFileAlt className="text-xs" />
-                      <span>Upload New</span>
-                    </button>
                   </div>
                 </div>
                 <div className="p-5">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    {fileURLS.map((file, index) => (
-                      <div
-                        key={index}
-                        className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden cursor-pointer hover:shadow-md hover:-translate-y-1 transition-all duration-200 group"
-                        onClick={() => handleFileSelect(file)}
-                      >
-                        <div className="h-32 bg-blue-50 border-b border-gray-200 flex items-center justify-center">
-                          <div className="w-16 h-16 rounded-full bg-primary text-white flex items-center justify-center group-hover:bg-primary transition-colors shadow-md">
-                            <FaImage className="text-2xl" />
-                          </div>
-                        </div>
-                        <div className="p-4">
-                          <div className="font-medium text-gray-800 truncate group-hover:text-blue-700 transition-colors">
-                            {file.file?.name || `Document ${index + 1}`}
-                          </div>
-                          <div className="flex items-center justify-between mt-2">
-                            <div className="text-xs text-gray-500">
-                              {format(new Date(), "MMM dd, yyyy")}
-                            </div>
-                            <div className="text-xs font-medium text-primary bg-blue-50 px-2 py-0.5 rounded-full">
-                              View
+                  {filteredDocuments.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                      {filteredDocuments.map((file, index) => (
+                        <div
+                          key={index}
+                          className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden cursor-pointer hover:shadow-md hover:-translate-y-1 transition-all duration-200 group"
+                          onClick={() => handleFileSelect(file)}
+                        >
+                          <div className="h-32 bg-blue-50 border-b border-gray-200 flex items-center justify-center">
+                            <div className="w-16 h-16 rounded-full bg-primary text-white flex items-center justify-center group-hover:bg-primary transition-colors shadow-md">
+                              <FaImage className="text-2xl" />
                             </div>
                           </div>
+                          <div className="p-4">
+                            <div className="font-medium text-gray-800 truncate group-hover:text-blue-700 transition-colors">
+                              {file.file?.name || `Document ${index + 1}`}
+                            </div>
+                            <div className="flex items-center justify-between mt-2">
+                              <div className="text-xs text-gray-500">
+                                {format(new Date(), "MMM dd, yyyy")}
+                              </div>
+                              <div className="text-xs font-medium text-primary bg-blue-50 px-2 py-0.5 rounded-full">
+                                View
+                              </div>
+                            </div>
+                          </div>
                         </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="w-full flex items-center justify-center text-center py-12">
+                      <div>
+                        <FaFileAlt className="mx-auto text-gray-400 text-4xl mb-4" />
+                        <p className="text-gray-500">
+                          No documents found.
+                        </p>
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </TabPanel>
           </div>
         </div>
       </Modal>
-      
+
       {viewerOpen && (
         <ViewerModal
           open={viewerOpen}
@@ -521,7 +560,6 @@ export function MedicalHistoryModal({ session, onClose }) {
           onClose={handleViewerClose}
         />
       )}
-     
     </>
   );
 }

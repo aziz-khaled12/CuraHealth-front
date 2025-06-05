@@ -19,7 +19,9 @@ const Sidebar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [selected, setSelected] = useState(null);
-  const { user } = useSelector((state) => state.auth); // Get user permissions
+  const { user, permissions } = useSelector((state) => state.auth); // Get user permissions
+  console.log("user: ", user)
+  console.log("permissions: ", permissions)
 
   const menuItems = [
     {
@@ -83,9 +85,9 @@ const Sidebar = () => {
   const filteredMenuItems = React.useMemo(
     () =>
       menuItems.filter((item) =>
-        item.permission ? user?.permissions?.includes(item.permission) : true
+        item.permission ? permissions.includes(item.permission) : true
       ),
-    [menuItems, user?.permissions]
+    [menuItems, permissions]
   );
 
   useEffect(() => {

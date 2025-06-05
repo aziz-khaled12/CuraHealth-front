@@ -2,24 +2,26 @@ import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
+  MenuItem,
   Modal,
+  Select,
   Stack,
   TextField,
   ToggleButton,
   ToggleButtonGroup,
 } from "@mui/material";
 
-import { LuPencil, LuPlus, LuTrash2 } from "react-icons/lu";
+import { LuPlus } from "react-icons/lu";
 import { useDispatch, useSelector } from "react-redux";
-import { add, set } from "date-fns";
 import { addSign, updateSign } from "../../../redux/signsSlice";
+import { showAlert } from "../../../redux/alertSlice";
 
-const ModifySignsModal = ({ open, handleClose, setFormData, formData }) => {
+const ModifyPatientSignsModal = ({ open, handleClose }) => {
   const [alignment, setAlignment] = useState("");
   const [selectedSign, setSelectedSign] = useState(null);
   const [show, setShow] = useState(false);
   const dispatch = useDispatch();
-  const { generalSigns } = useSelector((state) => state.signs);
+  const { generalSigns, status } = useSelector((state) => state.signs);
 
   const [newSign, setNewSign] = useState({
     name: "",
@@ -34,7 +36,9 @@ const ModifySignsModal = ({ open, handleClose, setFormData, formData }) => {
       : setNewSign({ ...newSign, [e.target.name]: e.target.value });
   };
   const handleButtonChange = (event, newAlignment) => {
-    setAlignment(newAlignment);
+    if (newAlignment !== null) {
+      setAlignment(newAlignment);
+    }
   };
 
   const handleCancel = () => {
@@ -44,44 +48,55 @@ const ModifySignsModal = ({ open, handleClose, setFormData, formData }) => {
   };
 
   const handleAdd = () => {
-    dispatch(addSign(newSign));
-    const updatedData = {
-      ...formData,
-      generalSigns: [
-        ...formData.generalSigns,
-        { name: newSign.name, value: "" },
-      ],
-    };
+    dispatch(addSign({ newSign }));
 
-    setFormData(updatedData);
-    setShow(false);
-    setNewSign({ name: "", unit: "", type: "", placeholder: "" });
+    if (status === "success") {
+      dispatch(
+        showAlert({
+          message: "Vital sign added successfully",
+          severity: "success",
+        })
+      );
+      setAlignment(null);
+      setShow(false);
+      setNewSign({ name: "", unit: "", type: "", placeholder: "" });
+    }
+    if (status === "failed") {
+      dispatch(
+        showAlert({
+          message: "Failed to add vital sign",
+          severity: "error",
+        })
+      );
+    }
   };
 
   const handleUpdate = () => {
-    dispatch(updateSign(selectedSign));
-
-    const updatedData = {
-      ...formData,
-      generalSigns: formData.generalSigns.map((sign) =>
-        sign.name === selectedSign.name ? { ...sign, ...selectedSign } : sign
-      ),
-    };
-
-    setFormData(updatedData);
-
-    setSelectedSign(null);
-    setShow(false);
+    dispatch(updateSign({ newSign: selectedSign, id: selectedSign.id, type: "appointment" }));
+    if (status === "success") {
+      dispatch(
+        showAlert({
+          message: "Vital sign modified successfully",
+          severity: "success",
+        })
+      );
+      setSelectedSign(null);
+      setShow(false);
+    }
+    if (status === "failed") {
+      dispatch(
+        showAlert({
+          message: "Failed to modify vital sign",
+          severity: "error",
+        })
+      );
+    }
   };
 
   const hanldeSignSelect = (sign) => {
     setSelectedSign(sign);
     setShow(true);
   };
-
-  useEffect(() => {
-    console.log(alignment);
-  }, [alignment]);
 
   return (
     <Modal open={open} onClose={handleClose}>
@@ -211,16 +226,23 @@ const ModifySignsModal = ({ open, handleClose, setFormData, formData }) => {
                       <h1 className="text-base font-medium text-darkText mb-2">
                         Type
                       </h1>
-                      <TextField
+                      <Select
                         fullWidth
                         name="type"
                         value={
                           selectedSign != null
-                            ? selectedSign.type
-                            : newSign.type
+                            ? selectedSign.type.trim()
+                            : newSign.type.trim()
                         }
                         onChange={handleChange}
-                      />
+                        displayEmpty
+                      >
+                        <MenuItem value="" disabled>
+                          Select type
+                        </MenuItem>
+                        <MenuItem value="number">Number</MenuItem>
+                        <MenuItem value="text">Text</MenuItem>
+                      </Select>
                     </div>
                   </div>
 
@@ -274,4 +296,4 @@ const ModifySignsModal = ({ open, handleClose, setFormData, formData }) => {
   );
 };
 
-export default ModifySignsModal;
+export default ModifyPatientSignsModal;

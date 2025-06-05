@@ -24,6 +24,7 @@ import Test from "./Test";
 import Layout from "./components/layout/Layout";
 import { jwtDecode } from "jwt-decode";
 import Dashboard from "./components/dashboard/Dashboard";
+import AlertMessage from "./components/layout/AlertMessage";
 
 function App() {
   const dispatch = useDispatch();
@@ -80,6 +81,7 @@ function App() {
 
   return (
     <div>
+      <AlertMessage />
       <div
         id="pdf-container"
         className="hidden print:block absolute top-0 left-0 bg-white w-[794px] min-h-[1123px]"

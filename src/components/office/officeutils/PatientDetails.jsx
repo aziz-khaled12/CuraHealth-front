@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { FaUserMd, FaFileMedical } from "react-icons/fa";
 import { Avatar, Button, Chip, Typography, Box } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import {
+  fetchAppointments,
   startAppointment,
   updateAppointment,
 } from "../../../redux/appointmentsSlice";
@@ -16,11 +17,14 @@ const PatientDetails = ({ appointment }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    dispatch(fetchAppointments())
+  }, [])
+
   const patient = useSelector((state) =>
     state.patients.patients.find((p) => p.PatientID === appointment.patient_id)
   );
 
-  console.log("appointment:", appointment);
 
   const canStartAppointment = useHasPermission("start Appointments");
   const canSeeRecords = useHasPermission("see All Patient Records");
@@ -41,7 +45,7 @@ const PatientDetails = ({ appointment }) => {
       finishedAt: null,
       category: appointment.category,
     };
-    dispatch(updateAppointment({ ...appointment, status: "On Going" }));
+    dispatch(updateAppointment({ id: appointment.appointmnt_id, status: "On Going" }));
     dispatch(addSession({ sessionId, sessionData: newSession }));
     dispatch(startAppointment({AppointmntID: appointment.appointmnt_id, ServiceID: appointment.service_id}));
     navigate(`/office/sessions`);

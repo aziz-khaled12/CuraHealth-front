@@ -28,6 +28,7 @@ import { fetchServices } from "../../redux/servicesSlice";
 import { fetchUsers } from "../../redux/usersSlice";
 import { showAlert } from "../../redux/alertSlice";
 import { FaTimes } from "react-icons/fa";
+import axios from "axios";
 
 const AddNewModal = ({ open, setOpen, cellData }) => {
   const dispatch = useDispatch();
@@ -45,9 +46,7 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
   );
   const { patients } = useSelector((state) => state.patients);
   const { services } = useSelector((state) => state.services);
-  const doctors = useSelector((state) =>
-    state.users.users.filter((user) => user.type === "Doctor")
-  );
+  const [doctors, setDoctors] = useState([]);
 
   const [startDate, setStartDate] = useState(
     cellData ? cellData.startDate : new Date()
@@ -65,7 +64,7 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [category, setCategory] = useState(categories[1]);
-  const [service, setService] = useState(services[1]);
+  const [service, setService] = useState({});
 
   // Form validation state
   const [errors, setErrors] = useState({
@@ -89,12 +88,64 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
     endTime: false,
   });
 
+  const fetchServiceDoctors = async () => {
+    try {
+      if (service && service.id) {
+        console.log("Fetching doctors for service:", service.name);
+        const response = await axios.get(
+          `${import.meta.env.VITE_BACK_END_URL}/api/serviceUsers?ServiceID=${
+            service.id
+          }`
+        );
+        const data = response.data.response;
+        if (data === null) {
+          dispatch(
+            showAlert({
+              message: "No doctors found for this service",
+              severity: "warning",
+            })
+          );
+          setDoctors([]);
+          return;
+        }
+        console.log("Fetched doctors:", data);
+        setDoctors(data);
+      } else {
+        // Clear doctors when no service is selected
+        setDoctors([]);
+      }
+    } catch (error) {
+      console.error("Error fetching service doctors:", error);
+      setDoctors([]);
+      dispatch(
+        showAlert({
+          message: "Failed to fetch service doctors",
+          severity: "error",
+        })
+      );
+    }
+  };
+
+  useEffect(() => {
+    if (service && service.id) {
+      fetchServiceDoctors();
+      // Clear selected doctor when service changes
+      setSelectedDoctor(null);
+      setErrors({ ...errors, doctor: false });
+    } else {
+      setDoctors([]);
+      setSelectedDoctor(null);
+      setErrors({ ...errors, doctor: false });
+    }
+    console.log("Service changed:", service);
+  }, [service]);
+
   // Validate the form before submission
   const validateForm = () => {
     const newErrors = {
       patient: !selectedPatient,
       doctor: !selectedDoctor,
-      service: !service,
+      service: !service || !service.id,
       category: !category,
       date: !startDate,
       startTime: !startDate,
@@ -122,7 +173,7 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
     }
 
     const newAppointment = {
-      DoctorID: selectedDoctor.id,
+      DoctorID: selectedDoctor.UserID,
       PatientID: selectedPatient.PatientID,
       ForTime: endDate,
       ApponmentCategoryID: category.ApponmentCategoryID,
@@ -237,6 +288,10 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
     });
   };
 
+  useEffect(() => {
+    console.log("doctors:", doctors);
+  }, [doctors]);
+
   return (
     <>
       <Modal open={open} onClose={handleClose}>
@@ -255,7 +310,7 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
             p: 4,
           }}
         >
-           <div className="w-full flex items-center justify-between mb-10">
+          <div className="w-full flex items-center justify-between mb-10">
             <h2 className=" text-2xl font-semibold">Add Appointment</h2>
             <button
               onClick={handleClose}
@@ -305,25 +360,25 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
 
               <div className="flex flex-col items-start w-full">
                 <h1 className="text-base font-medium mb-3">
-                  Doctor<span className="text-red-500">*</span>
+                  Service<span className="text-red-500">*</span>
                 </h1>
                 <Autocomplete
                   sx={{ margin: "0" }}
                   fullWidth
                   freeSolo
-                  options={doctors}
-                  getOptionLabel={(option) => `${option.userName}`}
-                  onChange={handleDoctorSelect}
+                  options={services}
+                  getOptionLabel={(option) => option.name}
+                  onChange={handleServiceChange}
                   renderInput={(params) => (
                     <TextField
                       {...params}
                       fullWidth
-                      placeholder="Doctor"
+                      placeholder="Service"
                       variant="outlined"
-                      error={touched.doctor && errors.doctor}
+                      error={touched.service && errors.service}
                       helperText={
-                        touched.doctor && errors.doctor
-                          ? "Doctor is required"
+                        touched.service && errors.service
+                          ? "Service is required"
                           : ""
                       }
                     />
@@ -331,7 +386,7 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
                   renderOption={(props, option) => (
                     <>
                       <MenuItem {...props} key={option.id}>
-                        {`${option.userName}`}
+                        {option.name}
                       </MenuItem>
                     </>
                   )}
@@ -372,35 +427,42 @@ const AddNewModal = ({ open, setOpen, cellData }) => {
               </div>
               <div className="flex flex-col items-start w-full">
                 <h1 className="text-base font-medium mb-3">
-                  Service<span className="text-red-500">*</span>
+                  Doctor<span className="text-red-500">*</span>
                 </h1>
                 <Autocomplete
                   sx={{ margin: "0" }}
                   fullWidth
                   freeSolo
-                  options={services}
-                  getOptionLabel={(option) => option.name}
-                  onChange={handleServiceChange}
+                  disabled={!service || !service.id || doctors.length === 0}
+                  options={doctors}
+                  value={selectedDoctor}
+                  getOptionLabel={(option) => {
+                    console.log("option: ", option);
+                    return `${option.UserName}`;
+                  }}
+                  onChange={handleDoctorSelect}
                   renderInput={(params) => (
                     <TextField
                       {...params}
                       fullWidth
-                      placeholder="Service"
+                      placeholder="Doctor"
                       variant="outlined"
-                      error={touched.service && errors.service}
+                      error={touched.doctor && errors.doctor}
                       helperText={
-                        touched.service && errors.service
-                          ? "Service is required"
+                        !service || !service.id
+                          ? "Please select a service first"
+                          : service && service.id && doctors.length === 0
+                          ? "No doctors available for this service"
+                          : touched.doctor && errors.doctor
+                          ? "Doctor is required"
                           : ""
                       }
                     />
                   )}
                   renderOption={(props, option) => (
-                    <>
-                      <MenuItem {...props} key={option.id}>
-                        {option.name}
-                      </MenuItem>
-                    </>
+                    <MenuItem {...props} key={option.UserID}>
+                      {`${option.UserName}`}
+                    </MenuItem>
                   )}
                 />
               </div>

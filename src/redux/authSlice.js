@@ -74,22 +74,15 @@ export const login = createAsyncThunk(
   "auth/login",
   async ({ email, password }, { rejectWithValue }) => {
     try {
-
       const res = await axios.post(`${url}/api/login`, { email, password });
 
       const token = res.data.token;
       const decodedToken = jwtDecode(token);
-      let user = decodedToken.User;
-
-      // Assign permissions based on role
-      user.permissions = res.data.permitions ? res.data.permitions.map((permission) => {
-        return permission.NamePermition;
-      }) : ["see Users"];
-
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
-
-      return { user, token };
+      const user = decodedToken.user;
+      const permissions = decodedToken.permissions || [];
+      const services = decodedToken.services || [];
+      console.log("decoded token: ", decodedToken)
+      return { user, token, permissions, services };
     } catch (err) {
       return rejectWithValue(
         err.response && err.response.status === 401
@@ -100,27 +93,34 @@ export const login = createAsyncThunk(
   }
 );
 
-
-
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-    user: JSON.parse(localStorage.getItem("user")) || null,
     accessToken: localStorage.getItem("token") || null,
     isAuthenticated: !!localStorage.getItem("token"),
+    user: !!localStorage.getItem("token")
+      ? jwtDecode(localStorage.getItem("token")).user
+      : null,
+    permissions: !!localStorage.getItem("token")
+      ? jwtDecode(localStorage.getItem("token")).permissions
+      : [],
+    userServices: !!localStorage.getItem("token")
+      ? jwtDecode(localStorage.getItem("token")).services
+      : [],
     error: null,
     authStatus: "idle",
   },
+
   reducers: {
     logout: (state, action) => {
-    state.user = null;
-    state.accessToken = null;
-    state.isAuthenticated = false;
-    state.error = action.payload?.error || null;
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+      state.user = null;
+      state.accessToken = null;
+      state.isAuthenticated = false;
+      state.error = action.payload?.error || null;
+      localStorage.removeItem("token");
+    },
   },
-  },
+
   extraReducers: (builder) => {
     builder
       .addCase(login.pending, (state) => {
@@ -129,16 +129,18 @@ const authSlice = createSlice({
       .addCase(login.fulfilled, (state, action) => {
         state.authStatus = "success";
         state.user = action.payload.user;
+        state.permissions = action.payload.permissions;
+        state.userServices = action.payload.services;
         state.accessToken = action.payload.token;
         state.isAuthenticated = true;
+        localStorage.setItem("token", action.payload.token);
         state.error = null;
         window.location.href = "/";
       })
       .addCase(login.rejected, (state, action) => {
         state.authStatus = "failed";
         state.error = action.payload;
-      })
-
+      });
   },
 });
 

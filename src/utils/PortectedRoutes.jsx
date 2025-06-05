@@ -3,13 +3,13 @@ import { useSelector } from "react-redux";
 import { routePermissions } from "./routePermissions";
 
 const PortectedRoutes = () => {
-  const { isAuthenticated, user } = useSelector((state) => state.auth);
+  const { isAuthenticated, permissions } = useSelector((state) => state.auth);
   const location = useLocation();
   const currentPath = location.pathname.split("/")[1]; // Get the base route
 
   const requiredPermission = routePermissions[currentPath];
   const hasPermission = requiredPermission
-    ? user?.permissions.includes(requiredPermission)
+    ? permissions.includes(requiredPermission)
     : true;
 
   if (!isAuthenticated) {

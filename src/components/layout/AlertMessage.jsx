@@ -48,14 +48,14 @@ const AlertMessage = () => {
   };
 
   return (
-    <Slide direction="down" in={open} mountOnEnter unmountOnExit>
+    <Slide direction="down" in={open} mountOnEnter unmountOnExit className="!z-[1301]">
       <div
         style={{
           position: "fixed",
           top: "20px",
           left: "40%",
           transform: "translateX(-50%)",
-          zIndex: 1000,
+          zIndex: 1301,
         }}
       >
         <div style={{ position: "relative" }}>

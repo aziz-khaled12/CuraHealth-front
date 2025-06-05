@@ -207,18 +207,33 @@ export const appointmentsSlice = createSlice({
       };
       state.appointments.push(newAppointment);
     },
+
     updateAppointment: (state, action) => {
       const { id, ...changes } = action.payload;
+      console.log("Updating appointment ID:", id);
+      console.log("Changes:", changes);
+      console.log("appointments: ", state.appointments)
+
       const index = state.appointments.findIndex(
         (appointment) => appointment.appointmnt_id === id
       );
+
       if (index !== -1) {
-        console.log("before changes: ", state.appointments[index])
+        // Update existing appointment
         state.appointments[index] = {
           ...state.appointments[index],
           ...changes,
         };
-        console.log("after changes: ", state.appointments[index])
+        console.log("Successfully updated appointment at index:", index);
+        console.log("Updated appointment:", state.appointments[index]);
+        console.log("changes: ", changes);
+        state.appointments.push({id, endDate: new Date(changes.endDate), startDate: new Date(changes.startDate)});
+      } else {
+        console.error("Appointment not found with ID:", id);
+        console.log(
+          "Available appointment IDs:",
+          state.appointments.map((apt) => apt.appointmnt_id)
+        );
       }
     },
 

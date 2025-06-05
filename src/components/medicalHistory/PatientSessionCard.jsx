@@ -12,14 +12,19 @@ import {
 } from "react-icons/fa";
 import useHasPermission from "../../hooks/useHasPermission";
 import { useNavigate } from "react-router-dom";
+import { downloadPDF } from "../../utils/pdfHandler";
 
 const PatientSessionCard = ({ session, handleViewDetails }) => {
   // Status badge styles based on status
 
   const canSeeDetails = useHasPermission("see recent Patient Records details");
   const canDownloadRecords = useHasPermission("download Patient records");
-  const navigate = useNavigate();
-  
+  const clinic = {
+    name: "Cura Health Medical Center",
+    address: "123 Healthcare Avenue, Medical District",
+    contact: "Tel: (123) 456-7890 • Email: info@curahealth.com",
+  };
+
   const getStatusStyles = (status) => {
     switch (status?.toLowerCase()) {
       case "completed":
@@ -128,7 +133,10 @@ const PatientSessionCard = ({ session, handleViewDetails }) => {
           )}
 
           {canDownloadRecords && (
-            <button className="flex h-8 items-center gap-1.5 rounded-full border border-gray-300 bg-white px-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors shadow-sm">
+            <button
+              onClick={() => downloadPDF(session, clinic)}
+              className="flex h-8 items-center gap-1.5 rounded-full border border-gray-300 bg-white px-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors shadow-sm"
+            >
               <FaDownload className="h-3 w-3" />
               Download
             </button>

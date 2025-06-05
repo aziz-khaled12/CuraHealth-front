@@ -8,21 +8,15 @@ import {
   TextField,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { FaSearch, FaSortNumericDown, FaTable } from "react-icons/fa";
+import { FaSearch, FaTable } from "react-icons/fa";
 import { IoDocumentTextOutline } from "react-icons/io5";
 
 const PatientRecordsSearch = ({
   selected,
   setSelected,
   setSearch,
-  filters,
-  setFilters,
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
-
-  const handleChange = (event) => {
-    setFilters(event.target.value);
-  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -68,41 +62,6 @@ const PatientRecordsSearch = ({
             }}
           />
         </form>
-      </div>
-      <div className="flex-[2]">
-        <FormControl variant="outlined" fullWidth className="w-fit">
-          <Select
-            value={filters}
-            size="small"
-            onChange={handleChange}
-            sx={{
-              borderRadius: "8px",
-              fontSize: "0.9rem",
-            }}
-            placeholder="Sort By"
-            startAdornment={
-              <FaSortNumericDown className="mr-2 text-xl text-gray-500" />
-            }
-            className="bg-white shadow-md rounded-xl"
-          >
-            <MenuItem value={0} disabled sx={{ display: "none" }}>
-              Sort
-            </MenuItem>
-            <div className="px-4 py-2 font-semibold text-[0.9rem] ">
-              Sort By
-            </div>
-            <Divider orientation="horizontal" flexItem></Divider>
-            <MenuItem sx={{ fontSize: "0.9rem" }} value="name">
-              Name
-            </MenuItem>
-            <MenuItem sx={{ fontSize: "0.9rem" }} value="date">
-              Date
-            </MenuItem>
-            <MenuItem sx={{ fontSize: "0.9rem" }} value="price">
-              Price
-            </MenuItem>
-          </Select>
-        </FormControl>
       </div>
 
       <div className="flex gap-2 flex-[1]">

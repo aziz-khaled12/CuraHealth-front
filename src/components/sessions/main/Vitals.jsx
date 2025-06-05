@@ -1,13 +1,15 @@
-import { Box, Divider, Stack, Typography } from "@mui/material";
+import { Box, Button, Divider, Stack, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import VitalsInput from "../sessionUtils/VitalsInput";
 import { useDispatch, useSelector } from "react-redux";
 import { updateSessionAttribute } from "../../../redux/sessionSlice";
 import { fetchVitals } from "../../../redux/signsSlice";
-// import { modifySession } from "../../../redux/sessionSlice";
+import { Edit } from "@mui/icons-material";
+import ModifySignsModal from "../sessionUtils/ModifySignsModal";
 
 const Vitals = ({ id }) => {
   const [selected, setSelected] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false); // State for modal
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -17,13 +19,9 @@ const Vitals = ({ id }) => {
   const { generalSigns } = useSelector((state) => state.signs);
   const vitals = useSelector(
     (state) =>
-      state.sessions.vitals.find((vital) => vital.sessionId === id).data
+      state.sessions.vitals.find((vital) => vital.sessionId === id)?.data || []
   );
 
-  useEffect(() => {
-    console.log("vitals: ", vitals)
-    console.log("generalSigns: ", generalSigns)
-  }, [vitals, generalSigns])
   const [formData, setFormData] = useState(vitals || []);
 
   const handleChange = (e) => {
@@ -32,7 +30,7 @@ const Vitals = ({ id }) => {
 
     const updatedVitals = [
       ...currentVitals.filter((vital) => vital.name !== name),
-      { id: generalSigns.find((sign) => sign.name === name)?.id, name, value }, // Include id
+      { id: generalSigns.find((sign) => sign.name === name)?.id, name, value },
     ];
 
     setFormData(updatedVitals);
@@ -44,6 +42,10 @@ const Vitals = ({ id }) => {
       })
     );
   };
+
+  useEffect(() => {
+    console.log("Form Data Updated:", formData);
+  }, [formData]);
 
   return (
     <Box className="w-full bg-white border border-[#B4B4B4] p-4 rounded-lg">
@@ -66,6 +68,14 @@ const Vitals = ({ id }) => {
               selected={selected}
             />
           ))}
+          <Button
+            variant={"text"}
+            sx={{ textTransform: "none" }}
+            startIcon={<Edit />}
+            onClick={() => setModalOpen(true)} // Open modal on click
+          >
+            Modify
+          </Button>
         </Box>
       ) : (
         <Stack
@@ -77,50 +87,21 @@ const Vitals = ({ id }) => {
         >
           {generalSigns
             .map((sign, index) => {
-              if (sign.name === "Blood Pressure") {
-                const bp1 = formData?.find(
-                  (vital) => vital.name === "BloodPressure1"
-                )?.value;
-                const bp2 = formData?.find(
-                  (vital) => vital.name === "BloodPressure2"
-                )?.value;
+              const vital = formData?.find((vital) => vital.name === sign.name);
 
-                if (bp1 && bp2) {
-                  return (
-                    <Stack key={index} direction={"row"} alignItems={"center"}>
-                      <Typography
-                        variant="body2"
-                        className="!font-medium !mr-1"
-                      >
-                        {sign.name}:
-                      </Typography>
-                      <Typography variant="body2">
-                        {bp1}/{bp2} {sign.unit}
-                      </Typography>
-                    </Stack>
-                  );
-                }
-              } else {
-                const vital = formData?.find(
-                  (vital) => vital.name === sign.name
+              if (vital) {
+                return (
+                  <Stack key={index} direction={"row"} alignItems={"center"}>
+                    <Typography variant="body2" className="!font-medium !mr-1">
+                      {sign.name}:
+                    </Typography>
+                    <Typography variant="body2">
+                      {vital.value} {sign.unit}
+                    </Typography>
+                  </Stack>
                 );
-
-                if (vital) {
-                  return (
-                    <Stack key={index} direction={"row"} alignItems={"center"}>
-                      <Typography
-                        variant="body2"
-                        className="!font-medium !mr-1"
-                      >
-                        {sign.name}:
-                      </Typography>
-                      <Typography variant="body2">
-                        {vital.value} {sign.unit}
-                      </Typography>
-                    </Stack>
-                  );
-                }
               }
+
               return null;
             })
             .filter(Boolean)
@@ -139,6 +120,12 @@ const Vitals = ({ id }) => {
             )}
         </Stack>
       )}
+
+      {/* Add the modal component */}
+      <ModifySignsModal
+        open={modalOpen}
+        handleClose={() => setModalOpen(false)}
+      />
     </Box>
   );
 };

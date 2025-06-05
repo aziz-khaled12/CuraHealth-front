@@ -1,23 +1,18 @@
 import React, { useState } from "react";
 import { Box, Button, Modal, Stack, TextField } from "@mui/material";
 import { useDispatch } from "react-redux";
-import { addService } from "../../redux/servicesSlice";
+import { createService } from "../../redux/servicesSlice";
 const ServicesModal = ({ open, setOpen }) => {
   const dispatch = useDispatch();
   const [name, setName] = useState("");
-  const [price, setPrice] = useState("");
 
   const handleClose = () => {
     setOpen(false);
   };
 
   const handleSubmit = () => {
-    if (price.length > 0 && name.length > 0) {
-      const newService = {
-        name: name,
-        price: price,
-      };
-      dispatch(addService(newService));
+    if (name.length > 0) {
+      dispatch(createService({NameService: name}));
     }
     handleClose()
   };
@@ -46,15 +41,6 @@ const ServicesModal = ({ open, setOpen }) => {
               value={name}
               onChange={(e) => {
                 setName(e.target.value);
-              }}
-            />
-            <TextField
-              name="price"
-              fullWidth
-              placeholder="Price"
-              value={price}
-              onChange={(e) => {
-                setPrice(e.target.value);
               }}
             />
           </Stack>

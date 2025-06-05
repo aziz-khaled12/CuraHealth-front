@@ -8,10 +8,12 @@ import OfficeHeader from "./OfficeHeader";
 import { fetchAppointments } from "../../../redux/appointmentsSlice";
 import { fetchAppointmentsData } from "../../../redux/appointmentDataSlice";
 import { fetchPatients } from "../../../redux/patientsSlice";
-import PatientDetails from "../officeUtils/PatientDetails";
+import PatientDetails from "../officeutils/PatientDetails";
 
 const Office = () => {
   const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
+  console.log(user)
 
   const fetchData = async () => {
     await dispatch(fetchPatients());
@@ -23,7 +25,11 @@ const Office = () => {
     fetchData();
   }, []);
 
-  const { appointments } = useSelector((state) => state.appointments);
+  const appointments = useSelector((state) =>
+    state.appointments.appointments.filter(
+      (a) => a.doctor_id === user.UserID
+    )
+  );
   const [activeTab, setActiveTab] = useState("1");
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -101,7 +107,7 @@ const Office = () => {
 
   return (
     <div>
-      <OfficeHeader  />
+      <OfficeHeader />
 
       <Paper className="p-4 mb-6" elevation={0}>
         <div className="flex justify-between items-center mb-2">

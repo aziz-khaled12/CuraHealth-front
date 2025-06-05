@@ -44,10 +44,7 @@ const PatientRecordsFilters = ({
     if (medication) count++;
     return count;
   };
-  console.log("doctors: ", doctors);
-  console.log("diagnosises: ", diagnosises);
-  console.log("recordTypes: ", recordTypes);
-  console.log("medications: ", medications);
+
 
   // Reset all filters
   const handleReset = () => {

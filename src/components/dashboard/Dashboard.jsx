@@ -1,9 +1,6 @@
 import React from "react";
 import {
   FaCalendar,
-  FaCriticalRole,
-  FaMoneyBillWave,
-  FaUserInjured,
 } from "react-icons/fa";
 import StatCard from "./dashboardUtils/StatCard";
 import { FaHeartPulse, FaUser, FaUserGroup } from "react-icons/fa6";
@@ -14,22 +11,22 @@ const Dashboard = () => {
     {
       title: "Patients Today",
       Icon: FaUser,
-      value: 1000,
+      value: 67,
     },
     {
       title: "New Patients",
       Icon: FaUserGroup,
-      value: 100,
+      value: 5,
     },
     {
       title: "Total Appointments",
       Icon: FaCalendar,
-      value: 1000,
+      value: 689,
     },
     {
       title: "Critical Cases",
       Icon: FaHeartPulse,
-      value: 1000000,
+      value: 58,
     },
   ];
   return (

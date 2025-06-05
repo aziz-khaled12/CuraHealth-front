@@ -7,20 +7,16 @@ import {
   TextField,
   Select,
   FormControl,
-  InputLabel,
   Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   Box,
   Typography,
   Divider,
+  InputAdornment,
+
 } from "@mui/material";
 import {
   MoreHoriz,
   Edit,
-  Delete,
   Shield,
   Search,
   Close,
@@ -29,6 +25,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUsers } from "../../redux/usersSlice";
 import { Add as AddIcon } from "@mui/icons-material";
+import { FaSortNumericDown, FaSearch } from "react-icons/fa";
 
 const UserTable = ({
   onEdit,
@@ -105,26 +102,67 @@ const UserTable = ({
       <div className="w-full flex items-cnter justify-between mb-4">
         <div className="flex items-center gap-4">
           <TextField
-            label="Search users"
+            fullWidth
+            type="search"
             variant="outlined"
+            placeholder="Search users"
             size="small"
+            sx={{
+              background: "white",
+              borderRadius: "8px",
+
+              "& .MuiOutlinedInput-root": {
+                borderRadius: "8px",
+                fontSize: "0.9rem",
+              },
+            }}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             InputProps={{
               startAdornment: (
-                <Search fontSize="small" style={{ marginRight: 5 }} />
+                <InputAdornment
+                  sx={{ "& .MuiTypography-root": { fontSize: "14px" } }}
+                  position="start"
+                >
+                  <FaSearch className="text-primary"/>
+                </InputAdornment>
               ),
             }}
           />
-          <FormControl size="small">
-            <InputLabel>Filter</InputLabel>
+
+
+          
+          <FormControl variant="outlined" fullWidth className="w-fit">
             <Select
+              size="small"
               value={filterType}
               onChange={(e) => setFilterType(e.target.value)}
+              sx={{
+                borderRadius: "8px",
+                fontSize: "0.9rem",
+              }}
+              placeholder="Sort By"
+              startAdornment={
+                <FaSortNumericDown className="mr-2 text-xl text-gray-500" />
+              }
+              className="bg-white shadow-md rounded-xl"
             >
-              <MenuItem value="all">All Users</MenuItem>
-              <MenuItem value="Doctor">Doctors</MenuItem>
-              <MenuItem value="Nurse">Nurses</MenuItem>
+              <MenuItem value={0} disabled sx={{ display: "none" }}>
+                Filter
+              </MenuItem>
+              <div className="px-4 py-2 font-semibold text-[0.9rem] ">
+                Filter
+              </div>
+              <Divider orientation="horizontal" flexItem></Divider>
+              <MenuItem sx={{ fontSize: "0.9rem" }} value="all">
+                All Users
+              </MenuItem>
+              <MenuItem sx={{ fontSize: "0.9rem" }} value="Doctor">
+                Doctors
+              </MenuItem>
+              <MenuItem sx={{ fontSize: "0.9rem" }} value="Nurse">
+                Nurses
+              </MenuItem>
             </Select>
           </FormControl>
         </div>

@@ -2,10 +2,13 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
-import MedicalRecord from "../pdf/MedicalRecordTemplate";
 import PageOne from "../pdf/PageOne";
 import PageTwo from "../pdf/PageTwo";
 import PageThree from "../pdf/PageThree";
+import Prescription from "../pdf/Prescription";
+import PrintPageOne from "../pdf/PrintPageOne";
+import PrintPageTwo from "../pdf/PrintPageTwo";
+import PrintPageThree from "../pdf/PrintPageThree";
 
 
 const createTempContainer1 = (record, clinicInfo) => {
@@ -84,7 +87,27 @@ export const printPDF = (medicalRecord, clinicInfo) => {
   root = createRoot(container);
   root.render(
     <div className="w-[794px] min-h-[1123px] bg-white">
-      <PageOne record={medicalRecord} clinic={clinicInfo} />
+      <PrintPageOne record={medicalRecord} clinic={clinicInfo} />
+      <PrintPageTwo record={medicalRecord} clinic={clinicInfo} />
+      <PrintPageThree record={medicalRecord} clinic={clinicInfo} />
+    </div>
+  );
+  setTimeout(() => {
+    window.print();
+  }, 300);
+};
+
+export const printPrescription = (medicalRecord, clinicInfo) => {
+  const container = document.getElementById("pdf-container");
+  if (!container) return;
+
+  if (root) {
+    root.unmount();
+  }
+  root = createRoot(container);
+  root.render(
+    <div className="w-[794px] min-h-[1123px] bg-white">
+      <Prescription record={medicalRecord} clinic={clinicInfo} />
     </div>
   );
   setTimeout(() => {
@@ -96,7 +119,7 @@ export const downloadPDF = (record, clinicInfo) => {
   // Create and append temporary containers
   const container1 = createTempContainer1(record, clinicInfo);
   const container2 = createTempContainer2(record, clinicInfo);
-
+  
   const containers = [container1, container2];
 
   // Wait for React to render the content

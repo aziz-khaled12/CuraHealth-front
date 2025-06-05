@@ -52,8 +52,8 @@ const ModifyModal = ({ open, setOpen, cellData }) => {
         patient: selectedPatient,
         category: category,
         modifiedAt: new Date().toLocaleString(),
-        startDate: startDate.toLocaleString(),
-        endDate: endDate.toLocaleString(),
+        startDate: new Date(startDate).toLocaleString(),
+        endDate: new Date(endDate).toLocaleString(),
       };
       dispatch(updateAppointment(newAppointment));
       handleClose();
@@ -63,7 +63,7 @@ const ModifyModal = ({ open, setOpen, cellData }) => {
   const handlePatientSelect = (event, value) => {
     if (value) {
       setSelectedPatient(value);
-      setAppointmentTitle(value.name);
+      setAppointmentTitle(`${value.FirstName} ${value.LastName}`);
     }
   };
 

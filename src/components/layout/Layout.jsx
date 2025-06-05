@@ -12,7 +12,7 @@ const Layout = () => {
   return (
     <div className="flex flex-col h-screen w-full overflow-hidden">
       <div className="w-full flex-shrink-0 z-10">
-        <AlertMessage />
+        
         <Navbar />
       </div>
 

@@ -16,7 +16,6 @@ import { fetchServices } from "../../redux/servicesSlice";
 import { fetchAppointmentsData } from "../../redux/appointmentDataSlice";
 
 const PatientRecords = () => {
-  const [sortFilter, setSortFilter] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [selected, setSelected] = useState("table");
   const dispatch = useDispatch();
@@ -53,9 +52,7 @@ const PatientRecords = () => {
   }, [patientSessions]);
 
 
-  const handleChange = (event) => {
-    setSortFilter(event.target.value);
-  };
+
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -202,8 +199,6 @@ const PatientRecords = () => {
           setSearch={setSearchQuery}
           selected={selected}
           setSelected={setSelected}
-          setFilters={setSortFilter}
-          filters={sortFilter}
         />
 
         {/* records */}

@@ -1,9 +1,11 @@
 import { useSelector } from "react-redux";
 
 const useHasPermission = (permission) => {
-  const user = useSelector((state) => state.auth.user);
+  const { permissions } = useSelector((state) => state.auth);
   
-  return user?.permissions.includes(permission);
+  console.log("Permissions in useHasPermission:", permissions);
+
+  return permissions.includes(permission);
 };
 
 export default useHasPermission;

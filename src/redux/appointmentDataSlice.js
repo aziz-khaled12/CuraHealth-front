@@ -154,7 +154,6 @@ export const appointmentsDataSlice = createSlice({
       })
       .addCase(addNewAppointmentData.fulfilled, (state, action) => {
         state.status = "success";
-        // Depending on the type, you might want to update a specific array
         if (action.payload.type === "Motifs") {
           state.consultationCauses.push(action.payload.data);
         } else if (action.payload.type === "SingePhysic") {

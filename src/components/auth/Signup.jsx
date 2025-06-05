@@ -101,6 +101,7 @@ const Signup = () => {
           Password: formData.password,
           Name: formData.userName,
           TypeID: formData.TypeID,
+          TypeName: types.find((t) => t.TypeID === formData.TypeID).TypeName
         })
       );
     }

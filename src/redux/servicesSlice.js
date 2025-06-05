@@ -14,9 +14,8 @@ export const fetchServices = createAsyncThunk(
         return {
           id: service.ServiceID,
           name: service.NameService,
-        }
+        };
       });
-      console.log(services)
       return services;
     } catch (err) {
       return rejectWithValue(err.response.data.error || "Something went wrong");
@@ -28,9 +27,53 @@ export const attachService = createAsyncThunk(
   "services/attachService",
   async (attachData, { rejectWithValue }) => {
     try {
-      const res = await axios.post(`${url}/api/AttatchServiceToUser`, attachData, {
-        headers: { Authorization: `${token}` },
-      });      
+      const res = await axios.post(
+        `${url}/api/AttatchServiceToUser`,
+        attachData,
+        {
+          headers: { Authorization: `${token}` },
+        }
+      );
+    } catch (err) {
+      return rejectWithValue(err.response.data.error || "Something went wrong");
+    }
+  }
+);
+
+export const deattachService = createAsyncThunk(
+  "services/deattachService",
+  async (deattachData, { rejectWithValue }) => {
+    try {
+      const res = await axios.post(
+        `${url}/api/DetachServiceFromUser`,
+        deattachData,
+        {
+          headers: { Authorization: `${token}` },
+        }
+      );
+    } catch (err) {
+      return rejectWithValue(err.response.data.error || "Something went wrong");
+    }
+  }
+);
+
+export const createService = createAsyncThunk(
+  "services/deattachService",
+  async ({ NameService }, { rejectWithValue }) => {
+    try {
+      const res = await axios.post(
+        `${url}/api/service`,
+        { name_service: NameService },
+        {
+          headers: { Authorization: `${token}` },
+        }
+      );
+      console.log("res: ", res);
+      const service = {
+        id: res.data.Service.ServiceID,
+        name: res.data.Service.NameService,
+      };
+      return service;
     } catch (err) {
       return rejectWithValue(err.response.data.error || "Something went wrong");
     }
@@ -78,6 +121,10 @@ export const serviceSlice = createSlice({
       .addCase(fetchServices.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
+      })
+      .addCase(createService.fulfilled, (state, action) => {
+        state.status = "success";
+        state.services.push(action.payload);
       });
   },
 });

@@ -3,7 +3,9 @@ import { calculateWaitingTime } from "../../../utils/TimeManipulationFunctions";
 import { useSelector } from "react-redux";
 
 const AllAppointmentsDrawer = ({ open, onClose, startSession }) => {
-  const { appointments } = useSelector((state) => state.appointments);
+  const appointments = useSelector(
+    (state) => state.appointments.appointments.filter((a) => a.start_time === "0001-01-01T00:00:00Z")
+  );
 
   return (
     <Drawer anchor="right" open={open} onClose={onClose}>
